@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL Database ──────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: sejiwa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sejiwa_db
+      POSTGRES_USER: sejiwa_user
+      POSTGRES_PASSWORD: sejiwa_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - sejiwa_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sejiwa_user -d sejiwa_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── SEJIWA Backend API ───────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sejiwa_api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_POSTGRES_HOST: postgres        # override host ke nama service docker
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
+  # ── Mental Health Python Microservice ─────────────────────────────────────
+  mental_health:
+    build:
+      context: ../ml
+      dockerfile: Dockerfile
+    container_name: sejiwa_mental_health
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - api
+
+volumes:
+  sejiwa_pgdata:
