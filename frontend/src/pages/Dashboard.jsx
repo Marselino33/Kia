@@ -5,7 +5,7 @@ import useAuthStore from '../store/authStore'
 import api from '../lib/api'
 
 const quickLinks = [
-    { to: '/konten?fase=kehamilan_1', label: 'Kehamilan Trimester 1', color: '#ec4899', icon: Heart },
+    { to: '/konten?fase=kehamilan_1', label: 'Kehamilan Trimester 1', color: '#E8307D', icon: Heart },
     { to: '/konten?fase=persalinan', label: 'Panduan Persalinan', color: '#8b5cf6', icon: Baby },
     { to: '/kuis', label: 'Kuis Edukasi', color: '#f59e0b', icon: Activity },
 ]
@@ -44,7 +44,7 @@ export default function Dashboard() {
     }, [])
 
     const phaseColors = {
-        kehamilan_1: '#ec4899', kehamilan_2: '#8b5cf6', kehamilan_3: '#06b6d4',
+        kehamilan_1: '#E8307D', kehamilan_2: '#8b5cf6', kehamilan_3: '#06b6d4',
         persalinan: '#f59e0b', bayi: '#14b8a6', balita: '#10b981',
     }
 
@@ -62,7 +62,7 @@ export default function Dashboard() {
 
                 {/* Stats */}
                 <div className="grid-4" style={{ marginBottom: '2.5rem' }}>
-                    <StatCard icon={BookOpen} value={articles.length} label="Artikel Dibaca" color="#ec4899" bg="rgba(236,72,153,0.12)" />
+                    <StatCard icon={BookOpen} value={articles.length} label="Artikel Dibaca" color="#E8307D" bg="rgba(232,48,125,0.12)" />
                     <StatCard icon={Bookmark} value={bookmarks.length} label="Disimpan" color="#8b5cf6" bg="rgba(139,92,246,0.12)" />
                     <StatCard icon={Activity} value="0" label="Kuis Selesai" color="#14b8a6" bg="rgba(20,184,166,0.12)" />
                     <StatCard icon={Baby} value="0" label="Data Anak" color="#f59e0b" bg="rgba(245,158,11,0.12)" />
@@ -129,7 +129,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div className="glass-card" style={{ padding: '1.5rem', background: 'var(--gradient-card)' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-                                <Heart size={16} color="#ec4899" fill="#ec4899" />
+                                <Heart size={16} color="#E8307D" fill="#E8307D" />
                                 <h3 style={{ fontWeight: 700, fontSize: '0.95rem' }}>Tips Hari Ini</h3>
                             </div>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.7 }}>

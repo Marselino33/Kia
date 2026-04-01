@@ -4,6 +4,7 @@ import { Shield, Phone, Lock, Eye, EyeOff, LogIn } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { setAdminToken } from '../../lib/adminApi'
+import useAuthStore from '../../store/authStore'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api/v1'
 
@@ -13,6 +14,7 @@ export default function AdminLogin() {
     const [showPin, setShowPin] = useState(false)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const setUser = useAuthStore((s) => s.setUser)
 
     // Demo admin login
     const handleDemoLogin = () => {
@@ -33,7 +35,20 @@ export default function AdminLogin() {
             // Verify admin role
             const role = res.data?.data?.role
             if (role !== 'admin') throw new Error('Akun ini bukan admin')
+
             setAdminToken(token)
+
+            // set user state in authStore for admin (so App route can read role)
+            const adminUser = {
+                id: res.data?.data?.pengguna?.id || 'admin',
+                email: res.data?.data?.pengguna?.no_hp || noHp,
+                user_metadata: {
+                    full_name: res.data?.data?.pengguna?.nama || 'Admin',
+                    role: 'admin',
+                },
+            }
+            setUser(adminUser)
+
             toast.success('Login admin berhasil! 🛡️')
             navigate('/admin')
         } catch (err) {
@@ -46,7 +61,7 @@ export default function AdminLogin() {
     return (
         <div style={{
             minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '2rem 1rem', background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)',
+            padding: '2rem 1rem', background: 'linear-gradient(135deg, #881421 0%, #E8307D 50%, #f472b6 100%)',
         }}>
             <div style={{
                 width: '100%', maxWidth: 440, padding: '2.5rem',
@@ -58,9 +73,9 @@ export default function AdminLogin() {
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <div style={{
                         width: 56, height: 56, borderRadius: '14px',
-                        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        background: 'linear-gradient(135deg, #E8307D, #f472b6)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 1rem', boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+                        margin: '0 auto 1rem', boxShadow: '0 8px 24px rgba(232,48,125,0.4)',
                     }}>
                         <Shield size={26} color="white" />
                     </div>
@@ -118,7 +133,7 @@ export default function AdminLogin() {
 
                     <button type="submit" disabled={loading} style={{
                         marginTop: '0.5rem', padding: '0.875rem',
-                        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        background: 'linear-gradient(135deg, #E8307D, #f472b6)',
                         border: 'none', borderRadius: '0.75rem', color: 'white',
                         fontWeight: 600, fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
@@ -130,13 +145,13 @@ export default function AdminLogin() {
                 </form>
 
                 {/* Demo login */}
-                <div style={{ marginTop: '1.5rem', padding: '1rem', borderRadius: '0.75rem', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', borderRadius: '0.75rem', background: 'rgba(232,48,125,0.15)', border: '1px solid rgba(232,48,125,0.3)' }}>
                     <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', textAlign: 'center', marginBottom: '0.75rem' }}>
                         💡 Mode Demo: Login langsung tanpa akun
                     </p>
                     <button onClick={handleDemoLogin} style={{
                         width: '100%', padding: '0.6rem',
-                        background: 'rgba(99,102,241,0.3)', border: '1px solid rgba(99,102,241,0.5)',
+                        background: 'rgba(232,48,125,0.3)', border: '1px solid rgba(232,48,125,0.5)',
                         borderRadius: '0.5rem', color: 'white', fontSize: '0.875rem',
                         cursor: 'pointer', fontWeight: 500
                     }}>

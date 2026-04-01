@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Heart, User, LogOut, Menu, X, Settings, LayoutDashboard, Shield } from 'lucide-react'
+import { Heart, User, LogOut, Menu, X, LayoutDashboard, Shield } from 'lucide-react'
 import useAuthStore from '../store/authStore'
 import { isAdminLoggedIn } from '../lib/adminApi'
 import toast from 'react-hot-toast'
@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 const navLinks = [
     { to: '/', label: 'Beranda' },
     { to: '/gizi-menu', label: 'Gizi & Menu' },
+    { to: '/mental-health', label: 'Kesehatan Mental', requiresAuth: true },
     { to: '/kuis', label: 'Parenting & Kuis', requiresAuth: true },
     { to: '/kesehatan-ibu', label: 'Kesehatan Ibu' },
     { to: '/phbs', label: 'PHBS' },
@@ -47,7 +48,7 @@ export default function Navbar() {
                 <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0, color: '#1f2937' }}>
                     <div style={{
                         width: 32, height: 32, borderRadius: '8px',
-                        background: '#f472b6',
+                        background: '#E8307D',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                         <Heart size={16} color="white" fill="white" />
@@ -64,42 +65,32 @@ export default function Navbar() {
                                 fontSize: '0.9rem', padding: '0.5rem 1rem', borderRadius: '30px',
                                 fontWeight: 600, transition: 'all 0.2s',
                                 color: isActive ? 'white' : '#4b5563',
-                                background: isActive ? '#f472b6' : 'transparent',
+                                background: isActive ? '#E8307D' : 'transparent',
                             }}>
                                 {label}
                             </Link>
                         )
                     })}
-                    {/* Settings Link */}
-                    {user && (
-                    <Link to="/pengaturan" style={{
-                        fontSize: '0.9rem', padding: '0.5rem 1rem', borderRadius: '30px',
-                        fontWeight: 600, color: '#4b5563', display: 'flex', alignItems: 'center', gap: '0.4rem'
-                    }}>
-                        <Settings size={16} /> Pengaturan
-                    </Link>
-                    )}
                 </nav>
 
                 {/* Auth Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: 'auto' }}>
                     {/* Admin Panel Link */}
-                    {isAdminLoggedIn() && (
+                    {isAdminLoggedIn() ? (
                         <Link to="/admin" style={{
                             fontSize: '0.85rem', padding: '0.5rem 1rem', borderRadius: '30px',
-                            fontWeight: 600, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                            fontWeight: 600, background: 'linear-gradient(135deg, #E8307D, #f472b6)',
                             color: 'white', display: 'flex', alignItems: 'center', gap: '0.4rem'
                         }}>
                             <Shield size={16} /> Admin
                         </Link>
-                    )}
-                    {!isAdminLoggedIn() && (
+                    ) : (
                         <Link to="/admin/login" style={{
                             fontSize: '0.85rem', padding: '0.5rem 1rem', borderRadius: '30px',
-                            fontWeight: 600, background: 'rgba(99,102,241,0.1)',
-                            color: '#6366f1', display: 'flex', alignItems: 'center', gap: '0.4rem'
+                            fontWeight: 600, background: 'rgba(232,48,125,0.1)',
+                            color: '#E8307D', display: 'flex', alignItems: 'center', gap: '0.4rem'
                         }}>
-                            <Shield size={16} /> Admin Login
+                            <Shield size={16} /> Masuk
                         </Link>
                     )}
                     {user ? (
@@ -148,21 +139,15 @@ export default function Navbar() {
                             {label}
                         </Link>
                     ))}
-                    {user && (
-                    <Link to="/pengaturan" style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#4b5563', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Settings size={18} /> Pengaturan
-                    </Link>
-                    )}
 
                     {/* Admin Links in Mobile */}
-                    {isAdminLoggedIn() && (
-                        <Link to="/admin" style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#6366f1', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99,102,241,0.1)' }}>
+                    {isAdminLoggedIn() ? (
+                        <Link to="/admin" style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#E8307D', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(232,48,125,0.1)' }}>
                             <Shield size={18} /> Admin Panel
                         </Link>
-                    )}
-                    {!isAdminLoggedIn() && (
-                        <Link to="/admin/login" style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#6366f1', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99,102,241,0.1)' }}>
-                            <Shield size={18} /> Admin Login
+                    ) : (
+                        <Link to="/admin/login" style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#E8307D', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(232,48,125,0.1)' }}>
+                            <Shield size={18} /> Masuk
                         </Link>
                     )}
 

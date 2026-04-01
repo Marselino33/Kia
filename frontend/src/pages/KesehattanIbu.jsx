@@ -223,7 +223,7 @@ export default function KesehattanIbu() {
                             border: 'none', padding: '1rem', borderRadius: '0.75rem', fontWeight: 700,
                             cursor: 'pointer', fontSize: '1rem', transition: 'all 0.2s'
                         }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#ec4899'}
+                            onMouseEnter={e => e.currentTarget.style.background = '#E8307D'}
                             onMouseLeave={e => e.currentTarget.style.background = '#f472b6'}
                         >
                             Mulai →

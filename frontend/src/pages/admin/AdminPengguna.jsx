@@ -180,7 +180,7 @@ function roleBadge(role) {
 
 const btnPrimaryStyle = {
     display: 'flex', alignItems: 'center', gap: '0.4rem',
-    padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #E8307D, #f472b6)',
     color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer',
     fontSize: '0.875rem', fontWeight: 600
 }

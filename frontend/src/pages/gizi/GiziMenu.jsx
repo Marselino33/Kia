@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import AdminBar from '../../components/AdminBar'
 import { Clock, Flame, Heart, X } from 'lucide-react'
 import api from '../../lib/api'
@@ -15,7 +16,7 @@ const USIA_ITEMS = [
 ]
 
 const USIA_BADGE_COLORS = {
-    ibu_hamil: { bg: '#ec4899', label: 'IBU HAMIL' },
+    ibu_hamil: { bg: '#E8307D', label: 'IBU HAMIL' },
     bayi_0_6: { bg: '#8b5cf6', label: 'BAYI 0-6 BLN' },
     mpasi_6_24: { bg: '#10b981', label: 'MPASI 6-24 BLN' },
     ibu_menyusui: { bg: '#f59e0b', label: 'IBU MENYUSUI' },
@@ -73,14 +74,16 @@ function ResepCard({ resep, onFavorit, onAddJadwal }) {
     const badge = USIA_BADGE_COLORS[resep.usia_kategori] || { bg: '#6b7280', label: resep.usia_kategori }
 
     return (
-        <div className="glass-card" style={{
-            borderRadius: '1rem', overflow: 'hidden',
-            display: 'flex', flexDirection: 'column',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-        }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '' }}
-        >
+        <Link to={`/gizi/${resep.slug}`} style={{ textDecoration: 'none' }}>
+            <div className="glass-card" style={{
+                borderRadius: '1rem', overflow: 'hidden',
+                display: 'flex', flexDirection: 'column',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                cursor: 'pointer',
+            }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '' }}
+            >
             {/* Image */}
             <div style={{ position: 'relative', height: 180, overflow: 'hidden', flexShrink: 0 }}>
                 <img
@@ -110,7 +113,7 @@ function ResepCard({ resep, onFavorit, onAddJadwal }) {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
                 >
-                    <Heart size={16} fill={resep.is_favorit ? '#ec4899' : 'none'} color={resep.is_favorit ? '#ec4899' : '#9ca3af'} />
+                    <Heart size={16} fill={resep.is_favorit ? '#E8307D' : 'none'} color={resep.is_favorit ? '#E8307D' : '#9ca3af'} />
                 </button>
             </div>
 
@@ -147,16 +150,17 @@ function ResepCard({ resep, onFavorit, onAddJadwal }) {
                         marginTop: 'auto', width: '100%',
                         padding: '0.55rem', borderRadius: 8,
                         fontSize: '0.82rem', fontWeight: 600,
-                        color: '#ec4899', borderColor: '#ec4899', background: 'transparent',
+                        color: '#E8307D', borderColor: '#E8307D', background: 'transparent',
                         cursor: 'pointer', transition: 'all 0.2s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#ec4899'; e.currentTarget.style.color = '#fff' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ec4899' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#E8307D'; e.currentTarget.style.color = '#fff' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#E8307D' }}
                 >
                     + Tambah ke Jadwal
                 </button>
             </div>
         </div>
+    </Link>
     )
 }
 
@@ -231,7 +235,7 @@ function AddJadwalModal({ resep, onClose, onConfirm }) {
                     disabled={loading}
                     style={{
                         marginTop: '1.25rem', width: '100%',
-                        background: loading ? '#d1d5db' : 'linear-gradient(135deg, #ec4899, #f472b6)',
+                        background: loading ? '#d1d5db' : 'linear-gradient(135deg, #ed5fb3, #E8307D)',
                         color: '#fff', border: 'none', borderRadius: 10,
                         padding: '0.75rem', fontSize: '0.9rem', fontWeight: 700,
                         cursor: loading ? 'not-allowed' : 'pointer',

@@ -16,7 +16,7 @@ const PHASES = [
 ]
 
 const PHASE_COLORS = {
-    perencanaan: '#ec4899', kehamilan_1: '#8b5cf6', kehamilan_2: '#7c3aed',
+    perencanaan: '#E8307D', kehamilan_1: '#8b5cf6', kehamilan_2: '#7c3aed',
     kehamilan_3: '#6d28d9', persalinan: '#f59e0b', nifas: '#ef4444',
     bayi: '#14b8a6', balita: '#10b981',
 }
@@ -33,7 +33,7 @@ const SAMPLE_ARTICLES = [
 ]
 
 function ArticleCard({ article }) {
-    const color = PHASE_COLORS[article.phase] || '#ec4899'
+    const color = PHASE_COLORS[article.phase] || '#E8307D'
     return (
         <Link to={`/konten/${article.slug}`} className="glass-card" style={{ padding: '1.5rem', display: 'block' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>

@@ -47,7 +47,7 @@ export default function Profile() {
                     <div style={{ position: 'relative' }}>
                         <div style={{
                             width: 80, height: 80, borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                            background: 'linear-gradient(135deg, #ed5fb3, #E8307D)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '2rem', fontWeight: 700, color: 'white',
                             boxShadow: '0 4px 20px rgba(236,72,153,0.35)',
@@ -98,7 +98,7 @@ export default function Profile() {
                     <div style={{ marginTop: '1.25rem', padding: '1rem', background: '#fdf2f8', borderRadius: 'var(--radius-md)', border: '1px solid #fbcfe8' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', marginBottom: '0.5rem' }}>
                             <input type="checkbox" checked={form.isPregnant} onChange={e => setForm({ ...form, isPregnant: e.target.checked })} disabled={!editing}
-                                style={{ width: 16, height: 16, accentColor: '#ec4899' }} />
+                                style={{ width: 16, height: 16, accentColor: '#E8307D' }} />
                             <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Saat ini sedang hamil</span>
                         </label>
                         {form.isPregnant && (

@@ -7,6 +7,10 @@ import {
 import { clearAdminToken } from '../../lib/adminApi'
 import toast from 'react-hot-toast'
 
+const PRIMARY = '#E8307D'
+const PRIMARY_LIGHT = '#fde8f3'
+const PRIMARY_HOVER_BG = '#fde8f3'
+
 const NAV_ITEMS = [
     { path: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
     { path: '/admin/pengguna', label: 'Pengguna', icon: Users },
@@ -17,8 +21,52 @@ const NAV_ITEMS = [
     { path: '/admin/quiz', label: 'Quiz', icon: Brain },
 ]
 
+function NavItem({ item, active, sidebarOpen }) {
+    const [hovered, setHovered] = useState(false)
+
+    const bg = active
+        ? PRIMARY_LIGHT
+        : hovered
+            ? PRIMARY_HOVER_BG
+            : 'transparent'
+
+    const textColor = active
+        ? PRIMARY
+        : hovered
+            ? PRIMARY
+            : '#475569'
+
+    const borderColor = active
+        ? PRIMARY
+        : 'transparent'
+
+    return (
+        <Link
+            to={item.path}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+                display: 'flex', alignItems: 'center', gap: '0.75rem',
+                padding: sidebarOpen ? '0.7rem 0.875rem' : '0.7rem',
+                borderRadius: '0.75rem', marginBottom: '0.25rem',
+                background: bg,
+                borderLeft: active ? `3px solid ${PRIMARY}` : '3px solid transparent',
+                color: textColor,
+                textDecoration: 'none', transition: 'all 0.2s ease',
+                justifyContent: sidebarOpen ? 'flex-start' : 'center',
+                fontWeight: active ? 600 : 400,
+            }}
+        >
+            <item.icon size={18} style={{ flexShrink: 0 }} />
+            {sidebarOpen && <span style={{ fontSize: '0.875rem' }}>{item.label}</span>}
+            {sidebarOpen && active && <ChevronRight size={14} style={{ marginLeft: 'auto', color: PRIMARY }} />}
+        </Link>
+    )
+}
+
 export default function AdminLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [logoutHovered, setLogoutHovered] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
 
@@ -38,32 +86,33 @@ export default function AdminLayout({ children }) {
             {/* Sidebar */}
             <aside style={{
                 width: sidebarOpen ? 256 : 72,
-                background: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 100%)',
+                background: '#ffffff',
                 transition: 'width 0.3s ease',
                 display: 'flex', flexDirection: 'column',
                 position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 100,
-                boxShadow: '4px 0 20px rgba(0,0,0,0.15)'
+                borderRight: '1px solid #e2e8f0',
+                boxShadow: '2px 0 8px rgba(0,0,0,0.04)'
             }}>
                 {/* Header */}
                 <div style={{
                     padding: '1.25rem', display: 'flex', alignItems: 'center',
-                    gap: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)'
+                    gap: '0.75rem', borderBottom: '1px solid #f1f5f9'
                 }}>
                     <div style={{
                         width: 36, height: 36, borderRadius: '10px',
-                        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        background: `linear-gradient(135deg, ${PRIMARY}, #f472b6)`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                     }}>
                         <Shield size={18} color="white" />
                     </div>
                     {sidebarOpen && (
                         <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.2 }}>SEJIWA Admin</div>
-                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>Panel Kontrol</div>
+                            <div style={{ color: '#1e293b', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.2 }}>SEJIWA Admin</div>
+                            <div style={{ color: '#94a3b8', fontSize: '0.7rem' }}>Panel Kontrol</div>
                         </div>
                     )}
                     <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
-                        background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)',
+                        background: 'none', border: 'none', color: '#94a3b8',
                         cursor: 'pointer', padding: '0.25rem', borderRadius: '6px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
@@ -73,37 +122,32 @@ export default function AdminLayout({ children }) {
 
                 {/* Nav items */}
                 <nav style={{ flex: 1, padding: '0.75rem 0.5rem', overflowY: 'auto' }}>
-                    {NAV_ITEMS.map(item => {
-                        const active = isActive(item)
-                        return (
-                            <Link key={item.path} to={item.path} style={{
-                                display: 'flex', alignItems: 'center', gap: '0.75rem',
-                                padding: sidebarOpen ? '0.7rem 0.875rem' : '0.7rem',
-                                borderRadius: '0.75rem', marginBottom: '0.25rem',
-                                background: active ? 'rgba(99,102,241,0.3)' : 'transparent',
-                                border: active ? '1px solid rgba(99,102,241,0.5)' : '1px solid transparent',
-                                color: active ? 'white' : 'rgba(255,255,255,0.65)',
-                                textDecoration: 'none', transition: 'all 0.15s',
-                                justifyContent: sidebarOpen ? 'flex-start' : 'center',
-                            }}>
-                                <item.icon size={18} style={{ flexShrink: 0 }} />
-                                {sidebarOpen && <span style={{ fontSize: '0.875rem', fontWeight: active ? 600 : 400 }}>{item.label}</span>}
-                                {sidebarOpen && active && <ChevronRight size={14} style={{ marginLeft: 'auto' }} />}
-                            </Link>
-                        )
-                    })}
+                    {NAV_ITEMS.map(item => (
+                        <NavItem
+                            key={item.path}
+                            item={item}
+                            active={isActive(item)}
+                            sidebarOpen={sidebarOpen}
+                        />
+                    ))}
                 </nav>
 
                 {/* Logout */}
-                <div style={{ padding: '0.75rem 0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <button onClick={handleLogout} style={{
-                        display: 'flex', alignItems: 'center', gap: '0.75rem',
-                        padding: sidebarOpen ? '0.7rem 0.875rem' : '0.7rem',
-                        borderRadius: '0.75rem', width: '100%',
-                        background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-                        color: '#fca5a5', cursor: 'pointer', transition: 'all 0.15s',
-                        justifyContent: sidebarOpen ? 'flex-start' : 'center',
-                    }}>
+                <div style={{ padding: '0.75rem 0.5rem', borderTop: '1px solid #f1f5f9' }}>
+                    <button
+                        onClick={handleLogout}
+                        onMouseEnter={() => setLogoutHovered(true)}
+                        onMouseLeave={() => setLogoutHovered(false)}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.75rem',
+                            padding: sidebarOpen ? '0.7rem 0.875rem' : '0.7rem',
+                            borderRadius: '0.75rem', width: '100%',
+                            background: logoutHovered ? '#fef2f2' : 'transparent',
+                            border: '1px solid transparent',
+                            color: '#ef4444', cursor: 'pointer', transition: 'all 0.2s ease',
+                            justifyContent: sidebarOpen ? 'flex-start' : 'center',
+                        }}
+                    >
                         <LogOut size={18} style={{ flexShrink: 0 }} />
                         {sidebarOpen && <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Logout</span>}
                     </button>
@@ -117,6 +161,7 @@ export default function AdminLayout({ children }) {
         </div>
     )
 }
+
 
 // Page header component
 export function AdminPageHeader({ title, subtitle, action }) {

@@ -19,8 +19,10 @@ import GrowthTracker from './pages/growth/GrowthTracker'
 import Profile from './pages/profile/Profile'
 import Bookmarks from './pages/Bookmarks'
 import GiziMenu from './pages/gizi/GiziMenu'
+import GiziDetail from './pages/gizi/GiziDetail'
 import PHBS from './pages/PHBS'
 import KesehattanIbu from './pages/KesehattanIbu'
+import MentalHealthCheck from './pages/MentalHealthCheck'
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin'
@@ -34,21 +36,30 @@ import AdminQuiz from './pages/admin/AdminQuiz'
 
 // Guards
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuthStore()
+  const user = useAuthStore((s) => s.user)
+  const loading = useAuthStore((s) => s.loading)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
-  if (!user) return <Navigate to="/login" replace />
+  if (!user || !isAuthenticated()) return <Navigate to="/login" replace />
   return children
 }
 
 function GuestRoute({ children }) {
-  const { user, loading } = useAuthStore()
+  const user = useAuthStore((s) => s.user)
+  const loading = useAuthStore((s) => s.loading)
+
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
   if (user) return <Navigate to="/beranda" replace />
   return children
 }
 
 function AdminRoute({ children }) {
+  const isAdmin = useAuthStore((s) => s.isAdmin ? s.isAdmin() : false)
+
   if (!isAdminLoggedIn()) return <Navigate to="/admin/login" replace />
+  // server side middleware / admin api already valid, but we also check app state when available
+  if (!isAdmin) return <Navigate to="/login" replace />
   return children
 }
 
@@ -100,11 +111,15 @@ export default function App() {
 
               {/* Protected */}
               <Route path="/beranda" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/mental-health" element={<ProtectedRoute><MentalHealthCheck /></ProtectedRoute>} />
               <Route path="/kuis" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
               <Route path="/tumbuh-kembang" element={<ProtectedRoute><GrowthTracker /></ProtectedRoute>} />
               <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/bookmark" element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
+              
+              {/* Gizi Menu - Public or Protected depending on design */}
               <Route path="/gizi-menu" element={<GiziMenu />} />
+              <Route path="/gizi/:slug" element={<GiziDetail />} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

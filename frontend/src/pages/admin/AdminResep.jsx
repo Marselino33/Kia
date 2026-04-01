@@ -172,7 +172,7 @@ export default function AdminResep() {
     )
 }
 
-const btnP = { display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }
+const btnP = { display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #E8307D, #f472b6)', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }
 const btnE = { padding: '0.4rem', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '0.4rem', cursor: 'pointer', color: '#0ea5e9', display: 'flex' }
 const btnD = { padding: '0.4rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.4rem', cursor: 'pointer', color: '#ef4444', display: 'flex' }
 const btnC = { padding: '0.6rem 1.25rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', color: '#374151' }

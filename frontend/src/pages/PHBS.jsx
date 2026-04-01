@@ -13,7 +13,7 @@ const PHBS_CATEGORIES = [
 ]
 
 const CATEGORY_COLORS = {
-    kebersihan_diri: { bg: '#fff1f2', label: 'KEBERSIHAN DIRI', color: '#ec4899' },
+    kebersihan_diri: { bg: '#fff1f2', label: 'KEBERSIHAN DIRI', color: '#E8307D' },
     sanitasi_lingkungan: { bg: '#f0fdf4', label: 'SANITASI LINGKUNGAN', color: '#10b981' },
     pencegahan_penyakit: { bg: '#fef3c7', label: 'PENCEGAHAN PENYAKIT', color: '#f59e0b' },
     gaya_hidup_sehat: { bg: '#e0f2fe', label: 'GAYA HIDUP SEHAT', color: '#06b6d4' },

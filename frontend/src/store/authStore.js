@@ -1,12 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import authApi from '../lib/authApi'
 
-// ==================== DEMO MODE ====================
-// Mode demo ini memungkinkan testing tanpa Supabase
-// Untuk production, hapus demo mode dan gunakan Supabase Auth
-
-const DEMO_MODE = !isSupabaseConfigured
+// Demo mode: aktifkan dengan VITE_DEMO_MODE=true
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
 
 const DEMO_USERS = {
   'demo@example.com': {
@@ -14,186 +11,210 @@ const DEMO_USERS = {
     user: {
       id: 'demo-user-1',
       email: 'demo@example.com',
-      user_metadata: { full_name: 'Demo User', role: 'user' }
-    }
+      user_metadata: { full_name: 'Demo User', role: 'user' },
+    },
   },
   'john@example.com': {
     password: 'password123',
     user: {
       id: 'user-john-123',
       email: 'john@example.com',
-      user_metadata: { full_name: 'John Doe', role: 'admin' }
-    }
+      user_metadata: { full_name: 'John Doe', role: 'admin' },
+    },
+  },
+}
+
+function buildUserFromBackend(pengguna) {
+  if (!pengguna) return null
+  return {
+    id: pengguna.id,
+    email: pengguna.no_hp,
+    user_metadata: {
+      full_name: pengguna.nama,
+      role: pengguna.role,
+      desa: pengguna.desa,
+    },
   }
 }
 
-// ====================================================
-
 const useAuthStore = create(
-    persist(
-        (set, get) => ({
-            user: null,
-            session: null,
-            profile: null,
-            role: 'user',
-            loading: true,
-            error: null,
-            isDemoMode: DEMO_MODE,
+  persist(
+    (set, get) => ({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      loading: true,
+      error: null,
+      isDemoMode: DEMO_MODE,
 
-            setUser: (user) => set({ user }),
-            setSession: (session) => set({ session }),
-            setProfile: (profile) => set({ profile }),
-            setRole: (role) => set({ role }),
-            isAdmin: () => get().role === 'admin',
-            setLoading: (loading) => set({ loading }),
-            setError: (error) => set({ error }),
+      setUser: (user) => set({ user }),
+      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
+      setError: (error) => set({ error }),
+      setLoading: (loading) => set({ loading }),
 
-            initialize: async () => {
-                set({ loading: true })
-                
-                if (DEMO_MODE) {
-                  console.log('🎭 Demo mode aktif - auth menggunakan mock data')
-                  set({ 
-                    loading: false,
-                    error: 'ℹ️ Demo Mode: Gunakan email demo@example.com, password: demo1234'
-                  })
-                  return
-                }
+      initialize: async () => {
+        set({ loading: true })
 
-                if (!isSupabaseConfigured) {
-                  set({ 
-                    error: 'Supabase belum dikonfigurasi. Silakan atur VITE_SUPABASE_ANON_KEY di file .env',
-                    loading: false 
-                  })
-                  return
-                }
-
-                try {
-                  const { data: { session } } = await supabase.auth.getSession()
-                  const role = session?.user?.user_metadata?.role || 'user'
-                  set({
-                    session,
-                    user: session?.user ?? null,
-                    role,
-                    loading: false,
-                  })
-
-                  supabase.auth.onAuthStateChange((_event, session) => {
-                    set({
-                      session,
-                      user: session?.user ?? null,
-                    })
-                  })
-                } catch (err) {
-                  console.error('Auth initialize error:', err)
-                  set({ 
-                    error: err.message,
-                    loading: false 
-                  })
-                }
-            },
-
-            login: async (email, password) => {
-                // Demo mode
-                if (DEMO_MODE) {
-                  const demoUser = DEMO_USERS[email]
-                  if (!demoUser) {
-                    throw new Error('Email tidak ditemukan di demo mode. Coba: demo@example.com')
-                  }
-                  if (demoUser.password !== password) {
-                    throw new Error('Password salah. Gunakan: ' + demoUser.password)
-                  }
-                  
-                  const mockSession = {
-                    user: demoUser.user,
-                    access_token: 'demo-token-' + Date.now(),
-                    refresh_token: 'demo-refresh-' + Date.now(),
-                  }
-                  
-                  set({ 
-                    session: mockSession, 
-                    user: demoUser.user, 
-                    role: demoUser.user.user_metadata?.role || 'user',
-                    error: null 
-                  })
-                  return mockSession
-                }
-
-                if (!isSupabaseConfigured) {
-                  throw new Error('❌ Supabase belum dikonfigurasi. Buka LOGIN_TROUBLESHOOTING.md untuk panduan setup.')
-                }
-                
-                try {
-                  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-                  if (error) throw error
-                  const role = data.user?.user_metadata?.role || 'user'
-                  set({ session: data.session, user: data.user, role, error: null })
-                  return data
-                } catch (err) {
-                  set({ error: err.message })
-                  throw err
-                }
-            },
-
-            register: async (email, password, fullName) => {
-                // Demo mode
-                if (DEMO_MODE) {
-                  if (DEMO_USERS[email]) {
-                    throw new Error('Email sudah terdaftar di demo mode. Gunakan email lain.')
-                  }
-                  
-                  // Add to demo users
-                  DEMO_USERS[email] = {
-                    password,
-                    user: {
-                      id: 'user-' + Math.random().toString(36).substr(2, 9),
-                      email,
-                      user_metadata: { full_name: fullName }
-                    }
-                  }
-                  
-                  console.log('✅ Demo mode: Akun berhasil dibuat. Silakan login.')
-                  return { user: DEMO_USERS[email].user }
-                }
-
-                if (!isSupabaseConfigured) {
-                  throw new Error('❌ Supabase belum dikonfigurasi. Buka LOGIN_TROUBLESHOOTING.md untuk panduan setup.')
-                }
-
-                try {
-                  const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { full_name: fullName } },
-                  })
-                  if (error) throw error
-                  set({ error: null })
-                  return data
-                } catch (err) {
-                  set({ error: err.message })
-                  throw err
-                }
-            },
-
-            logout: async () => {
-                try {
-                  if (!DEMO_MODE && isSupabaseConfigured) {
-                    await supabase.auth.signOut()
-                  }
-                  set({ user: null, session: null, profile: null, error: null })
-                } catch (err) {
-                  set({ error: err.message })
-                  throw err
-                }
-            },
-
-            isAuthenticated: () => !!get().session,
-        }),
-        {
-            name: 'kia-auth',
-            partialize: (state) => ({ user: state.user, isDemoMode: state.isDemoMode }),
+        if (DEMO_MODE) {
+          console.log('🎭 Demo mode aktif - auth menggunakan mock data')
+          set({
+            loading: false,
+            error: 'ℹ️ Demo Mode: Gunakan email demo@example.com, password: demo1234',
+          })
+          return
         }
-    )
+
+        const { accessToken, refreshToken } = get()
+        if (!accessToken || !refreshToken) {
+          set({ loading: false })
+          return
+        }
+
+        try {
+          const resp = await authApi.post('/auth/refresh', { refresh_token: refreshToken })
+          const data = resp.data?.data
+          const user = buildUserFromBackend(data?.pengguna)
+          set({
+            user,
+            accessToken: data?.access_token,
+            refreshToken: data?.refresh_token,
+            error: null,
+            loading: false,
+          })
+        } catch (err) {
+          console.error('Auth initialize error:', err)
+          set({ user: null, accessToken: null, refreshToken: null, loading: false })
+        }
+      },
+
+      login: async (emailOrPhone, password) => {
+        if (DEMO_MODE) {
+          const demoUser = DEMO_USERS[emailOrPhone]
+          if (!demoUser) {
+            throw new Error('Email tidak ditemukan di demo mode. Coba: demo@example.com')
+          }
+          if (demoUser.password !== password) {
+            throw new Error('Password salah. Gunakan: ' + demoUser.password)
+          }
+
+          const mockSession = {
+            user: demoUser.user,
+            accessToken: 'demo-token-' + Date.now(),
+            refreshToken: 'demo-refresh-' + Date.now(),
+          }
+
+          set({
+            user: demoUser.user,
+            accessToken: mockSession.accessToken,
+            refreshToken: mockSession.refreshToken,
+            error: null,
+          })
+          return mockSession
+        }
+
+        try {
+          const resp = await authApi.post('/auth/login', {
+            no_hp: emailOrPhone,
+            pin: password,
+          })
+          const data = resp.data?.data
+          const user = buildUserFromBackend(data?.pengguna)
+
+          set({
+            user,
+            accessToken: data?.access_token,
+            refreshToken: data?.refresh_token,
+            error: null,
+          })
+          return data
+        } catch (err) {
+          const message = err?.response?.data?.message || err.message || 'Login gagal'
+          set({ error: message })
+          throw new Error(message)
+        }
+      },
+
+      register: async (emailOrPhone, password, fullName) => {
+        if (DEMO_MODE) {
+          if (DEMO_USERS[emailOrPhone]) {
+            throw new Error('Email sudah terdaftar di demo mode. Gunakan email lain.')
+          }
+
+          DEMO_USERS[emailOrPhone] = {
+            password,
+            user: {
+              id: 'user-' + Math.random().toString(36).substr(2, 9),
+              email: emailOrPhone,
+              user_metadata: { full_name: fullName, role: 'user' },
+            },
+          }
+
+          console.log('✅ Demo mode: Akun berhasil dibuat. Silakan login.')
+          return { user: DEMO_USERS[emailOrPhone].user }
+        }
+
+        try {
+          const resp = await authApi.post('/auth/register', {
+            nama: fullName,
+            no_hp: emailOrPhone,
+            pin: password,
+            role: 'ibu',
+          })
+          const data = resp.data?.data
+          const user = buildUserFromBackend(data?.pengguna)
+
+          set({
+            user,
+            accessToken: data?.access_token,
+            refreshToken: data?.refresh_token,
+            error: null,
+          })
+          return data
+        } catch (err) {
+          const message = err?.response?.data?.message || err.message || 'Gagal membuat akun'
+          set({ error: message })
+          throw new Error(message)
+        }
+      },
+
+      refresh: async () => {
+        const { refreshToken } = get()
+        if (!refreshToken) throw new Error('Refresh token tidak tersedia')
+        try {
+          const resp = await authApi.post('/auth/refresh', { refresh_token: refreshToken })
+          const data = resp.data?.data
+          const user = buildUserFromBackend(data?.pengguna)
+          set({
+            user,
+            accessToken: data?.access_token,
+            refreshToken: data?.refresh_token,
+            error: null,
+          })
+          return data
+        } catch (err) {
+          const message = err?.response?.data?.message || err.message || 'Gagal refresh token'
+          set({ error: message })
+          throw new Error(message)
+        }
+      },
+
+      logout: async () => {
+        set({ user: null, accessToken: null, refreshToken: null, error: null })
+      },
+
+      isAuthenticated: () => !!get().accessToken,
+      isAdmin: () => get().user?.user_metadata?.role === 'admin',
+    }),
+    {
+      name: 'kia-auth',
+      partialize: (state) => ({
+        user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        isDemoMode: state.isDemoMode,
+      }),
+    }
+  )
 )
 
 export default useAuthStore
