@@ -1,0 +1,200 @@
+﻿/* Page styles for pages/parenting/PolaAsuhAnak.jsx */
+.pola-page {
+  background-color: #f9fafb;
+  padding-top: 20px;
+}
+
+.pola-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.pola-breadcrumb-wrap {
+  margin-bottom: 30px;
+}
+
+.pola-breadcrumb {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pola-breadcrumb-link,
+.pola-breadcrumb-current-link {
+  color: #06b6d4;
+}
+
+.pola-breadcrumb-link {
+  cursor: pointer;
+}
+
+.pola-breadcrumb-sep {
+  margin: 0 8px;
+}
+
+.pola-head {
+  margin-bottom: 50px;
+}
+
+.pola-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.pola-subtitle {
+  font-size: 16px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.pola-filter-wrap {
+  margin-bottom: 50px;
+}
+
+.pola-filter-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pola-filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.pola-filter-btn.active {
+  background-color: #0284c7;
+  color: #fff;
+}
+
+.pola-loading-wrap {
+  text-align: center;
+}
+
+.pola-loading-text {
+  color: #6b7280;
+}
+
+.pola-list-wrap {
+  margin-bottom: 60px;
+}
+
+.pola-article-item {
+  display: grid;
+  gap: 40px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.pola-article-item.image-left {
+  grid-template-columns: 350px 1fr;
+}
+
+.pola-article-item.image-right {
+  grid-template-columns: 1fr 350px;
+}
+
+.pola-article-item.has-gap {
+  margin-bottom: 80px;
+}
+
+.pola-article-item.image-left .pola-article-image-wrap {
+  order: -1;
+}
+
+.pola-article-item.image-right .pola-article-content {
+  order: -1;
+}
+
+.pola-article-image-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #e5e7eb;
+}
+
+.pola-article-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.pola-stage-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+.pola-stage-badge-tahap-bayi {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.pola-stage-badge-tahap-salita {
+  background-color: #fce7f3;
+  color: #831843;
+}
+.pola-stage-badge-tahap-pra-sekolah {
+  background-color: #dbeafe;
+  color: #1e3a8a;
+}
+.pola-stage-badge-tahap-sekolah {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.pola-article-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.pola-article-subtitle {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.pola-article-preview {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.pola-read-btn {
+  background-color: transparent;
+  border: none;
+  color: #0284c7;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+@media (max-width: 960px) {
+  .pola-article-item.image-left,
+  .pola-article-item.image-right {
+    grid-template-columns: 1fr;
+  }
+
+  .pola-article-item.image-left .pola-article-image-wrap,
+  .pola-article-item.image-right .pola-article-content {
+    order: initial;
+  }
+}

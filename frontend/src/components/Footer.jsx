@@ -1,100 +1,109 @@
 import { Link } from 'react-router-dom'
-import { Heart } from 'lucide-react'
+import { Rss, Mail, Share2 } from 'lucide-react'
 
 export default function Footer() {
     return (
         <footer style={{
-            background: '#fdf8f9',
-            borderTop: '1px solid rgba(0,0,0,0.05)',
-            padding: '4rem 0 1.5rem',
-            color: '#4b5563',
+            background: '#f3f4f6',
+            borderTop: '1px solid #e5e7eb',
+            padding: '3.5rem 0 2rem',
+            color: '#64748b',
         }}>
             <div className="container">
+                {/* Top Section */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gridTemplateColumns: '1.2fr 1fr 1fr 1fr',
                     gap: '2.5rem',
-                    marginBottom: '3rem',
+                    alignItems: 'flex-start',
+                    marginBottom: '2.5rem',
+                    paddingBottom: '2.5rem',
+                    borderBottom: '1px solid #e2e8f0'
                 }}>
-                    {/* Column 1: Tentang Kami */}
                     <div>
-                        <h4 style={{ fontWeight: 800, marginBottom: '1.5rem', fontSize: '1rem', color: '#1f2937' }}>Tentang Kami</h4>
-                        <p style={{ color: '#6b7280', fontSize: '0.85rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                            Berdedikasi untuk memberdayakan orang tua dengan pengetahuan ahli dan dukungan praktis untuk kesehatan ibu dan anak.
-                        </p>
-                    </div>
-
-                    {/* Column 2: Sumber Daya */}
-                    <div>
-                        <h4 style={{ fontWeight: 800, marginBottom: '1.5rem', fontSize: '1rem', color: '#1f2937' }}>Sumber Daya</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Artikel Kami</Link>
-                            <Link to="/konten" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Alat Kami</Link>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Kebijakan Privasi</Link>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Syarat & Ketentuan</Link>
-                        </div>
-                    </div>
-
-                    {/* Column 3: Tabel Terhubung */}
-                    <div>
-                        <h4 style={{ fontWeight: 800, marginBottom: '1.5rem', fontSize: '1rem', color: '#1f2937' }}>Tabel Terhubung</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Pelajari Cepat</Link>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Database Resep</Link>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Dukungan Komunitas</Link>
-                            <Link to="#" style={{ color: '#6b7280', fontSize: '0.85rem' }}>Akun Saya</Link>
-                        </div>
-                    </div>
-
-                    {/* Column 4: Alirkan Email */}
-                    <div>
-                        <h4 style={{ fontWeight: 800, marginBottom: '1.5rem', fontSize: '1rem', color: '#1f2937' }}>Alirkan Email</h4>
-                        <p style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.6 }}>
-                            Dapatkan tips kesehatan ibu dan anak langsung ke inbox Anda.
-                        </p>
-                        <form style={{ display: 'flex', gap: '0.5rem' }} onSubmit={(e) => e.preventDefault()}>
-                            <input 
-                                type="email" 
-                                placeholder="Alamat email"
-                                style={{
-                                    flex: 1,
-                                    padding: '0.6rem 0.75rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid #e5e7eb',
-                                    fontSize: '0.85rem',
-                                    outline: 'none'
-                                }}
+                        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '1rem', color: '#0f172a', textDecoration: 'none' }}>
+                            <img
+                                className="footer-brand-logo"
+                                src="/logo-kia-cerdas.png"
+                                alt="KIA Cerdas"
+                                style={{ width: '78px', height: 'auto', objectFit: 'contain' }}
                             />
-                            <button style={{
-                                background: '#f472b6',
-                                color: 'white',
-                                border: 'none',
-                                padding: '0.6rem 1rem',
-                                borderRadius: '8px',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}>
-                                →
-                            </button>
-                        </form>
+                        </Link>
+                        <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.55, maxWidth: '320px' }}>
+                            Mendukung setiap langkah orang tua dalam membersamai tumbuh kembang buah hati tercinta.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 style={{ fontWeight: 800, marginBottom: '1.2rem', fontSize: '1rem', color: '#0f172a' }}>Layanan</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                            <Link to="/konten" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>E-Konsultasi</Link>
+                            <Link to="/resep-mpasi" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>E-Resep MPASI</Link>
+                            <Link to="/tumbuh-kembang" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>Tracking Tumbuh Kembang</Link>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style={{ fontWeight: 800, marginBottom: '1.2rem', fontSize: '1rem', color: '#0f172a' }}>Informasi</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                            <Link to="#" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>Tentang Kami</Link>
+                            <Link to="#" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>Bantuan</Link>
+                            <Link to="#" style={{ color: '#64748b', fontSize: '0.95rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#0284c7'} onMouseLeave={(e) => e.target.style.color = '#64748b'}>Kebijakan Privasi</Link>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style={{ fontWeight: 800, marginBottom: '1.2rem', fontSize: '1rem', color: '#0f172a' }}>Ikuti Kami</h4>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <a className="footer-social-icon" href="#" style={{
+                                width: 62, height: 62, borderRadius: '50%',
+                                background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s', cursor: 'pointer'
+                            }} onMouseEnter={(e) => { e.currentTarget.style.background = '#bfdbfe'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#dbeafe'; }}>
+                                <Rss size={27} color="#2563eb" />
+                            </a>
+                            <a className="footer-social-icon" href="#" style={{
+                                width: 62, height: 62, borderRadius: '50%',
+                                background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s', cursor: 'pointer'
+                            }} onMouseEnter={(e) => { e.currentTarget.style.background = '#bfdbfe'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#dbeafe'; }}>
+                                <Mail size={27} color="#2563eb" />
+                            </a>
+                            <a className="footer-social-icon" href="#" style={{
+                                width: 62, height: 62, borderRadius: '50%',
+                                background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s', cursor: 'pointer'
+                            }} onMouseEnter={(e) => { e.currentTarget.style.background = '#bfdbfe'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#dbeafe'; }}>
+                                <Share2 size={27} color="#2563eb" />
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                {/* Bottom divider and copyright */}
-                <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '2rem', textAlign: 'center' }}>
-                    <p style={{ color: '#9ca3af', fontSize: '0.75rem' }}>
-                        © 2024 Platform Edukasi KIA, Hak Cipta Dilindungi.
+                <div style={{ textAlign: 'center' }}>
+                    <p style={{ color: '#94a3b8', fontSize: '0.78rem' }}>
+                        © 2024 KIA Sehat. All rights reserved.
                     </p>
                 </div>
             </div>
 
             <style>{`
             @media (max-width: 1024px) {
-                footer .container > div:first-child { grid-template-columns: repeat(2, 1fr); }
+                footer .container > div:first-child {
+                    grid-template-columns: 1fr 1fr;
+                }
+                .footer-brand-logo { width: 70px !important; }
             }
             @media (max-width: 640px) {
-                footer .container > div:first-child { grid-template-columns: 1fr; }
+                footer .container > div:first-child {
+                    grid-template-columns: 1fr;
+                    gap: 2rem;
+                }
+                .footer-brand-logo { width: 64px !important; }
+                .footer-social-icon {
+                    width: 50px !important;
+                    height: 50px !important;
+                }
             }
             `}</style>
         </footer>

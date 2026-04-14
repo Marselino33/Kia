@@ -1,0 +1,214 @@
+.gizi-anak-page {
+  min-height: 100vh;
+  background: #eef2f7;
+  padding: 104px 0 90px;
+}
+
+.gizi-anak-container {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.gizi-anak-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7f8793;
+  font-size: 13px;
+  margin-bottom: 34px;
+}
+
+.gizi-anak-breadcrumb-link {
+  cursor: pointer;
+  color: #7f8793;
+}
+
+.gizi-anak-breadcrumb-parent,
+.gizi-anak-breadcrumb-current {
+  color: #4f5663;
+}
+
+.gizi-anak-head {
+  margin-bottom: 30px;
+}
+
+.gizi-anak-title {
+  margin: 0;
+  color: #171d27;
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.gizi-anak-subtitle {
+  margin: 9px 0 0;
+  color: #4f5663;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.gizi-anak-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.gizi-anak-card {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  min-height: 220px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e8ecf4;
+  overflow: hidden;
+}
+
+.gizi-anak-card-image-wrap {
+  height: 220px;
+  min-height: 220px;
+}
+
+.gizi-anak-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gizi-anak-card-content {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.gizi-anak-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.gizi-anak-card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #f7d8ca;
+  color: #a14f2f;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+}
+
+.gizi-anak-card-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #7d8592;
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.gizi-anak-card-heading {
+  margin: 0;
+  color: #1a202c;
+  font-size: 1.16rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.gizi-anak-card-content-text {
+  margin: 8px 0 0;
+  color: #515867;
+  line-height: 1.45;
+  font-size: 0.84rem;
+  max-width: 600px;
+}
+
+.gizi-anak-read-btn {
+  margin-top: 12px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  background: #0868d6;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.gizi-anak-load-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.gizi-anak-load-btn {
+  border: none;
+  border-radius: 999px;
+  background: #dfe5ef;
+  color: #1c66be;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+@media (max-width: 980px) {
+  .gizi-anak-container {
+    width: calc(100% - 28px);
+  }
+
+  .gizi-anak-card {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+
+  .gizi-anak-card-image-wrap {
+    height: 190px;
+    min-height: 190px;
+  }
+
+  .gizi-anak-card-content {
+    padding: 18px;
+  }
+
+  .gizi-anak-card-heading {
+    font-size: 1.08rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .gizi-anak-page {
+    padding-top: 26px;
+  }
+
+  .gizi-anak-title {
+    font-size: 1.75rem;
+  }
+
+  .gizi-anak-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .gizi-anak-card-image-wrap {
+    height: 170px;
+    min-height: 170px;
+  }
+
+  .gizi-anak-card-heading {
+    font-size: 1rem;
+  }
+
+  .gizi-anak-load-btn {
+    font-size: 0.92rem;
+    padding: 12px 20px;
+  }
+}

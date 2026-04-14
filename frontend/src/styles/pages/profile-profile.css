@@ -1,0 +1,275 @@
+﻿/* Page styles for profile/Profile.jsx */
+
+/* inline-style-codemod */
+
+.isx-profile-1 {
+  padding-top: 72px;
+}
+
+.isx-profile-2 {
+  padding-block: 2.5rem;
+  max-width: 720px;
+}
+
+.isx-profile-3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.isx-profile-4 {
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.isx-profile-5 {
+  position: relative;
+}
+
+.isx-profile-6 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.3) !important;
+}
+
+.isx-profile-7 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.isx-profile-8 {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.isx-profile-9 {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.isx-profile-10 {
+  margin-left: auto;
+}
+
+.isx-profile-11 {
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.isx-profile-12 {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.isx-profile-13 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.isx-profile-14 {
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+}
+.isx-profile-14--on {
+  color: var(--text-primary);
+}
+.isx-profile-14--off {
+  color: var(--text-muted);
+}
+
+.isx-profile-15 {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: #eff6ff !important;
+  border-radius: var(--radius-md);
+  border: 1px solid #bfdbfe !important;
+}
+
+.isx-profile-16 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.isx-profile-17 {
+  width: 16px;
+  height: 16px;
+  accent-color: #0284c7 !important;
+}
+
+.isx-profile-18 {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.isx-profile-19 {
+  margin-top: 0.75rem;
+}
+
+.isx-profile-20 {
+  margin-top: 1.25rem;
+  width: 100%;
+  padding: 0.875rem;
+}
+
+.isx-profile-21 {
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.isx-profile-22 {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.isx-profile-23 {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.isx-profile-24 {
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.isx-profile-25 {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.isx-profile-26 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.isx-profile-27 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.isx-profile-28 {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.isx-profile-29 {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.isx-profile-30 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.isx-profile-31 {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.isx-profile-32 {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.isx-profile-33 {
+  color: #0284c7}
+
+.isx-profile-34 {
+  width: 100%;
+  color: #dc2626;
+  border-color: rgba(220,38,38,0.2);
+}
+
+.isx-profile-1 .btn-primary,
+.isx-profile-1 .isx-profile-20 {
+  background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
+}
+
+.isx-profile-1 .btn-primary:hover,
+.isx-profile-1 .isx-profile-20:hover {
+  background: linear-gradient(135deg, #0369a1, #1d4ed8) !important;
+}
+
+.isx-profile-1 .glass-card:hover {
+  border-color: rgba(37, 99, 235, 0.32) !important;
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.14) !important;
+  transform: translateY(-2px);
+}
+
+.isx-profile-1 .btn-secondary:hover,
+.isx-profile-1 .btn-ghost:hover,
+.isx-profile-1 .isx-profile-7:hover,
+.isx-profile-1 .isx-profile-34:hover {
+  background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+  color: #ffffff !important;
+  border-color: rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18) !important;
+}
+
+.isx-profile-1 .btn-secondary:hover svg,
+.isx-profile-1 .btn-ghost:hover svg,
+.isx-profile-1 .isx-profile-7:hover svg {
+  color: #ffffff !important;
+}
+
+.isx-profile-1 .isx-profile-7:hover {
+  border-color: #bfdbfe !important;
+}

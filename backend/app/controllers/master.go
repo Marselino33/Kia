@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"sejiwa-backend/app/helpers"
+	"sejiwa-backend/app/middleware"
 	"sejiwa-backend/app/models"
 	"sejiwa-backend/app/usecases"
 
@@ -15,50 +18,12 @@ import (
 
 // MasterController menangani endpoint master data (vaksin KIA 2024).
 type MasterController struct {
-	masterUC *usecases.MasterUseCase
+	masterUC *usecases.MasterContentUseCase
 	db       *gorm.DB
 }
 
-func NewMasterController(masterUC *usecases.MasterUseCase, db *gorm.DB) *MasterController {
+func NewMasterController(masterUC *usecases.MasterContentUseCase, db *gorm.DB) *MasterController {
 	return &MasterController{masterUC: masterUC, db: db}
-}
-
-// ListVaksin godoc
-// @Summary      List semua vaksin KIA 2024
-// @Description  Mengembalikan 26 vaksin standar imunisasi anak dari Buku KIA 2024
-// @Tags         master
-// @Produce      json
-// @Success      200  {object}  models.Response
-// @Router       /master/vaksin [get]
-func (h *MasterController) ListVaksin(c echo.Context) error {
-	list, err := h.masterUC.ListVaksin()
-	if err != nil {
-		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data vaksin", nil, nil)
-	}
-	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, nil)
-}
-
-// GetVaksinByID godoc
-// @Summary      Detail vaksin berdasarkan ID
-// @Tags         master
-// @Produce      json
-// @Param        id   path      int  true  "Vaksin ID"
-// @Success      200  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Router       /master/vaksin/{id} [get]
-func (h *MasterController) GetVaksinByID(c echo.Context) error {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return helpers.StandardResponse(c, http.StatusBadRequest, "id vaksin tidak valid", nil, nil)
-	}
-
-	vaksin, err := h.masterUC.GetVaksinByID(id)
-	if err != nil {
-		return helpers.StandardResponse(c, http.StatusNotFound, "vaksin tidak ditemukan", nil, nil)
-	}
-
-	return helpers.StandardResponse(c, http.StatusOK, "berhasil", vaksin, nil)
 }
 
 // GetContentBySlug returns a single article detail from database
@@ -103,13 +68,177 @@ func (h *MasterController) CheckBookmark(c echo.Context) error {
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", map[string]bool{"bookmarked": false}, nil)
 }
 
-// Quiz attempt stub
+type quizHistoryItem struct {
+	ID           string `json:"id"`
+	QuizID       string `json:"quiz_id"`
+	QuizTitle    string `json:"quiz_title"`
+	QuizCategory string `json:"quiz_category"`
+	Skor         int    `json:"score"`
+	Total        int    `json:"total"`
+	CreatedAt    string `json:"created_at"`
+}
+
+// RecordQuizAttempt menyimpan skor attempt kuis user.
 func (h *MasterController) RecordQuizAttempt(c echo.Context) error {
-	var body map[string]interface{}
-	if err := c.Bind(&body); err != nil {
+	penggunaID := middleware.GetPenggunaID(c)
+	if penggunaID == "" {
+		return helpers.StandardResponse(c, http.StatusUnauthorized, "pengguna tidak terautentikasi", nil, nil)
+	}
+
+	var payload map[string]interface{}
+	if err := c.Bind(&payload); err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid", nil, nil)
 	}
-	return helpers.StandardResponse(c, http.StatusOK, "quiz attempt recorded", nil, nil)
+
+	quizID := strings.TrimSpace(toString(payload["quiz_id"]))
+	if quizID == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "quiz_id wajib diisi", nil, nil)
+	}
+
+	score := toInt(payload["score"])
+	total := toInt(payload["total"])
+	title := strings.TrimSpace(toString(payload["title"]))
+	category := strings.TrimSpace(toString(payload["category"]))
+	phase := strings.TrimSpace(toString(payload["phase"]))
+
+	if total <= 0 {
+		total = 100
+	}
+	if score < 0 {
+		score = 0
+	}
+	if score > total {
+		score = total
+	}
+
+	var quiz models.Quiz
+	err := h.db.First(&quiz, "id = ?", quizID).Error
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal validasi quiz", nil, nil)
+		}
+
+		if title == "" {
+			title = "Kuis Parenting"
+		}
+
+		quiz = models.Quiz{
+			ID:          quizID,
+			Judul:       title,
+			Deskripsi:   "Kuis parenting dari aplikasi KIA",
+			Kategori:    category,
+			Phase:       phase,
+			IsPublished: true,
+		}
+
+		if errCreate := h.db.Create(&quiz).Error; errCreate != nil {
+			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal membuat referensi quiz", nil, nil)
+		}
+	}
+
+	attempt := models.QuizAttempt{
+		PenggunaID: penggunaID,
+		QuizID:     quizID,
+		Skor:       score,
+		Total:      total,
+	}
+
+	if err := h.db.Create(&attempt).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal menyimpan skor kuis", nil, nil)
+	}
+
+	return helpers.StandardResponse(c, http.StatusOK, "attempt kuis berhasil disimpan", attempt, nil)
+}
+
+func toString(v interface{}) string {
+	switch val := v.(type) {
+	case string:
+		return val
+	case float64:
+		return strconv.Itoa(int(val))
+	case int:
+		return strconv.Itoa(val)
+	case int64:
+		return strconv.FormatInt(val, 10)
+	default:
+		return ""
+	}
+}
+
+func toInt(v interface{}) int {
+	switch val := v.(type) {
+	case float64:
+		return int(val)
+	case int:
+		return val
+	case int64:
+		return int(val)
+	case string:
+		parsed, err := strconv.Atoi(strings.TrimSpace(val))
+		if err != nil {
+			return 0
+		}
+		return parsed
+	default:
+		return 0
+	}
+}
+
+// ListQuizAttemptHistory menampilkan riwayat skor kuis user yang sedang login.
+func (h *MasterController) ListQuizAttemptHistory(c echo.Context) error {
+	penggunaID := middleware.GetPenggunaID(c)
+	if penggunaID == "" {
+		return helpers.StandardResponse(c, http.StatusUnauthorized, "pengguna tidak terautentikasi", nil, nil)
+	}
+
+	limit := 10
+	if qLimit := c.QueryParam("limit"); qLimit != "" {
+		parsed, err := strconv.Atoi(qLimit)
+		if err == nil && parsed > 0 && parsed <= 100 {
+			limit = parsed
+		}
+	}
+
+	quizID := strings.TrimSpace(c.QueryParam("quiz_id"))
+
+	query := h.db.Table("quiz_attempts qa").
+		Select("qa.id, qa.quiz_id, qa.skor, qa.total, qa.created_at, q.judul as quiz_title, q.kategori as quiz_category").
+		Joins("LEFT JOIN quizzes q ON q.id = qa.quiz_id").
+		Where("qa.pengguna_id = ?", penggunaID)
+
+	if quizID != "" {
+		query = query.Where("qa.quiz_id = ?", quizID)
+	}
+
+	type rawHistory struct {
+		ID           string
+		QuizID       string
+		QuizTitle    string
+		QuizCategory string
+		Skor         int
+		Total        int
+		CreatedAt    time.Time
+	}
+
+	var rows []rawHistory
+	if err := query.Order("qa.created_at DESC").Limit(limit).Scan(&rows).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil riwayat kuis", nil, nil)
+	}
+
+	items := make([]quizHistoryItem, 0, len(rows))
+	for _, row := range rows {
+		items = append(items, quizHistoryItem{
+			ID:           row.ID,
+			QuizID:       row.QuizID,
+			QuizTitle:    row.QuizTitle,
+			QuizCategory: row.QuizCategory,
+			Skor:         row.Skor,
+			Total:        row.Total,
+			CreatedAt:    row.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", items, nil)
 }
 
 // ListContent godoc

@@ -9,8 +9,6 @@ import (
 type Main struct {
 	Pengguna *PenggunaRepository
 	Anak     *AnakRepository
-	Vaksin   *VaksinRepository
-	Riwayat  *RiwayatRepository
 }
 
 type Options struct {
@@ -22,7 +20,5 @@ func Init(opts Options) *Main {
 	return &Main{
 		Pengguna: NewPenggunaRepository(opts.Postgres),
 		Anak:     NewAnakRepository(opts.Postgres),
-		Vaksin:   NewVaksinRepository(opts.Postgres),
-		Riwayat:  NewRiwayatRepository(opts.Postgres),
 	}
 }

@@ -1,4 +1,5 @@
-import AdminContent from './AdminContent'
+﻿import AdminContent from './AdminContent'
+import '../../styles/pages/admin-admin-phbs.css'
 
 // Wrapper for PHBS content management
 export default function AdminPHBS() {

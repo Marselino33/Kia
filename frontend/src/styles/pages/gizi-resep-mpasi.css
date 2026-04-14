@@ -1,0 +1,241 @@
+﻿/* Page styles for pages/gizi/ResepMPASI.jsx */
+.resep-mpasi-page {
+  background-color: #f3f6fb;
+  min-height: calc(100vh - 160px);
+  padding-top: 84px;
+}
+
+.resep-mpasi-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 22px 20px 70px;
+}
+
+.resep-mpasi-breadcrumb {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.resep-mpasi-link {
+  cursor: pointer;
+}
+
+.resep-mpasi-sep {
+  margin: 0 8px;
+}
+
+.resep-mpasi-breadcrumb-current {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.resep-mpasi-title {
+  margin: 0;
+  font-size: 58px;
+  line-height: 1.02;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.resep-mpasi-subtitle {
+  margin-top: 16px;
+  max-width: 760px;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.resep-mpasi-tab-row {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.resep-mpasi-tab-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+  background-color: #e9eef8;
+  box-shadow: none;
+}
+
+.resep-mpasi-tab-btn.is-active {
+  color: #ffffff;
+  background-color: #0f67c9;
+  box-shadow: 0 6px 18px rgba(15, 103, 201, 0.35);
+}
+
+.resep-mpasi-head-row {
+  margin-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.resep-mpasi-section-title {
+  margin: 0;
+  color: #0f67c9;
+  font-size: 40px;
+}
+
+.resep-mpasi-chip-row {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.resep-mpasi-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.resep-mpasi-chip-primary {
+  color: #0f67c9;
+  background-color: #dbeafe;
+}
+
+.resep-mpasi-chip-secondary {
+  color: #64748b;
+  background-color: #e5e7eb;
+}
+
+.resep-mpasi-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.resep-mpasi-card {
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #e8edf6;
+  cursor: pointer;
+}
+
+.resep-mpasi-card-media {
+  position: relative;
+  height: 210px;
+  background-color: #dbeafe;
+}
+
+.resep-mpasi-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.resep-mpasi-label-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #0369a1;
+  background-color: #e0f2fe;
+}
+
+.resep-mpasi-card-body {
+  padding: 14px 14px 16px;
+}
+
+.resep-mpasi-duration {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.resep-mpasi-card-title {
+  margin: 10px 0;
+  font-size: 34px;
+  line-height: 1.12;
+  color: #0f172a;
+}
+
+.resep-mpasi-tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resep-mpasi-tag {
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 11px;
+  color: #92400e;
+  background-color: #fee2e2;
+}
+
+.resep-mpasi-footer-action {
+  margin-top: 34px;
+  text-align: center;
+}
+
+.resep-mpasi-more-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 34px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #0f67c9;
+  box-shadow: 0 8px 18px rgba(15, 103, 201, 0.3);
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .recipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .resep-mpasi-page h1 {
+    font-size: 42px !important;
+  }
+
+  .resep-mpasi-page h2 {
+    font-size: 30px !important;
+  }
+
+  .resep-mpasi-page h3 {
+    font-size: 26px !important;
+  }
+
+  .resep-mpasi-page p {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .recipe-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .resep-mpasi-page h1 {
+    font-size: 34px !important;
+  }
+
+  .resep-mpasi-page h2 {
+    font-size: 24px !important;
+  }
+
+  .resep-mpasi-page h3 {
+    font-size: 22px !important;
+  }
+}

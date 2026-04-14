@@ -1,53 +1,5 @@
 package models
 
-import "time"
-
-// ==============================
-// Jadwal Response types
-// ==============================
-
-const (
-	StatusVaksinSudah    = "sudah"
-	StatusVaksinTerlewat = "terlewat"
-	StatusVaksinSegera   = "segera"
-	StatusVaksinBelum    = "belum"
-)
-
-// VaksinStatusItem mendeskripsikan status satu vaksin untuk seorang anak.
-type VaksinStatusItem struct {
-	NamaVaksin    string     `json:"nama_vaksin"`
-	UsiaPemberian string     `json:"usia_pemberian"` // ex: "2 bulan"
-	Deskripsi     string     `json:"deskripsi"`
-	Status        string     `json:"status"` // sudah | segera | terlewat | belum
-	TanggalDone   *time.Time `json:"tanggal_done"`
-}
-
-// JadwalBulan mengelompokkan vaksin berdasarkan usia bulan.
-type JadwalBulan struct {
-	UsiaBulan  int                `json:"usia_bulan"`
-	LabelUsia  string             `json:"label_usia"`
-	Keterangan string             `json:"keterangan"`
-	VaksinList []VaksinStatusItem `json:"vaksin_list"`
-}
-
-// RingkasanJadwal adalah summary hitungan status vaksin anak.
-type RingkasanJadwal struct {
-	Sudah    int `json:"sudah"`
-	Segera   int `json:"segera"`
-	Terlewat int `json:"terlewat"`
-	Belum    int `json:"belum"`
-	Total    int `json:"total"`
-}
-
-// JadwalResponse adalah response lengkap GET /anak/:id/jadwal.
-type JadwalResponse struct {
-	AnakID    string          `json:"anak_id"`
-	UsiaBulan int             `json:"usia_bulan"`
-	UsiaTeks  string          `json:"usia_teks"`
-	Jadwal    []JadwalBulan   `json:"jadwal"`
-	Ringkasan RingkasanJadwal `json:"ringkasan"`
-}
-
 // ==============================
 // Anak Response types
 // ==============================

@@ -34,6 +34,7 @@ services:
       - .env
     environment:
       DB_POSTGRES_HOST: postgres        # override host ke nama service docker
+      MENTAL_HEALTH_SERVICE_URL: http://mental_health:8000/api/v1
     ports:
       - "8080:8080"
     volumes:

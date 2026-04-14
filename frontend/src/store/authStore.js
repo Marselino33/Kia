@@ -28,7 +28,7 @@ function buildUserFromBackend(pengguna) {
   if (!pengguna) return null
   return {
     id: pengguna.id,
-    email: pengguna.no_hp,
+    email: pengguna.email || pengguna.no_hp,
     user_metadata: {
       full_name: pengguna.nama,
       role: pengguna.role,
@@ -87,9 +87,9 @@ const useAuthStore = create(
         }
       },
 
-      login: async (emailOrPhone, password) => {
+      login: async (email, password) => {
         if (DEMO_MODE) {
-          const demoUser = DEMO_USERS[emailOrPhone]
+          const demoUser = DEMO_USERS[email]
           if (!demoUser) {
             throw new Error('Email tidak ditemukan di demo mode. Coba: demo@example.com')
           }
@@ -114,7 +114,8 @@ const useAuthStore = create(
 
         try {
           const resp = await authApi.post('/auth/login', {
-            no_hp: emailOrPhone,
+            email,
+            no_hp: email,
             pin: password,
           })
           const data = resp.data?.data
@@ -134,29 +135,30 @@ const useAuthStore = create(
         }
       },
 
-      register: async (emailOrPhone, password, fullName) => {
+      register: async (email, password, fullName) => {
         if (DEMO_MODE) {
-          if (DEMO_USERS[emailOrPhone]) {
+          if (DEMO_USERS[email]) {
             throw new Error('Email sudah terdaftar di demo mode. Gunakan email lain.')
           }
 
-          DEMO_USERS[emailOrPhone] = {
+          DEMO_USERS[email] = {
             password,
             user: {
               id: 'user-' + Math.random().toString(36).substr(2, 9),
-              email: emailOrPhone,
+              email,
               user_metadata: { full_name: fullName, role: 'user' },
             },
           }
 
           console.log('✅ Demo mode: Akun berhasil dibuat. Silakan login.')
-          return { user: DEMO_USERS[emailOrPhone].user }
+          return { user: DEMO_USERS[email].user }
         }
 
         try {
           const resp = await authApi.post('/auth/register', {
             nama: fullName,
-            no_hp: emailOrPhone,
+            email,
+            no_hp: email,
             pin: password,
             role: 'ibu',
           })
@@ -202,7 +204,7 @@ const useAuthStore = create(
         set({ user: null, accessToken: null, refreshToken: null, error: null })
       },
 
-      isAuthenticated: () => !!get().accessToken,
+      isAuthenticated: () => !!get().accessToken || !!get().user,
       isAdmin: () => get().user?.user_metadata?.role === 'admin',
     }),
     {

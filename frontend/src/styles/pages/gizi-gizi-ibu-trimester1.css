@@ -1,0 +1,263 @@
+/* Page styles for pages/gizi/GiziIbuTrimester1.jsx */
+.gizi-ibu-page {
+  background-color: #f3f6fb;
+  min-height: calc(100vh - 160px);
+  padding-top: 84px;
+}
+
+@media (max-width: 1100px) {
+  .gizi-hero {
+    grid-template-columns: 1fr !important;
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .gizi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .gizi-ibu-page h1 {
+    font-size: 42px !important;
+  }
+
+  .gizi-ibu-page h2 {
+    font-size: 30px !important;
+  }
+
+  .gizi-ibu-page h3 {
+    font-size: 34px !important;
+  }
+
+  .gizi-ibu-page p {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .gizi-ibu-page h1 {
+    font-size: 34px !important;
+  }
+
+  .gizi-ibu-page h2 {
+    font-size: 24px !important;
+  }
+
+  .gizi-ibu-page h3 {
+    font-size: 26px !important;
+  }
+
+  .gizi-ibu-page p {
+    font-size: 16px !important;
+  }
+}
+
+
+/* inline-style-codemod */
+
+.gizi-ibu-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 22px 20px 70px;
+}
+
+
+.gizi-ibu-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gizi-ibu-icon-makanan-pokok,
+.gizi-ibu-icon-sayur {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.gizi-ibu-icon-protein-hewani {
+  background-color: #fee2e2;
+  color: #b45309;
+}
+
+.gizi-ibu-icon-protein-nabati {
+  background-color: #cffafe;
+  color: #0e7490;
+}
+
+.gizi-ibu-icon-buah {
+  background-color: #fee2e2;
+  color: #c2410c;
+}
+
+.gizi-ibu-icon-lemak {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.gizi-ibu-icon-gula {
+  background-color: #cffafe;
+  color: #0284c7;
+}
+.gizi-ibu-breadcrumb {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.gizi-ibu-breadcrumb-link {
+  cursor: pointer;
+}
+
+.gizi-ibu-breadcrumb-sep {
+  margin: 0 8px;
+}
+
+.gizi-ibu-breadcrumb-parent {
+  color: #6b7280;
+}
+
+.gizi-ibu-breadcrumb-sep {
+  margin: 0 8px;
+}
+
+.gizi-ibu-breadcrumb-current {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.gizi-ibu-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.gizi-ibu-title {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.gizi-ibu-subtitle {
+  margin-top: 16px;
+  margin-bottom: 0;
+  max-width: 760px;
+  font-size: 21px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.gizi-ibu-tabs {
+  background-color: #0f5fbf;
+  border-radius: 999px;
+  padding: 4px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.gizi-ibu-tab-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gizi-ibu-tab-btn--active {
+  color: #0f5fbf;
+  background-color: #ffffff;
+}
+.gizi-ibu-tab-btn--inactive {
+  color: #ffffff;
+  background-color: transparent;
+}
+
+.gizi-ibu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 42px;
+}
+
+.gizi-ibu-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background-color: #f7f9fd;
+  border: 1px solid #edf1f8;
+  border-radius: 20px;
+  padding: 26px 24px;
+}
+.gizi-ibu-card--full {
+  grid-column: 1 / -1;
+}
+.gizi-ibu-card--half {
+  grid-column: auto;
+}
+
+.gizi-ibu-card-title {
+  margin: 0;
+  font-size: 38px;
+  line-height: 1.08;
+  color: #0f172a;
+}
+
+.gizi-ibu-card-portion {
+  margin: 12px 0 4px;
+  font-size: 22px;
+  color: #334155;
+}
+
+.gizi-ibu-card-sample {
+  margin: 0;
+  font-size: 22px;
+  color: #334155;
+}
+
+.gizi-ibu-tip {
+  border-radius: 20px;
+  padding: 38px 40px;
+  color: #ffffff;
+  background: linear-gradient(105deg, #145ab4 0%, #175fb9 72%, #2368c2 100%);
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+}
+
+.gizi-ibu-tip-content {
+  max-width: 740px;
+}
+
+.gizi-ibu-breadcrumb0 {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background-color: rgba(255,255,255,0.18);
+}
+
+.gizi-ibu-breadcrumb1 {
+  margin: 14px 0 10px;
+  font-size: 46px;
+  line-height: 1.1;
+}
+
+.gizi-ibu-breadcrumb2 {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.92);
+}
+
+

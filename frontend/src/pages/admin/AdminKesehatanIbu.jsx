@@ -1,4 +1,5 @@
-import AdminContent from './AdminContent'
+﻿import AdminContent from './AdminContent'
+import '../../styles/pages/admin-admin-kesehatan-ibu.css'
 
 // Wrapper for Kesehatan Ibu content management
 export default function AdminKesehatanIbu() {

@@ -1,0 +1,344 @@
+﻿/* Page styles for PHBS.jsx */
+.page-phbs {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-phbs-1 {
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.isx-phbs-2 {
+  height: 180px;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.isx-phbs-3 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.isx-phbs-4 {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.isx-phbs-5 {
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.3;
+  margin: 0;
+  color: #1f2937;
+}
+
+.isx-phbs-6 {
+  color: #6b7280;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.isx-phbs-7 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.isx-phbs-8 {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.isx-phbs-9 {
+  color: #f472b6;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.isx-phbs-10 {
+  padding-top: 80px;
+  min-height: 100vh;
+  background: #fdf8f9;
+}
+
+.isx-phbs-11 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 0;
+  font-size: 0.9rem;
+}
+
+.isx-phbs-12 {
+  color: #f472b6;
+  text-decoration: none;
+}
+
+.isx-phbs-13 {
+  margin: 0 0.5rem;
+  color: #d1d5db;
+}
+
+.isx-phbs-14 {
+  color: #f472b6;
+  font-weight: 700;
+}
+
+.isx-phbs-15 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.isx-phbs-16 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.isx-phbs-17 {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.isx-phbs-18 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+}
+
+.isx-phbs-19 {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+}
+
+.isx-phbs-20 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.isx-phbs-21 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.isx-phbs-22 {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s;
+  text-align: left;
+}
+.isx-phbs-22--on {
+  background: #fff1f2;
+  color: #f472b6;
+  font-weight: 700;
+}
+.isx-phbs-22--off {
+  background: transparent;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.isx-phbs-23 {
+  font-size: 1.1rem;
+}
+
+.isx-phbs-24 {
+  margin-left: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f472b6;
+}
+
+.isx-phbs-25 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.isx-phbs-26 {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.isx-phbs-27 {
+  color: #1f2937;
+}
+
+.isx-phbs-28 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.isx-phbs-29 {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.isx-phbs-30 {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+}
+
+.isx-phbs-31 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.isx-phbs-32 {
+  border-radius: 1rem;
+  background: #f3f4f6;
+  height: 350px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.isx-phbs-33 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.isx-phbs-34 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.isx-phbs-35 {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.isx-phbs-35--on {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.isx-phbs-35--off {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.isx-phbs-36 {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.isx-phbs-36--on {
+  border: none;
+  background: #f472b6;
+  color: white;
+}
+.isx-phbs-36--off {
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #1f2937;
+}
+
+.isx-phbs-37 {
+  color: #9ca3af;
+}
+
+.isx-phbs-38 {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.isx-phbs-38--on {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.isx-phbs-38--off {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.isx-phbs-1:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.isx-phbs-badge {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.isx-phbs-badge-kebersihan_diri {
+  background: #fff1f2;
+  color: #e8307d;
+}
+
+.isx-phbs-badge-sanitasi_lingkungan {
+  background: #f0fdf4;
+  color: #10b981;
+}
+
+.isx-phbs-badge-pencegahan_penyakit {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.isx-phbs-badge-gaya_hidup_sehat {
+  background: #e0f2fe;
+  color: #06b6d4;
+}

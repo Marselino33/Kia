@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"sejiwa-backend/app/models"
@@ -11,13 +12,11 @@ import (
 // AnakUseCase menangani CRUD data anak beserta perhitungan usia dan vaksin berikutnya.
 type AnakUseCase struct {
 	anakRepo *repositories.AnakRepository
-	jadwalUC *JadwalUseCase
 }
 
-func NewAnakUseCase(anakRepo *repositories.AnakRepository, jadwalUC *JadwalUseCase) *AnakUseCase {
+func NewAnakUseCase(anakRepo *repositories.AnakRepository) *AnakUseCase {
 	return &AnakUseCase{
 		anakRepo: anakRepo,
-		jadwalUC: jadwalUC,
 	}
 }
 
@@ -130,13 +129,6 @@ func (u *AnakUseCase) DeleteAnak(id, penggunaID string) error {
 func (u *AnakUseCase) toAnakResponse(anak *models.Anak) (models.AnakResponse, error) {
 	usiaBulan := HitungUsiaBulan(anak.TanggalLahir)
 
-	// Hitung vaksin berikutnya
-	vaksinBerikutnya := ""
-	berikutnya, err := u.jadwalUC.CariVaksinBerikutnya(anak.ID)
-	if err == nil {
-		vaksinBerikutnya = berikutnya
-	}
-
 	return models.AnakResponse{
 		ID:               anak.ID,
 		Nama:             anak.Nama,
@@ -146,6 +138,37 @@ func (u *AnakUseCase) toAnakResponse(anak *models.Anak) (models.AnakResponse, er
 		UsiaTeks:         FormatUsiaTeks(usiaBulan),
 		BeratLahirKg:     anak.BeratLahirKg,
 		GolonganDarah:    anak.GolonganDarah,
-		VaksinBerikutnya: vaksinBerikutnya,
+		VaksinBerikutnya: "",
 	}, nil
+}
+
+// HitungUsiaBulan menghitung usia anak dalam bulan penuh.
+func HitungUsiaBulan(tanggalLahir time.Time) int {
+	now := time.Now()
+	years := now.Year() - tanggalLahir.Year()
+	months := int(now.Month()) - int(tanggalLahir.Month())
+	total := years*12 + months
+	if now.Day() < tanggalLahir.Day() {
+		total--
+	}
+	if total < 0 {
+		return 0
+	}
+	return total
+}
+
+// FormatUsiaTeks mengubah bulan menjadi teks usia yang mudah dibaca.
+func FormatUsiaTeks(bulan int) string {
+	if bulan == 0 {
+		return "0 bulan"
+	}
+	if bulan < 12 {
+		return fmt.Sprintf("%d bulan", bulan)
+	}
+	tahun := bulan / 12
+	sisa := bulan % 12
+	if sisa == 0 {
+		return fmt.Sprintf("%d tahun", tahun)
+	}
+	return fmt.Sprintf("%d tahun %d bulan", tahun, sisa)
 }

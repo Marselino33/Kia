@@ -1,0 +1,162 @@
+﻿/* Page styles for admin/AdminPengguna.jsx */
+.page-admin-admin-pengguna {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-adminpengguna-1 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #E8307D, #f472b6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminpengguna-2 {
+  padding: 2rem;
+}
+
+.isx-adminpengguna-3 {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.isx-adminpengguna-4 {
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  flex: 1;
+  color: #334155;
+}
+
+.isx-adminpengguna-5 {
+  overflow-x: auto;
+}
+
+.isx-adminpengguna-6 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminpengguna-7 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminpengguna-8 {
+  margin-bottom: 0.5rem;
+}
+
+.isx-adminpengguna-9 {
+  transition: background 0.1s;
+}
+
+.isx-adminpengguna-10 {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.isx-adminpengguna-11 {
+  padding: 0.4rem;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #0ea5e9;
+  display: flex;
+}
+
+.isx-adminpengguna-12 {
+  padding: 0.4rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+}
+
+.isx-adminpengguna-13 {
+  padding: 1.5rem;
+}
+
+.isx-adminpengguna-14 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.isx-adminpengguna-15 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminpengguna-16 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #E8307D, #f472b6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminpengguna-17 {
+  padding: 1.5rem;
+}
+
+.isx-adminpengguna-18 {
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.isx-adminpengguna-19 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.isx-adminpengguna-20 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminpengguna-21 {
+  padding: 0.6rem 1.25rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

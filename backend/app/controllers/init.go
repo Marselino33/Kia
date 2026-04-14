@@ -9,13 +9,12 @@ import (
 
 // Main mengumpulkan semua controller SEJIWA dalam satu struct.
 type Main struct {
-	Auth    *AuthController
-	Anak    *AnakController
-	Jadwal  *JadwalController
-	Riwayat *RiwayatController
-	Master  *MasterController
-	Gizi    *GiziController
-	Admin   *AdminController
+	Auth   *AuthController
+	Anak   *AnakController
+	Master *MasterController
+	Gizi   *GiziController
+	Admin  *AdminController
+	Mental *MentalHealthController
 }
 
 type Options struct {
@@ -26,12 +25,11 @@ type Options struct {
 
 func Init(opts Options) *Main {
 	return &Main{
-		Auth:    NewAuthController(opts.UseCases.Auth),
-		Anak:    NewAnakController(opts.UseCases.Anak),
-		Jadwal:  NewJadwalController(opts.UseCases.Jadwal),
-		Riwayat: NewRiwayatController(opts.UseCases.Riwayat),
-		Master:  NewMasterController(opts.UseCases.Master, opts.DB),
-		Gizi:    NewGiziController(),
-		Admin:   NewAdminController(opts.DB),
+		Auth:   NewAuthController(opts.UseCases.Auth),
+		Anak:   NewAnakController(opts.UseCases.Anak),
+		Master: NewMasterController(opts.UseCases.Master, opts.DB),
+		Gizi:   NewGiziController(),
+		Admin:  NewAdminController(opts.DB),
+		Mental: NewMentalHealthController(opts.Config),
 	}
 }

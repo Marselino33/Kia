@@ -1,0 +1,359 @@
+﻿/* Page styles for KesehattanIbu.jsx */
+.page-kesehattan-ibu {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-kesehattanibu-1 {
+  padding-top: 80px;
+  min-height: 100vh;
+  background: #fdf8f9;
+}
+
+.isx-kesehattanibu-2 {
+  background: linear-gradient(135deg, #fce7f3 0%, #e0f2fe 100%);
+  padding: 3rem 1.5rem;
+}
+
+.isx-kesehattanibu-3 {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.isx-kesehattanibu-4 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f472b6;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.isx-kesehattanibu-5 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.isx-kesehattanibu-6 {
+  color: #f472b6;
+}
+
+.isx-kesehattanibu-7 {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.isx-kesehattanibu-8 {
+  display: flex;
+  gap: 1rem;
+}
+
+.isx-kesehattanibu-9 {
+  background: #ea580c;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.isx-kesehattanibu-10 {
+  background: #fff;
+  color: #ea580c;
+  border: 2px solid #ea580c;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.isx-kesehattanibu-11 {
+  background: #f0fdf4;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+.isx-kesehattanibu-12 {
+  font-size: 4rem;
+}
+
+.isx-kesehattanibu-13 {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.isx-kesehattanibu-14 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.isx-kesehattanibu-15 {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+.isx-kesehattanibu-16 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.isx-kesehattanibu-17 {
+  text-decoration: none;
+}
+
+.isx-kesehattanibu-18 {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: all 0.3s;
+  height: 100%;
+}
+
+.isx-kesehattanibu-19 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.isx-kesehattanibu-20 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.isx-kesehattanibu-21 {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.isx-kesehattanibu-22 {
+  background: linear-gradient(135deg, #fce7f3 0%, #fff0f6 100%);
+  padding: 3rem 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.isx-kesehattanibu-23 {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.isx-kesehattanibu-24 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f472b6;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.isx-kesehattanibu-25 {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.isx-kesehattanibu-26 {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid #f3f4f6;
+}
+
+.isx-kesehattanibu-27 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.isx-kesehattanibu-28 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.isx-kesehattanibu-29 {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.isx-kesehattanibu-29--on {
+  background: #fce7f3;
+  border: 2px solid #f472b6;
+}
+.isx-kesehattanibu-29--off {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+}
+
+.isx-kesehattanibu-30 {
+  accent-color: #f472b6;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.isx-kesehattanibu-31 {
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.isx-kesehattanibu-32 {
+  width: 100%;
+  margin-top: 1.5rem;
+  background: #f472b6;
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.isx-kesehattanibu-33 {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.isx-kesehattanibu-34 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.isx-kesehattanibu-35 {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+.isx-kesehattanibu-36 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.isx-kesehattanibu-37 {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid #f3f4f6;
+  transition: all 0.3s;
+}
+
+.isx-kesehattanibu-38 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.isx-kesehattanibu-39 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.isx-kesehattanibu-40 {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.isx-kesehattanibu-41 {
+  background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%);
+  padding: 3rem 1.5rem;
+  border-radius: 1.5rem;
+  margin-bottom: 4rem;
+  max-width: 1200px;
+  margin: 0 auto 4rem;
+}
+
+.isx-kesehattanibu-42 {
+  text-align: center;
+  color: #fff;
+}
+
+.isx-kesehattanibu-43 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+
+.isx-kesehattanibu-44 {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  line-height: 1.7;
+}
+
+.isx-kesehattanibu-45 {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.isx-kesehattanibu-46 {
+  background: #fff;
+  color: #06b6d4;
+  border: none;
+  padding: 0.85rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.isx-kesehattanibu-47 {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 0.8rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

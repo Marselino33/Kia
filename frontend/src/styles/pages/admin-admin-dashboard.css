@@ -1,0 +1,123 @@
+﻿/* Page styles for admin/AdminDashboard.jsx */
+.page-admin-admin-dashboard {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-admindashboard-1 {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.isx-admindashboard-2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.isx-admindashboard-3 {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.isx-admindashboard-4 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.isx-admindashboard-5 {
+  margin-bottom: 2rem;
+}
+
+.isx-admindashboard-6 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.isx-admindashboard-7 {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.isx-admindashboard-8 {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+}
+
+.isx-admindashboard-9 {
+  margin-bottom: 0.75rem;
+}
+
+.isx-admindashboard-10 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.isx-admindashboard-11 {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.isx-admindashboard-12 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.isx-admindashboard-13 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.isx-admindashboard-14 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.isx-admindashboard-15 {
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.isx-admindashboard-16 {
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: #10b98110;
+  border: 1px solid #10b98130;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.isx-admindashboard-17 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #10b981;
+  background: #10b98120;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}

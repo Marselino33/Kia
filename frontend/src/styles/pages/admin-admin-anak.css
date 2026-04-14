@@ -1,0 +1,152 @@
+﻿/* Page styles for admin/AdminAnak.jsx */
+.page-admin-admin-anak {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-adminanak-1 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminanak-2 {
+  padding: 2rem;
+}
+
+.isx-adminanak-3 {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.isx-adminanak-4 {
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.isx-adminanak-5 {
+  overflow-x: auto;
+}
+
+.isx-adminanak-6 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminanak-7 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminanak-8 {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.isx-adminanak-9 {
+  padding: 0.4rem;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #0ea5e9;
+  display: flex;
+}
+
+.isx-adminanak-10 {
+  padding: 0.4rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+}
+
+.isx-adminanak-11 {
+  padding: 1.5rem;
+}
+
+.isx-adminanak-12 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.isx-adminanak-13 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminanak-14 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminanak-15 {
+  padding: 1.5rem;
+}
+
+.isx-adminanak-16 {
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.isx-adminanak-17 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.isx-adminanak-18 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminanak-19 {
+  padding: 0.6rem 1.25rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

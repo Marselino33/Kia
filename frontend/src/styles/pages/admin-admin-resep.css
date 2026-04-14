@@ -1,0 +1,183 @@
+﻿/* Page styles for admin/AdminResep.jsx */
+.page-admin-admin-resep {
+  /* Add page-specific styles here */
+}
+
+
+/* inline-style-codemod */
+
+.isx-adminresep-1 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #E8307D, #f472b6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminresep-2 {
+  padding: 2rem;
+}
+
+.isx-adminresep-3 {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.isx-adminresep-4 {
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.isx-adminresep-5 {
+  overflow-x: auto;
+}
+
+.isx-adminresep-6 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminresep-7 {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.isx-adminresep-8 {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.isx-adminresep-9 {
+  padding: 0.4rem;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #0ea5e9;
+  display: flex;
+}
+
+.isx-adminresep-10 {
+  padding: 0.4rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+}
+
+.isx-adminresep-11 {
+  padding: 1.5rem;
+}
+
+.isx-adminresep-12 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+}
+
+.isx-adminresep-13 {
+  grid-column: 1/-1;
+}
+
+.isx-adminresep-14 {
+  grid-column: 1/-1;
+}
+
+.isx-adminresep-15 {
+  grid-column: 1/-1;
+}
+
+.isx-adminresep-16 {
+  grid-column: 1/-1;
+}
+
+.isx-adminresep-17 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.isx-adminresep-18 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.isx-adminresep-19 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminresep-20 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #E8307D, #f472b6);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.isx-adminresep-21 {
+  padding: 1.5rem;
+}
+
+.isx-adminresep-22 {
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.isx-adminresep-23 {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.isx-adminresep-24 {
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.isx-adminresep-25 {
+  padding: 0.6rem 1.25rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

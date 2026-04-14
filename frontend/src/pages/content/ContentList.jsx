@@ -1,154 +1,198 @@
-import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { Search, BookOpen, Clock, Filter, X } from 'lucide-react'
-import api from '../../lib/api'
-
-const PHASES = [
-    { value: '', label: 'Semua Fase' },
-    { value: 'perencanaan', label: 'Perencanaan' },
-    { value: 'kehamilan_1', label: 'Kehamilan Trimester 1' },
-    { value: 'kehamilan_2', label: 'Kehamilan Trimester 2' },
-    { value: 'kehamilan_3', label: 'Kehamilan Trimester 3' },
-    { value: 'persalinan', label: 'Persalinan' },
-    { value: 'nifas', label: 'Nifas' },
-    { value: 'bayi', label: 'Bayi Baru Lahir' },
-    { value: 'balita', label: 'Balita' },
-]
-
-const PHASE_COLORS = {
-    perencanaan: '#E8307D', kehamilan_1: '#8b5cf6', kehamilan_2: '#7c3aed',
-    kehamilan_3: '#6d28d9', persalinan: '#f59e0b', nifas: '#ef4444',
-    bayi: '#14b8a6', balita: '#10b981',
-}
-
-const SAMPLE_ARTICLES = [
-    { id: 1, slug: 'nutrisi-ibu-hamil', title: 'Nutrisi Penting untuk Ibu Hamil', summary: 'Panduan lengkap asupan gizi selama kehamilan untuk ibu dan janin yang sehat.', category: 'Gizi', readMinutes: 5, phase: 'kehamilan_1', tags: ['gizi', 'kehamilan'] },
-    { id: 2, slug: 'imunisasi-dasar-bayi', title: 'Jadwal Imunisasi Dasar Bayi 0-12 Bulan', summary: 'Informasi lengkap vaksin wajib bayi dan manfaatnya untuk kekebalan tubuh.', category: 'Imunisasi', readMinutes: 7, phase: 'bayi', tags: ['imunisasi', 'vaksin'] },
-    { id: 3, slug: 'tanda-persalinan', title: 'Mengenali Tanda-Tanda Persalinan', summary: 'Persiapkan diri Anda dengan mengetahui tanda persalinan sejak dini.', category: 'Persalinan', readMinutes: 6, phase: 'persalinan', tags: ['persalinan', 'melahirkan'] },
-    { id: 4, slug: 'asi-eksklusif', title: 'Panduan ASI Eksklusif 6 Bulan', summary: 'Manfaat dan cara sukses memberikan ASI eksklusif untuk tumbuh kembang optimal.', category: 'Gizi', readMinutes: 5, phase: 'bayi', tags: ['asi', 'menyusui'] },
-    { id: 5, slug: 'perkembangan-balita', title: 'Stimulasi Tumbuh Kembang Balita 1-3 Tahun', summary: 'Aktivitas dan stimulasi tepat untuk mendukung perkembangan motorik dan kognitif balita.', category: 'Tumbuh Kembang', readMinutes: 8, phase: 'balita', tags: ['balita', 'stimulasi'] },
-    { id: 6, slug: 'perawatan-bayi-baru', title: 'Merawat Bayi Baru Lahir di Rumah', summary: 'Tips merawat bayi baru lahir: memandikan, perawatan tali pusar, dan tanda bahaya.', category: 'Perawatan', readMinutes: 7, phase: 'bayi', tags: ['bayi baru lahir', 'perawatan'] },
-    { id: 7, slug: 'anemia-kehamilan', title: 'Mencegah Anemia pada Kehamilan', summary: 'Cara mencegah dan mengatasi anemia yang sering terjadi selama masa kehamilan.', category: 'Kesehatan', readMinutes: 5, phase: 'kehamilan_2', tags: ['anemia', 'kehamilan'] },
-    { id: 8, slug: 'kontrasepsi-pasca-melahirkan', title: 'Pilihan KB Pasca Melahirkan', summary: 'Panduan memilih metode kontrasepsi yang aman setelah melahirkan dan menyusui.', category: 'KB', readMinutes: 6, phase: 'nifas', tags: ['kb', 'kontrasepsi'] },
-]
-
-function ArticleCard({ article }) {
-    const color = PHASE_COLORS[article.phase] || '#E8307D'
-    return (
-        <Link to={`/konten/${article.slug}`} className="glass-card" style={{ padding: '1.5rem', display: 'block' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-                <span style={{ padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', background: `${color}18`, border: `1px solid ${color}30`, color, fontSize: '0.7rem', fontWeight: 600 }}>
-                    {article.category}
-                </span>
-                {article.phase && (
-                    <span style={{ padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', background: 'rgba(255,255,255,0.05)', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                        {PHASES.find(p => p.value === article.phase)?.label || article.phase}
-                    </span>
-                )}
-            </div>
-            <h2 style={{ fontWeight: 700, fontSize: '1rem', lineHeight: 1.45, marginBottom: '0.5rem' }}>{article.title}</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.65, marginBottom: '0.875rem' }}>{article.summary}</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                <Clock size={12} /> {article.readMinutes} menit baca
-            </div>
-        </Link>
-    )
-}
+﻿import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Search, ChevronRight } from 'lucide-react';
+import '../../styles/pages/content-content-list.css'
 
 export default function ContentList() {
-    const [searchParams, setSearchParams] = useSearchParams()
-    const [articles, setArticles] = useState(SAMPLE_ARTICLES)
-    const [loading, setLoading] = useState(false)
-    const [search, setSearch] = useState('')
-    const fase = searchParams.get('fase') || ''
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [contents, setContents] = useState([]);
+  const [filteredContents, setFilteredContents] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('kategori') || 'all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        setLoading(true)
-        const params = new URLSearchParams()
-        if (fase) params.set('phase', fase)
-        if (search.length > 2) params.set('q', search)
+  const categories = [
+    { id: 'all', label: 'Semua Konten' },
+    { id: 'pola-asuh', label: 'Pola Asuh' },
+    { id: 'stimulasi', label: 'Stimulasi Anak' },
+    { id: 'nutrisi', label: 'Nutrisi' },
+    { id: 'kesehatan', label: 'Kesehatan' },
+    { id: 'perkembangan', label: 'Perkembangan' },
+  ];
 
-        api.get(`/content?${params}`).then(r => {
-            if (r.data?.data?.length) setArticles(r.data.data)
-        }).catch(() => { }).finally(() => setLoading(false))
-    }, [fase, search])
+  // Sample data
+  const sampleContents = [
+    {
+      id: 1,
+      slug: 'teknik-pola-asuh-modern',
+      title: 'Teknik Pola Asuh Modern untuk Anak Usia Dini',
+      category: 'pola-asuh',
+      excerpt: 'Pelajari teknik pola asuh yang efektif dan positif untuk mendukung perkembangan anak.',
+      readTime: '8 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-15',
+    },
+    {
+      id: 2,
+      slug: 'stimulasi-bayi-3-bulan',
+      title: 'Stimulasi yang Tepat untuk Bayi 3 Bulan',
+      category: 'stimulasi',
+      excerpt: 'Panduan lengkap stimulasi motorik dan sensorik untuk bayi usia 3 bulan.',
+      readTime: '10 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-14',
+    },
+    {
+      id: 3,
+      slug: 'nutrisi-optimal-ibu-hamil',
+      title: 'Nutrisi Optimal Saat Hamil',
+      category: 'nutrisi',
+      excerpt: 'Kebutuhan nutrisi penting untuk ibu hamil dan perkembangan janin yang sehat.',
+      readTime: '12 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-13',
+    },
+    {
+      id: 4,
+      slug: 'vaksinasi-lengkap-anak',
+      title: 'Jadwal Vaksinasi Lengkap untuk Anak',
+      category: 'kesehatan',
+      excerpt: 'Informasi lengkap tentang jadwal dan jenis vaksinasi yang direkomendasikan.',
+      readTime: '15 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-12',
+    },
+    {
+      id: 5,
+      slug: 'tahap-perkembangan-anak',
+      title: 'Tahap Perkembangan Anak 0-3 Tahun',
+      category: 'perkembangan',
+      excerpt: 'Memahami milestone perkembangan anak dari lahir hingga 3 tahun.',
+      readTime: '18 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-11',
+    },
+    {
+      id: 6,
+      slug: 'bonding-ibu-bayi',
+      title: 'Membangun Bonding dengan Bayi Sejak Dini',
+      category: 'pola-asuh',
+      excerpt: 'Cara membangun ikatan emosional yang kuat dengan bayi Anda.',
+      readTime: '7 menit',
+      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+      date: '2024-01-10',
+    },
+  ];
 
-    const filtered = articles.filter(a => {
-        const matchPhase = !fase || a.phase === fase
-        const matchSearch = !search || a.title.toLowerCase().includes(search.toLowerCase()) || a.summary.toLowerCase().includes(search.toLowerCase())
-        return matchPhase && matchSearch
-    })
+  useEffect(() => {
+    // Simulate API call
+    setLoading(true);
+    setTimeout(() => {
+      setContents(sampleContents);
+      setLoading(false);
+    }, 500);
+  }, []);
 
-    return (
-        <div style={{ paddingTop: 72 }}>
-            {/* Header */}
-            <div style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', padding: '2.5rem 0' }}>
-                <div className="container">
-                    <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700, marginBottom: '0.5rem' }}>
-                        <BookOpen size={24} style={{ display: 'inline', marginRight: '0.5rem', color: 'var(--primary-400)', verticalAlign: 'middle' }} />
-                        Artikel Edukasi
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                        Informasi kesehatan ibu dan anak berdasarkan Buku KIA Kemenkes RI
-                    </p>
+  useEffect(() => {
+    let result = contents;
 
-                    {/* Search */}
-                    <div style={{ position: 'relative', maxWidth: 480, marginBottom: '1.25rem' }}>
-                        <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                        <input
-                            type="search" className="form-input" placeholder="Cari artikel..."
-                            value={search} onChange={e => setSearch(e.target.value)}
-                            style={{ paddingLeft: '2.75rem', paddingRight: search ? '2.75rem' : undefined }}
-                            id="search-articles"
-                        />
-                        {search && (
-                            <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', color: 'var(--text-muted)' }}>
-                                <X size={15} />
-                            </button>
-                        )}
-                    </div>
+    if (selectedCategory !== 'all') {
+      result = result.filter((c) => c.category === selectedCategory);
+    }
 
-                    {/* Phase Filter */}
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <Filter size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-                        {PHASES.map(({ value, label }) => (
-                            <button key={value} onClick={() => setSearchParams(value ? { fase: value } : {})}
-                                style={{
-                                    padding: '0.3rem 0.875rem', borderRadius: 'var(--radius-full)', fontSize: '0.8rem', fontWeight: 600,
-                                    cursor: 'pointer', transition: 'all 0.2s',
-                                    background: fase === value ? 'var(--gradient-primary)' : '#f8fafc',
-                                    border: fase === value ? 'none' : '1px solid var(--border-color)',
-                                    color: fase === value ? 'white' : 'var(--text-secondary)',
-                                }}
-                            >{label}</button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+    if (searchTerm) {
+      result = result.filter(
+        (c) =>
+          c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-            {/* Articles Grid */}
-            <div className="container" style={{ paddingBlock: '2rem' }}>
-                {loading ? (
-                    <div className="grid-3">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="glass-card" style={{ padding: '1.5rem' }}>
-                                <div className="skeleton" style={{ height: 20, width: '70%', marginBottom: '0.75rem' }} />
-                                <div className="skeleton" style={{ height: 16, marginBottom: '0.5rem' }} />
-                                <div className="skeleton" style={{ height: 16, width: '80%' }} />
-                            </div>
-                        ))}
-                    </div>
-                ) : filtered.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                        <BookOpen size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                        <p>Tidak ada artikel yang ditemukan.</p>
-                    </div>
-                ) : (
-                    <div className="grid-3">
-                        {filtered.map(a => <ArticleCard key={a.id} article={a} />)}
-                    </div>
-                )}
-            </div>
+    setFilteredContents(result);
+  }, [selectedCategory, searchTerm, contents]);
+
+
+  return (
+    <main className="content-list-page">
+      <div className="content-list-header-wrap">
+        <div className="content-list-container">
+          <h1 className="content-list-title">Pusat Informasi</h1>
+          <div className="content-list-search-wrap">
+            <Search size={20} className="content-list-search-icon" />
+            <input
+              type="text"
+              placeholder="Cari konten..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="content-list-search-input"
+            />
+          </div>
         </div>
-    )
+      </div>
+
+      <div className="content-list-container content-list-filter-wrap">
+        <div className="content-list-filter-row">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`content-list-filter-btn ${selectedCategory === cat.id ? 'is-active' : ''}`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="content-list-container content-list-body-wrap">
+        {loading ? (
+          <p className="content-list-state-text">Memuat konten...</p>
+        ) : filteredContents.length === 0 ? (
+          <div className="content-list-empty-wrap">
+            <p className="content-list-empty-text">Tidak ada konten yang ditemukan</p>
+          </div>
+        ) : (
+          <div className="content-list-grid">
+            {filteredContents.map((content) => (
+              <div
+                key={content.id}
+                onClick={() => navigate(`/konten/${content.slug}`)}
+                className="content-list-card"
+              >
+                <div className="content-list-thumb-wrap">
+                  <img src={content.image} alt={content.title} className="content-list-thumb-img" />
+                </div>
+
+                <div className="content-list-card-content">
+                  <div>
+                    <div className="content-list-meta-top">
+                      <span className="content-list-category-badge">
+                        {categories.find((c) => c.id === content.category)?.label}
+                      </span>
+                      <span className="content-list-readtime">Waktu baca {content.readTime}</span>
+                    </div>
+                    <h3 className="content-list-card-title">{content.title}</h3>
+                    <p className="content-list-card-excerpt">{content.excerpt}</p>
+                  </div>
+                  <div className="content-list-meta-bottom">
+                    <span className="content-list-date-text">
+                      {new Date(content.date).toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </span>
+                    <button className="content-list-read-btn" type="button">
+                      Baca <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
 }

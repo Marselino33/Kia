@@ -1,0 +1,87 @@
+.mh-check-page {
+  padding-top: 80px;
+  min-height: 100vh;
+  background: #f9f6ff;
+}
+
+.mh-check-container {
+  max-width: 860px;
+  padding: 2rem 1rem;
+}
+
+.mh-check-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.mh-check-intro {
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.mh-check-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.mh-check-question-card {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.mh-check-question {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.mh-check-options {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mh-check-option-label {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.mh-check-radio {
+  margin-right: 0.25rem;
+}
+
+.mh-check-submit {
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+
+.mh-check-result {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: #fff;
+  border-left: 4px solid #8b5cf6;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.mh-check-result-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.mh-check-note {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.mh-check-profile-link {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .mh-check-title {
+    font-size: 1.5rem;
+  }
+}

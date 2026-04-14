@@ -6,11 +6,9 @@ import (
 )
 
 type Main struct {
-	Auth    *AuthUseCase
-	Anak    *AnakUseCase
-	Jadwal  *JadwalUseCase
-	Riwayat *RiwayatUseCase
-	Master  *MasterUseCase
+	Auth   *AuthUseCase
+	Anak   *AnakUseCase
+	Master *MasterContentUseCase
 }
 
 type Options struct {
@@ -19,17 +17,9 @@ type Options struct {
 }
 
 func Init(opts Options) *Main {
-	jadwal := NewJadwalUseCase(
-		opts.Repository.Vaksin,
-		opts.Repository.Riwayat,
-		opts.Repository.Anak,
-	)
-
 	return &Main{
-		Auth:    NewAuthUseCase(opts.Repository.Pengguna, opts.Config.JWTSecret),
-		Anak:    NewAnakUseCase(opts.Repository.Anak, jadwal),
-		Jadwal:  jadwal,
-		Riwayat: NewRiwayatUseCase(opts.Repository.Riwayat, opts.Repository.Vaksin, opts.Repository.Anak),
-		Master:  NewMasterUseCase(opts.Repository.Vaksin),
+		Auth:   NewAuthUseCase(opts.Repository.Pengguna, opts.Config.JWTSecret),
+		Anak:   NewAnakUseCase(opts.Repository.Anak),
+		Master: NewMasterContentUseCase(),
 	}
 }

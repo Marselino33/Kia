@@ -11,8 +11,8 @@ import (
 // ConfigureRouter mendaftarkan semua endpoint API SEJIWA.
 //
 // Base path: /api/v1
-// Public   : /auth/*, /master/vaksin
-// Protected: /anak/*, /anak/:id/jadwal, /anak/:id/riwayat
+// Public   : /auth/*, /content/*, /gizi/resep/*, /mental-health/predict
+// Protected: /anak/*, /profile, /bookmarks, /quizzes/attempt, /gizi/*
 // Admin    : /admin/* (JWT + role=admin)
 func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.MiddlewareFunc) {
 	// Swagger UI (development)
@@ -25,11 +25,6 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	auth.POST("/register", ctrl.Auth.Register)
 	auth.POST("/login", ctrl.Auth.Login)
 	auth.POST("/refresh", ctrl.Auth.RefreshToken)
-
-	// Master data (tidak perlu login – boleh diakses Flutter saat load awal)
-	master := api.Group("/master")
-	master.GET("/vaksin", ctrl.Master.ListVaksin)
-	master.GET("/vaksin/:id", ctrl.Master.GetVaksinByID)
 
 	// Content
 	api.GET("/content", ctrl.Master.ListContent)
@@ -46,6 +41,7 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	protected.DELETE("/bookmarks/:id", ctrl.Master.RemoveBookmark)
 	protected.GET("/bookmarks/:slug", ctrl.Master.CheckBookmark)
 	protected.POST("/quizzes/attempt", ctrl.Master.RecordQuizAttempt)
+	protected.GET("/quizzes/history", ctrl.Master.ListQuizAttemptHistory)
 
 	// CRUD Anak
 	protected.GET("/anak", ctrl.Anak.List)
@@ -54,17 +50,11 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	protected.PUT("/anak/:id", ctrl.Anak.Update)
 	protected.DELETE("/anak/:id", ctrl.Anak.Delete)
 
-	// Jadwal imunisasi
-	protected.GET("/anak/:id/jadwal", ctrl.Jadwal.GetJadwal)
-
-	// Riwayat imunisasi
-	protected.POST("/anak/:id/riwayat", ctrl.Riwayat.CatatRiwayat)
-	protected.GET("/anak/:id/riwayat", ctrl.Riwayat.ListRiwayat)
-
 	// ─── Gizi & Menu ──────────────────────────────────────────────────────────
 	// Public: list & detail resep
 	api.GET("/gizi/resep", ctrl.Gizi.ListResep)
 	api.GET("/gizi/resep/:slug", ctrl.Gizi.GetResepBySlug)
+	api.POST("/mental-health/predict", ctrl.Mental.Predict)
 
 	// Protected: jadwal makan & favorit
 	protected.GET("/gizi/jadwal", ctrl.Gizi.ListJadwal)
@@ -90,13 +80,6 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	admin.GET("/anak/:id", ctrl.Admin.GetAnak)
 	admin.PUT("/anak/:id", ctrl.Admin.UpdateAnak)
 	admin.DELETE("/anak/:id", ctrl.Admin.DeleteAnak)
-
-	// Vaksin CRUD
-	admin.GET("/vaksin", ctrl.Admin.ListVaksinAdmin)
-	admin.POST("/vaksin", ctrl.Admin.CreateVaksin)
-	admin.GET("/vaksin/:id", ctrl.Admin.GetVaksinAdmin)
-	admin.PUT("/vaksin/:id", ctrl.Admin.UpdateVaksin)
-	admin.DELETE("/vaksin/:id", ctrl.Admin.DeleteVaksin)
 
 	// Content (Artikel) CRUD
 	admin.GET("/content", ctrl.Admin.ListContent)

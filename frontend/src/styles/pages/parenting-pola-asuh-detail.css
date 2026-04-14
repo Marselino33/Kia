@@ -1,0 +1,297 @@
+.pola-detail-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  padding-top: 84px;
+}
+
+.pola-detail-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+.pola-detail-breadcrumb {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 18px;
+}
+
+.pola-detail-link {
+  color: #06b6d4;
+  cursor: pointer;
+}
+
+.pola-detail-sep {
+  color: #cbd5e1;
+}
+
+.pola-detail-current {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.pola-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.pola-detail-back {
+  border: none;
+  background: transparent;
+  color: #0284c7;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.pola-detail-hero-card,
+.pola-detail-section,
+.pola-detail-sidebar-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.pola-detail-hero-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.pola-detail-hero-image {
+  width: 100%;
+  min-height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+.pola-detail-hero-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.78));
+  color: #ffffff;
+}
+
+.pola-detail-hero-overlay h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  line-height: 1.1;
+}
+
+.pola-detail-hero-overlay p {
+  margin: 0;
+  max-width: 760px;
+  line-height: 1.6;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pola-detail-stage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.pola-detail-stage-tahap-bayi {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pola-detail-stage-tahap-salita {
+  background: #fce7f3;
+  color: #831843;
+}
+
+.pola-detail-stage-tahap-pra-sekolah {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.pola-detail-stage-tahap-sekolah {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pola-detail-section {
+  margin-top: 22px;
+  padding: 22px 24px;
+}
+
+.pola-detail-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0f172a;
+  margin-bottom: 14px;
+}
+
+.pola-detail-section-title h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.pola-detail-content {
+  margin: 0;
+  color: #475569;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.pola-detail-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.pola-detail-steps li {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.pola-detail-steps svg {
+  color: #06b6d4;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pola-detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pola-detail-sidebar-card {
+  padding: 18px;
+}
+
+.pola-detail-sidebar-card h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pola-detail-meta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed #e2e8f0;
+  padding: 10px 0;
+  color: #475569;
+}
+
+.pola-detail-meta-item strong {
+  color: #0f172a;
+}
+
+.pola-detail-primary-btn,
+.pola-detail-outline-btn {
+  width: 100%;
+  border-radius: 999px;
+  padding: 11px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.pola-detail-primary-btn {
+  border: none;
+  background: #0284c7;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pola-detail-outline-btn {
+  border: 1px solid #bae6fd;
+  background: #ffffff;
+  color: #0284c7;
+}
+
+.pola-detail-related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pola-detail-related-item {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 10px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pola-detail-related-item img {
+  width: 86px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.pola-detail-related-item span {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.pola-detail-related-item strong {
+  font-size: 13px;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .pola-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pola-detail-sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .pola-detail-container {
+    padding-inline: 16px;
+  }
+
+  .pola-detail-hero-image {
+    min-height: 320px;
+  }
+
+  .pola-detail-hero-card,
+  .pola-detail-section,
+  .pola-detail-sidebar-card {
+    border-radius: 18px;
+  }
+}

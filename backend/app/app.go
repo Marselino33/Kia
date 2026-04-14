@@ -85,8 +85,6 @@ func (m *Main) Init() (err error) {
 	err = m.db.AutoMigrate(
 		&models.Pengguna{},
 		&models.Anak{},
-		&models.MasterVaksin{},
-		&models.RiwayatImunisasi{},
 		&models.Content{},
 		&models.Quiz{},
 		&models.QuizQuestion{},
@@ -96,11 +94,6 @@ func (m *Main) Init() (err error) {
 	if err != nil {
 		log.Printf("AutoMigrate warning: %v", err)
 		err = nil // jangan fatal, tabel mungkin sudah dibuat manual via SQL Editor
-	}
-
-	// Seed 26 vaksin KIA 2024 jika tabel kosong
-	if err2 := seed.SeedMasterVaksin(m.db); err2 != nil {
-		log.Printf("Seed warning: %v", err2)
 	}
 
 	// Seed akun admin default

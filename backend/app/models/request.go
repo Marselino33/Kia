@@ -47,18 +47,6 @@ type UpdateAnakRequest struct {
 }
 
 // ==============================
-// Riwayat Requests
-// ==============================
-
-// CatatRiwayatRequest adalah body request untuk POST /anak/:id/riwayat.
-type CatatRiwayatRequest struct {
-	NamaVaksin  string  `json:"nama_vaksin" validate:"required"`
-	TanggalDone string  `json:"tanggal_done" validate:"required"` // "YYYY-MM-DD"
-	DicatatOleh string  `json:"dicatat_oleh" validate:"required,oneof=ibu kader"`
-	Catatan     *string `json:"catatan,omitempty"`
-}
-
-// ==============================
 // Admin Requests
 // ==============================
 
@@ -78,4 +66,43 @@ type AdminUpdatePenggunaRequest struct {
 	PIN  string `json:"pin"`
 	Role string `json:"role"`
 	Desa string `json:"desa"`
+}
+
+// ==============================
+// Mental Health Requests
+// ==============================
+
+// MentalHealthPredictRequest adalah body request untuk POST /mental-health/predict.
+type MentalHealthPredictRequest struct {
+	Q1  int `json:"q1" validate:"min=0,max=3"`
+	Q2  int `json:"q2" validate:"min=0,max=3"`
+	Q3  int `json:"q3" validate:"min=0,max=3"`
+	Q4  int `json:"q4" validate:"min=0,max=3"`
+	Q5  int `json:"q5" validate:"min=0,max=3"`
+	Q6  int `json:"q6" validate:"min=0,max=3"`
+	Q7  int `json:"q7" validate:"min=0,max=3"`
+	Q8  int `json:"q8" validate:"min=0,max=3"`
+	Q9  int `json:"q9" validate:"min=0,max=3"`
+	Q10 int `json:"q10" validate:"min=0,max=3"`
+}
+
+// MentalHealthPredictResult adalah respons dari service ML.
+type MentalHealthPredictResult struct {
+	Label  string  `json:"label"`
+	Score  float64 `json:"score"`
+	Advice string  `json:"advice"`
+}
+
+// ==============================
+// Quiz Requests
+// ==============================
+
+// QuizAttemptRecordRequest adalah body request untuk menyimpan attempt kuis user.
+type QuizAttemptRecordRequest struct {
+	QuizID   string `json:"quiz_id" validate:"required"`
+	Score    int    `json:"score"`
+	Total    int    `json:"total"`
+	Title    string `json:"title"`
+	Category string `json:"category"`
+	Phase    string `json:"phase"`
 }

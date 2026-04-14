@@ -9,24 +9,26 @@ import (
 )
 
 type Config struct {
-	ServiceHost        string           `mapstructure:"service_host" json:"service_host"`
-	ServiceEndpointV   string           `mapstructure:"service_endpoint_v" json:"service_endpoint_v"`
-	ServiceEnvironment string           `mapstructure:"service_environment" json:"service_environment"`
-	ServicePort        string           `mapstructure:"service_port" json:"service_port"`
-	JWTSecret          string           `mapstructure:"jwt_secret" json:"jwt_secret"`
-	DatabaseURL        string           `mapstructure:"database_url" json:"database_url"`
-	Database           DatabasePlatform `mapstructure:"database" json:"database"`
+	ServiceHost            string           `mapstructure:"service_host" json:"service_host"`
+	ServiceEndpointV       string           `mapstructure:"service_endpoint_v" json:"service_endpoint_v"`
+	ServiceEnvironment     string           `mapstructure:"service_environment" json:"service_environment"`
+	ServicePort            string           `mapstructure:"service_port" json:"service_port"`
+	MentalHealthServiceURL string           `mapstructure:"mental_health_service_url" json:"mental_health_service_url"`
+	JWTSecret              string           `mapstructure:"jwt_secret" json:"jwt_secret"`
+	DatabaseURL            string           `mapstructure:"database_url" json:"database_url"`
+	Database               DatabasePlatform `mapstructure:"database" json:"database"`
 }
 
 func NewConfig() *Config {
 	return &Config{
-		ServiceHost:        viper.GetString("APP_HOST"),
-		ServiceEndpointV:   viper.GetString("APP_ENDPOINT_V"),
-		ServiceEnvironment: viper.GetString("APP_ENVIRONMENT"),
-		ServicePort:        viper.GetString("APP_PORT"),
-		JWTSecret:          viper.GetString("JWT_SECRET"),
-		DatabaseURL:        viper.GetString("DATABASE_URL"),
-		Database:           LoadDatabaseConfig(),
+		ServiceHost:            viper.GetString("APP_HOST"),
+		ServiceEndpointV:       viper.GetString("APP_ENDPOINT_V"),
+		ServiceEnvironment:     viper.GetString("APP_ENVIRONMENT"),
+		ServicePort:            viper.GetString("APP_PORT"),
+		MentalHealthServiceURL: viper.GetString("MENTAL_HEALTH_SERVICE_URL"),
+		JWTSecret:              viper.GetString("JWT_SECRET"),
+		DatabaseURL:            viper.GetString("DATABASE_URL"),
+		Database:               LoadDatabaseConfig(),
 	}
 }
 
