@@ -18,7 +18,6 @@ import QuizPage from './pages/quiz/QuizPage'
 import GrowthTracker from './pages/growth/GrowthTracker'
 import Profile from './pages/profile/Profile'
 import Bookmarks from './pages/Bookmarks'
-import PHBS from './pages/PHBS'
 import KesehattanIbu from './pages/KesehattanIbu'
 import MentalHealthCheck from './pages/mental-orang-tua/MentalHealthCheck'
 import StimulusAnak from './pages/parenting/StimulusAnak'
@@ -41,12 +40,14 @@ import InformasiUmumDetail from './pages/informasi-umum/InformasiUmumDetail'
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminPengguna from './pages/admin/AdminPengguna'
-import AdminContent from './pages/admin/AdminContent'
-import AdminParenting from './pages/admin/AdminAnak'  // Reuse Anak for Parenting
-import AdminGizi from './pages/admin/AdminResep'  // Reuse Resep for Gizi
-import AdminKesehatanIbu from './pages/admin/AdminKesehatanIbu'  // Wrapper for Kesehatan Ibu
-import AdminPHBS from './pages/admin/AdminPHBS'  // Wrapper for PHBS
 import AdminQuiz from './pages/admin/AdminQuiz'
+import AdminParenting from './pages/admin/AdminParenting'
+import AdminPolaAsuh from './pages/admin/AdminPolaAsuh'
+import AdminGiziIbu from './pages/admin/AdminGiziIbu'
+import AdminGiziAnak from './pages/admin/AdminGiziAnak'
+import AdminMPASI from './pages/admin/AdminMPASI'
+import AdminMental from './pages/admin/AdminMental'
+import AdminInformasi from './pages/admin/AdminInformasi'
 
 // Guards
 function ProtectedRoute({ children }) {
@@ -82,8 +83,11 @@ function GuestRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  const isAdmin = useAuthStore((s) => s.isAdmin ? s.isAdmin() : false)
+  const user = useAuthStore((s) => s.user)
+  const loading = useAuthStore((s) => s.loading)
+  const isAdmin = user?.user_metadata?.role === 'admin'
 
+  if (loading) return <div className="loading-screen"><div className="spinner" /></div>
   if (!isAdminLoggedIn()) return <Navigate to="/admin/login" replace />
   // server side middleware / admin api already valid, but we also check app state when available
   if (!isAdmin) return <Navigate to="/login" replace />
@@ -116,12 +120,17 @@ export default function App() {
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/daftar" element={<GuestRoute><Register /></GuestRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-        <Route path="/admin/content" element={<AdminRoute><AdminContent pageTitle="Semua Konten" pageSubtitle="Kelola seluruh konten lintas kategori" /></AdminRoute>} />
         <Route path="/admin/pengguna" element={<AdminRoute><AdminPengguna /></AdminRoute>} />
         <Route path="/admin/parenting" element={<AdminRoute><AdminParenting /></AdminRoute>} />
-        <Route path="/admin/kesehatan-ibu" element={<AdminRoute><AdminKesehatanIbu /></AdminRoute>} />
-        <Route path="/admin/phbs" element={<AdminRoute><AdminPHBS /></AdminRoute>} />
-        <Route path="/admin/gizi" element={<AdminRoute><AdminGizi /></AdminRoute>} />
+        <Route path="/admin/pola-asuh" element={<AdminRoute><AdminPolaAsuh /></AdminRoute>} />
+        <Route path="/admin/gizi" element={<Navigate to="/admin/gizi-ibu" replace />} />
+        <Route path="/admin/kesehatan-ibu" element={<Navigate to="/admin/mental-orang-tua" replace />} />
+        <Route path="/admin/phbs" element={<Navigate to="/admin/informasi-umum" replace />} />
+        <Route path="/admin/gizi-ibu" element={<AdminRoute><AdminGiziIbu /></AdminRoute>} />
+        <Route path="/admin/gizi-anak" element={<AdminRoute><AdminGiziAnak /></AdminRoute>} />
+        <Route path="/admin/mpasi" element={<AdminRoute><AdminMPASI /></AdminRoute>} />
+        <Route path="/admin/mental-orang-tua" element={<AdminRoute><AdminMental /></AdminRoute>} />
+        <Route path="/admin/informasi-umum" element={<AdminRoute><AdminInformasi /></AdminRoute>} />
         <Route path="/admin/quiz" element={<AdminRoute><AdminQuiz /></AdminRoute>} />
 
         {/* Regular routes with Navbar/Footer */}
@@ -134,7 +143,7 @@ export default function App() {
               <Route path="/konten/:slug" element={<ContentDetail />} />
               <Route path="/informasi-umum" element={<InformasiUmum />} />
               <Route path="/informasi-umum/:slug" element={<InformasiUmumDetail />} />
-              <Route path="/phbs" element={<PHBS />} />
+              <Route path="/phbs" element={<Navigate to="/informasi-umum" replace />} />
               <Route path="/kesehatan-ibu" element={<KesehattanIbu />} />
 
               {/* Protected */}
@@ -156,7 +165,7 @@ export default function App() {
               
               {/* Parenting - Stimulus Anak */}
               <Route path="/stimulus" element={<StimulusAnak />} />
-              <Route path="/stimulus/:id" element={<StimulusDetail />} />
+              <Route path="/stimulus/:slug" element={<StimulusDetail />} />
 
               {/* Parenting - Pola Asuh Anak */}
               <Route path="/pola-asuh" element={<PolaAsuhAnak />} />
@@ -165,6 +174,7 @@ export default function App() {
               {/* Parenting - Kuis Pemahaman */}
               <Route path="/kuis-parenting" element={<ProtectedRoute><KuisParenting /></ProtectedRoute>} />
               <Route path="/kuis-parenting/main/:topicId" element={<ProtectedRoute><ParentingQuizPlay /></ProtectedRoute>} />
+              <Route path="/kuis-parenting/konten/:feature/:contentSlug" element={<ProtectedRoute><ParentingQuizPlay /></ProtectedRoute>} />
 
               {/* Gizi - Ibu Hamil & Menyusui */}
               <Route path="/gizi-ibu-trimester1" element={<GiziIbuTrimester1 />} />

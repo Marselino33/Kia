@@ -10,7 +10,7 @@ import (
 )
 
 // SeedAdmin memastikan akun admin default tersedia di database.
-// No HP: 081234567890, PIN: 123456, Role: admin
+// Email: admin@sejiwa.id, PIN: 123456, Role: admin
 func SeedAdmin(db *gorm.DB) {
 	var count int64
 	db.Model(&models.Pengguna{}).Where("role = ?", "admin").Count(&count)
@@ -27,8 +27,8 @@ func SeedAdmin(db *gorm.DB) {
 
 	admin := models.Pengguna{
 		Nama:    "Admin SEJIWA",
-		NoHP:    "081234567890",
-		PinHash: string(pinHash),
+		Email:   "admin@sejiwa.id",
+		PasswordHash: string(pinHash),
 		Role:    "admin",
 		Desa:    "Pusat",
 	}
@@ -38,5 +38,5 @@ func SeedAdmin(db *gorm.DB) {
 		return
 	}
 
-	log.Println("✅ Seed: Akun admin berhasil dibuat (No HP: 081234567890, PIN: 123456)")
+	log.Println("✅ Seed: Akun admin berhasil dibuat (Email: admin@sejiwa.id, PIN: 123456)")
 }

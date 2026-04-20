@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { informasiUmumItems } from './informasiUmumData'
 import '../../styles/pages/informasi-umum.css'
 
 export default function InformasiUmum() {
+  const [items] = useState(informasiUmumItems)
+
   return (
     <main className="informasi-umum-page">
       <div className="informasi-umum-container">
@@ -18,7 +21,7 @@ export default function InformasiUmum() {
         </header>
 
         <section className="informasi-umum-grid">
-          {informasiUmumItems.map((item) => (
+          {items.map((item) => (
             <article key={item.slug} className="informasi-umum-card">
               <img src={item.image} alt={item.title} className="informasi-umum-card-image" />
               <div className="informasi-umum-card-content">

@@ -148,7 +148,7 @@ export default function AdminAnak() {
                     </AdminInput>
                     <AdminInput label="Pengguna" name="pengguna_id" type="select" value={form.pengguna_id} onChange={setF} required={modal === 'create'}>
                       <option value="">-- Pilih Pengguna --</option>
-                      {penggunaList.map(p => <option key={p.id} value={p.id}>{p.nama} ({p.no_hp})</option>)}
+                      {penggunaList.map(p => <option key={p.id} value={p.id}>{p.nama} ({p.email || '-'})</option>)}
                     </AdminInput>
                     <div className="isx-adminanak-12">
                         <button type="button" onClick={closeModal} className="isx-adminanak-13">Batal</button>

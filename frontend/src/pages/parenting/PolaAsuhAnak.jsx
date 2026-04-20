@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Search } from 'lucide-react';
 import api from '../../lib/api';
+import { contentService } from '../../api/contentService';
 import '../../styles/pages/parenting-pola-asuh-anak.css';
 
 export default function PolaAsuhAnak() {
@@ -9,15 +10,16 @@ export default function PolaAsuhAnak() {
   const [searchParams] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
-  const [selectedAgeRange, setSelectedAgeRange] = useState('0-18');
+  const [selectedAgeRange, setSelectedAgeRange] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const ageRanges = [
     { id: 'all', label: 'Lihat Semua' },
-    { id: '0-18', label: '0-18 Bulan' },
-    { id: '1.5-3', label: '1.5 - 3 Tahun' },
-    { id: '3-6', label: '3-6 Tahun' },
-    { id: '6+', label: '6+ Tahun' },
+    { id: '0-18 Bulan', label: '0-18 Bulan' },
+    { id: '1.5-3 Tahun', label: '1.5-3 Tahun' },
+    { id: '3-6 Tahun', label: '3-6 Tahun' },
+    { id: '6+ Tahun', label: '6+ Tahun' },
   ];
 
   const stageBadges = {
@@ -98,24 +100,67 @@ export default function PolaAsuhAnak() {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setArticles(sampleArticles);
-      setLoading(false);
-    }, 500);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await contentService.getPolaAsuh();
+        if (data && data.length > 0) {
+          const mappedData = data.map(item => ({
+            id: item.id,
+            slug: item.slug,
+            title: item.judul,
+            subtitle: item.ringkasan || item.judul,
+            stage: item.kategori ? item.kategori.toLowerCase().replace(' ', '-') : 'tahap-bayi',
+            ageRange: item.phase || '12-24 Bulan',
+            image: item.gambar_url || 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=600&h=400&fit=crop',
+            imagePosition: 'left',
+            content: item.isi || '',
+            keySteps: item.langkah_praktis ? (typeof item.langkah_praktis === 'string' ? JSON.parse(item.langkah_praktis) : item.langkah_praktis) : [],
+          }));
+          setArticles(mappedData);
+        } else {
+          setArticles(sampleArticles);
+        }
+      } catch (error) {
+        console.error('Error fetching pola asuh:', error);
+        setArticles(sampleArticles);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
-    if (selectedAgeRange === 'all') {
-      setFilteredArticles(articles);
-    } else {
-      setFilteredArticles(articles.filter((article) => article.ageRange === selectedAgeRange));
-    }
-  }, [selectedAgeRange, articles]);
+    let result = articles;
 
-  const handleArticleClick = (articleId) => {
-    navigate(`/pola-asuh/${articleId}`);
+    if (selectedAgeRange !== 'all') {
+      result = result.filter((article) => {
+        const articlePhase = article.phase || article.ageRange || '';
+        return articlePhase === selectedAgeRange || articlePhase.includes(selectedAgeRange);
+      });
+    }
+
+    if (searchQuery.trim()) {
+      const term = searchQuery.toLowerCase();
+      result = result.filter((article) => 
+        (article.title || '').toLowerCase().includes(term) ||
+        (article.content || '').toLowerCase().includes(term) ||
+        (article.subtitle || '').toLowerCase().includes(term)
+      );
+    }
+
+    setFilteredArticles(result);
+  }, [selectedAgeRange, articles, searchQuery]);
+
+  const handleArticleClick = (slug) => {
+    navigate(`/pola-asuh/${slug}`);
+  };
+
+  const truncateText = (text, maxLength = 120) => {
+    const source = (text || '').replace(/\s+/g, ' ').trim();
+    if (source.length <= maxLength) return source;
+    return `${source.slice(0, maxLength).trimEnd()}...`;
   };
 
   return (
@@ -143,6 +188,20 @@ export default function PolaAsuhAnak() {
           </p>
         </div>
 
+        {/* Search Section */}
+        <div className="pola-container pola-search-wrap">
+          <div className="pola-search-input-wrap">
+            <Search size={18} className="pola-search-icon" />
+            <input
+              type="text"
+              placeholder="Cari artikel pola asuh..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pola-search-input"
+            />
+          </div>
+        </div>
+
         {/* Age Range Filter */}
         <div className="pola-container pola-filter-wrap">
           <div className="pola-filter-grid">
@@ -166,13 +225,13 @@ export default function PolaAsuhAnak() {
         ) : (
           <div className="pola-container pola-list-wrap">
             {filteredArticles.map((article, index) => {
-              const badge = stageBadges[article.stage];
+              const badge = stageBadges[article.stage] || { label: 'PARENTING' };
               const isImageLeft = article.imagePosition === 'left';
 
               return (
                 <div
                   key={article.id}
-                  onClick={() => handleArticleClick(article.id)}
+                  onClick={() => handleArticleClick(article.slug || article.id)}
                   className={`pola-article-item ${isImageLeft ? 'image-left' : 'image-right'} ${index !== filteredArticles.length - 1 ? 'has-gap' : ''}`}
                 >
                   {/* Image */}
@@ -198,18 +257,30 @@ export default function PolaAsuhAnak() {
 
                     {/* Description */}
                     <p className="pola-article-subtitle">
-                      {article.subtitle}
+                      {truncateText(article.subtitle, 100)}
                     </p>
 
                     {/* Content Preview */}
                     <p className="pola-article-preview">
-                      {article.content}
+                      {truncateText(article.content || article.subtitle, 160)}
                     </p>
 
                     {/* Read Button */}
-                    <button className="pola-read-btn">
-                      Pelajari <ChevronRight size={16} />
-                    </button>
+                    <div className="pola-article-actions">
+                      <button className="pola-read-btn">
+                        Pelajari <ChevronRight size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        className="pola-quiz-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate(`/kuis-parenting/konten/pola-asuh/${article.slug || article.id}`);
+                        }}
+                      >
+                        Kuis Materi
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

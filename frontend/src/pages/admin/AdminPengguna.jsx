@@ -6,8 +6,8 @@ import toast from 'react-hot-toast';
 import '../../styles/pages/admin-admin-pengguna.css';
 const EMPTY_FORM = {
   nama: '',
-  no_hp: '',
-  pin: '',
+  email: '',
+  password: '',
   role: 'user',
   desa: ''
 };
@@ -35,8 +35,8 @@ export default function AdminPengguna() {
   const openEdit = item => {
     setForm({
       nama: item.nama,
-      no_hp: item.no_hp,
-      pin: '',
+      email: item.email || '',
+      password: '',
       role: item.role || 'user',
       desa: item.desa || ''
     });
@@ -57,12 +57,12 @@ export default function AdminPengguna() {
   }));
   const handleSave = async e => {
     e.preventDefault();
-    if (!form.nama || !form.no_hp || !form.role) {
-      toast.error('Nama, No HP, dan Role wajib diisi');
+    if (!form.nama || !form.email || !form.role) {
+      toast.error('Nama, Email, dan Role wajib diisi');
       return;
     }
-    if (modal === 'create' && !form.pin) {
-      toast.error('PIN wajib diisi untuk pengguna baru');
+    if (modal === 'create' && !form.password) {
+      toast.error('Password wajib diisi untuk pengguna baru');
       return;
     }
     setSaving(true);
@@ -73,11 +73,11 @@ export default function AdminPengguna() {
       } else {
         const payload = {
           nama: form.nama,
-          no_hp: form.no_hp,
+          email: form.email,
           role: form.role,
           desa: form.desa
         };
-        if (form.pin) payload.pin = form.pin;
+        if (form.password) payload.password = form.password;
         await adminApi.put(`/admin/pengguna/${selected.id}`, payload);
         toast.success('Pengguna berhasil diperbarui');
       }
@@ -102,7 +102,7 @@ export default function AdminPengguna() {
       setSaving(false);
     }
   };
-  const filtered = list.filter(u => u.nama?.toLowerCase().includes(search.toLowerCase()) || u.no_hp?.includes(search));
+  const filtered = list.filter(u => u.nama?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()));
   return <AdminLayout>
             <AdminPageHeader title="Manajemen Pengguna & Role" subtitle={`${list.length} pengguna terdaftar`} action={<button onClick={openCreate} className="isx-adminpengguna-1">
                         <Plus size={16} /> Tambah Pengguna
@@ -112,7 +112,7 @@ export default function AdminPengguna() {
                     {/* Search */}
                     <div className="isx-adminpengguna-3">
                         <Search size={16} color="#94a3b8" />
-                        <input type="text" placeholder="Cari nama atau No HP..." value={search} onChange={e => setSearch(e.target.value)} className="isx-adminpengguna-4" />
+                        <input type="text" placeholder="Cari nama atau email..." value={search} onChange={e => setSearch(e.target.value)} className="isx-adminpengguna-4" />
                     </div>
 
                     {/* Table */}
@@ -124,7 +124,7 @@ export default function AdminPengguna() {
                                 <thead>
                                     <tr>
                                   <th className="admin-th">Nama</th>
-                                  <th className="admin-th">No HP</th>
+                                  <th className="admin-th">Email</th>
                                   <th className="admin-th">Role</th>
                                   <th className="admin-th">Desa</th>
                                   <th className="admin-th admin-th-right">Aksi</th>
@@ -133,7 +133,7 @@ export default function AdminPengguna() {
                                 <tbody>
                                     {filtered.map(u => <tr key={u.id} className="isx-adminpengguna-9">
                                     <td className="admin-td"><strong>{u.nama}</strong></td>
-                                    <td className="admin-td">{u.no_hp}</td>
+                                    <td className="admin-td">{u.email || '-'}</td>
                                     <td className="admin-td">
                                       <span className={roleBadgeClass(u.role)}>{u.role}</span>
                                             </td>
@@ -155,8 +155,8 @@ export default function AdminPengguna() {
             <AdminModal open={modal === 'create' || modal === 'edit'} onClose={closeModal} title={modal === 'create' ? 'Tambah Pengguna' : 'Edit Pengguna'}>
                 <form onSubmit={handleSave} className="isx-adminpengguna-13">
                     <AdminInput label="Nama Lengkap" name="nama" value={form.nama} onChange={handleSetForm} required placeholder="Nama pengguna" />
-                    <AdminInput label="Nomor HP" name="no_hp" value={form.no_hp} onChange={handleSetForm} required placeholder="08xxxxxxxxxx" />
-                    <AdminInput label={modal === 'create' ? 'PIN (6 digit)' : 'PIN Baru (kosongkan jika tidak diubah)'} name="pin" type="password" value={form.pin} onChange={handleSetForm} required={modal === 'create'} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢" maxLength={6} />
+                    <AdminInput label="Email" name="email" value={form.email} onChange={handleSetForm} required placeholder="nama@email.com" />
+                    <AdminInput label={modal === 'create' ? 'Password' : 'Password Baru (kosongkan jika tidak diubah)'} name="password" type="password" value={form.password} onChange={handleSetForm} required={modal === 'create'} placeholder="Masukkan password" />
                     <AdminInput label="Role" name="role" type="select" value={form.role} onChange={handleSetForm} required>
                         {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </AdminInput>
@@ -192,7 +192,7 @@ const btnPrimaryStyle = {
   alignItems: 'center',
   gap: '0.4rem',
   padding: '0.6rem 1.25rem',
-  background: 'linear-gradient(135deg, #E8307D, #f472b6)',
+  background: 'linear-gradient(135deg, #42a5f5, #1565C0)',
   color: 'white',
   border: 'none',
   borderRadius: '0.5rem',
@@ -202,11 +202,11 @@ const btnPrimaryStyle = {
 };
 const btnEditStyle = {
   padding: '0.4rem',
-  background: '#f0f9ff',
-  border: '1px solid #bae6fd',
+  background: '#e3f2fd',
+  border: '1px solid #bbdefb',
   borderRadius: '0.4rem',
   cursor: 'pointer',
-  color: '#0ea5e9',
+  color: '#1565C0',
   display: 'flex'
 };
 const btnDeleteStyle = {

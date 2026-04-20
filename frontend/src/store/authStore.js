@@ -28,7 +28,7 @@ function buildUserFromBackend(pengguna) {
   if (!pengguna) return null
   return {
     id: pengguna.id,
-    email: pengguna.email || pengguna.no_hp,
+    email: pengguna.email,
     user_metadata: {
       full_name: pengguna.nama,
       role: pengguna.role,
@@ -115,8 +115,7 @@ const useAuthStore = create(
         try {
           const resp = await authApi.post('/auth/login', {
             email,
-            no_hp: email,
-            pin: password,
+            password,
           })
           const data = resp.data?.data
           const user = buildUserFromBackend(data?.pengguna)
@@ -158,8 +157,7 @@ const useAuthStore = create(
           const resp = await authApi.post('/auth/register', {
             nama: fullName,
             email,
-            no_hp: email,
-            pin: password,
+            password,
             role: 'ibu',
           })
           const data = resp.data?.data

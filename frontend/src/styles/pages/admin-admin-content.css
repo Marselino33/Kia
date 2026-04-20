@@ -11,7 +11,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.25rem;
-  background: linear-gradient(135deg, #E8307D, #f472b6);
+  background: linear-gradient(135deg, #42a5f5, #1565C0);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -75,21 +75,21 @@
 
 .isx-admincontent-11 {
   padding: 0.4rem;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
   border-radius: 0.4rem;
   cursor: pointer;
-  color: #0ea5e9;
+  color: #1565C0;
   display: flex;
 }
 
 .isx-admincontent-12 {
   padding: 0.4rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
   border-radius: 0.4rem;
   cursor: pointer;
-  color: #ef4444;
+  color: #c62828;
   display: flex;
 }
 
@@ -149,7 +149,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.25rem;
-  background: linear-gradient(135deg, #E8307D, #f472b6);
+  background: linear-gradient(135deg, #42a5f5, #1565C0);
   color: white;
   border: none;
   border-radius: 0.5rem;

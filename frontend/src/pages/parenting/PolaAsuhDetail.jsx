@@ -1,7 +1,105 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, CheckCircle2, BookOpen } from 'lucide-react';
+import { ArrowLeft, ChevronRight, ChevronDown, BookOpen } from 'lucide-react';
+import { contentService } from '../../api/contentService';
 import '../../styles/pages/parenting-pola-asuh-detail.css';
+
+function normalizeLine(line) {
+  return (line || '')
+    .replace(/^\s*[-*]\s+/, '')
+    .replace(/^\s*\d+[.)]\s+/, '')
+    .replace(/^#+\s*/, '')
+    .replace(/\*\*/g, '')
+    .trim();
+}
+
+function isNoiseLine(line) {
+  const value = normalizeLine(line).replace(/\s+/g, ' ').trim();
+
+  if (!value || value.length < 4) return true;
+
+  const blockedPatterns = [
+    /^\+\d+$/,
+    /^https?:\/\//i,
+    /^www\./i,
+    /^(sumber|source)\s*:/i,
+    /^universitas\b/i,
+  ];
+
+  return blockedPatterns.some((pattern) => pattern.test(value));
+}
+
+function canonicalStepKey(line) {
+  return normalizeLine(line)
+    .toLowerCase()
+    .replace(/[:;,.!?]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function cleanStepItems(items) {
+  const seen = new Set();
+  const cleaned = [];
+
+  for (const rawItem of items || []) {
+    const item = normalizeLine(rawItem).replace(/\s+/g, ' ').trim();
+    if (isNoiseLine(item)) continue;
+
+    const key = canonicalStepKey(item);
+    if (seen.has(key)) continue;
+
+    const isNearDuplicate = cleaned.some((existing) => {
+      const existingKey = canonicalStepKey(existing);
+      return existingKey.includes(key) || key.includes(existingKey);
+    });
+    if (isNearDuplicate) continue;
+
+    seen.add(key);
+    cleaned.push(item);
+  }
+
+  return cleaned;
+}
+
+function parsePracticalSteps(raw) {
+  if (Array.isArray(raw)) {
+    return cleanStepItems(raw.map((item) => normalizeLine(String(item))).filter(Boolean));
+  }
+
+  if (typeof raw !== 'string' || !raw.trim()) {
+    return [];
+  }
+
+  const rows = raw
+    .split(/\r?\n/)
+    .map((line) => normalizeLine(line))
+    .filter(Boolean);
+
+  return cleanStepItems(rows);
+}
+
+function splitStep(rawStep) {
+  const step = normalizeLine(rawStep);
+  const splitIndex = step.indexOf(':');
+
+  if (step.endsWith(':') && splitIndex === step.length - 1) {
+    return {
+      title: step,
+      description: '',
+      type: 'heading',
+    };
+  }
+
+  if (splitIndex > 0 && splitIndex < 70) {
+    return {
+      title: step.slice(0, splitIndex + 1).trim(),
+      description: step.slice(splitIndex + 1).trim(),
+      type: 'default',
+    };
+  }
+
+  return { title: step, description: '', type: 'default' };
+}
 
 const articles = [
   {
@@ -108,19 +206,157 @@ const articles = [
   },
 ];
 
+function groupPracticalSteps(items) {
+  const parsedRows = (items || []).map((row) => splitStep(row)).filter((row) => row.title || row.description);
+  if (!parsedRows.length) return [];
+
+  const hasHeading = parsedRows.some((row) => row.type === 'heading');
+  if (!hasHeading) {
+    const [first, ...rest] = parsedRows;
+    const firstKey = canonicalStepKey(first.title);
+    const seen = new Set([firstKey]);
+    const uniqueChildren = [];
+
+    for (const row of rest) {
+      const rowKey = canonicalStepKey(`${row.title} ${row.description}`);
+      if (!rowKey || seen.has(rowKey)) continue;
+      seen.add(rowKey);
+      uniqueChildren.push(row);
+    }
+
+    return [
+      {
+        title: first.title.replace(/:\s*$/, ''),
+        description: first.description,
+        items: uniqueChildren,
+      },
+    ];
+  }
+
+  const groups = [];
+  let currentGroup = null;
+
+  for (const row of parsedRows) {
+    if (row.type === 'heading') {
+      if (currentGroup) groups.push(currentGroup);
+      currentGroup = {
+        title: row.title.replace(/:\s*$/, ''),
+        description: '',
+        items: [],
+        seen: new Set(),
+      };
+      continue;
+    }
+
+    if (!currentGroup) {
+      currentGroup = {
+        title: row.title,
+        description: row.description,
+        items: [],
+        seen: new Set([canonicalStepKey(`${row.title} ${row.description}`)]),
+      };
+      continue;
+    }
+
+    const rowKey = canonicalStepKey(`${row.title} ${row.description}`);
+    if (!rowKey || currentGroup.seen.has(rowKey)) continue;
+    currentGroup.seen.add(rowKey);
+    currentGroup.items.push(row);
+  }
+
+  if (currentGroup) groups.push(currentGroup);
+
+  return groups.map(({ seen, ...group }) => group);
+}
+
 export default function PolaAsuhDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [openGroupIndex, setOpenGroupIndex] = useState(-1);
 
-  const article = useMemo(() => {
-    const articleId = Number(id);
-    return articles.find((item) => item.id === articleId) || articles[0];
+  useEffect(() => {
+    const fetchArticle = async () => {
+      setLoading(true);
+      try {
+        const data = await contentService.getPolaAsuhBySlug(id);
+        if (data) {
+          let stepsSource = data.langkah_praktis;
+          if (typeof stepsSource === 'string' && stepsSource.trim().startsWith('[')) {
+            try {
+              stepsSource = JSON.parse(stepsSource);
+            } catch {
+              stepsSource = data.langkah_praktis;
+            }
+          }
+
+          const steps = parsePracticalSteps(stepsSource);
+
+          setArticle({
+            id: data.id,
+            slug: data.slug,
+            title: data.judul,
+            subtitle: data.ringkasan || '',
+            stage: data.kategori ? data.kategori.toLowerCase().replace(' ', '-') : 'disiplin-positif',
+            stageLabel: data.kategori ? data.kategori.toUpperCase() : 'DISCIPLIN POSITIF',
+            ageRange: data.phase || '12-24 Bulan',
+            image: data.gambar_url || 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=1200&h=680&fit=crop',
+            content: data.isi || '',
+            keySteps: steps.length > 0 ? steps : getDefaultSteps(data.judul),
+          });
+        } else {
+          setArticle(getArticleById(id));
+        }
+      } catch (error) {
+        console.error('Error fetching article:', error);
+        setArticle(getArticleById(id));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticle();
   }, [id]);
 
-  const related = useMemo(
-    () => articles.filter((item) => item.id !== article.id).slice(0, 4),
-    [article.id]
-  );
+  const getArticleById = (articleId) => {
+    const numId = Number(articleId);
+    const byId = articles.find((item) => item.id === numId);
+    if (byId) return byId;
+    const bySlug = articles.find((item) => item.slug === articleId);
+    return bySlug || articles[0];
+  };
+
+  const getDefaultSteps = (title) => {
+    const fallback = articles.find(a => a.title.toLowerCase().includes(title?.toLowerCase() || ''));
+    return fallback?.keySteps || [];
+  };
+
+  const related = useMemo(() => {
+    if (!article) return [];
+    return articles.filter((item) => item.id !== article.id).slice(0, 4);
+  }, [article]);
+
+  const practicalGroups = useMemo(() => groupPracticalSteps(article?.keySteps || []), [article]);
+
+  if (loading) {
+    return (
+      <main className="pola-detail-page">
+        <div className="pola-detail-container">
+          <div className="pola-loading">Memuat...</div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!article) {
+    return (
+      <main className="pola-detail-page">
+        <div className="pola-detail-container">
+          <div className="pola-loading">Artikel tidak ditemukan</div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="pola-detail-page">
@@ -160,14 +396,46 @@ export default function PolaAsuhDetail() {
               <div className="pola-detail-section-title">
                 <h2>Langkah Praktis</h2>
               </div>
-              <ul className="pola-detail-steps">
-                {article.keySteps.map((step) => (
-                  <li key={step}>
-                    <CheckCircle2 size={18} />
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="pola-detail-accordion">
+                {practicalGroups.map((group, groupIndex) => {
+                  const isOpen = openGroupIndex === groupIndex;
+
+                  return (
+                    <div key={`${article.id}-${group.title}-${groupIndex}`} className={`pola-detail-accordion-item ${isOpen ? 'is-open' : ''}`}>
+                      <button
+                        type="button"
+                        className="pola-detail-accordion-trigger"
+                        onClick={() => setOpenGroupIndex((current) => (current === groupIndex ? -1 : groupIndex))}
+                        aria-expanded={isOpen}
+                      >
+                        <span className="pola-detail-step-number">{String(groupIndex + 1).padStart(2, '0')}</span>
+                        <div className="pola-detail-step-body">
+                          <strong>{group.title}</strong>
+                          {group.description ? <p>{group.description}</p> : null}
+                        </div>
+                        <ChevronDown size={18} className="pola-detail-accordion-icon" />
+                      </button>
+
+                      {isOpen ? (
+                        <ul className="pola-detail-step-list">
+                          {group.items.map((step, stepIndex) => {
+                            const stepNumber = stepIndex + 2;
+                            return (
+                              <li key={`${article.id}-${groupIndex}-${stepIndex}`} className="pola-detail-step-item">
+                                <span className="pola-detail-step-mini-number">{String(stepNumber).padStart(2, '0')}</span>
+                                <div className="pola-detail-step-body">
+                                  <strong>{step.title}</strong>
+                                  {step.description ? <p>{step.description}</p> : null}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
             </section>
           </section>
 
@@ -182,7 +450,11 @@ export default function PolaAsuhDetail() {
                 <span>Usia</span>
                 <strong>{article.ageRange}</strong>
               </div>
-              <button type="button" className="pola-detail-primary-btn" onClick={() => navigate('/kuis-parenting')}>
+              <button
+                type="button"
+                className="pola-detail-primary-btn"
+                onClick={() => navigate(`/kuis-parenting/konten/pola-asuh/${article.slug || article.id}`)}
+              >
                 Lanjut Kuis Parenting <ChevronRight size={16} />
               </button>
             </div>

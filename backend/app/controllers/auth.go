@@ -21,7 +21,7 @@ func NewAuthController(authUC *usecases.AuthUseCase) *AuthController {
 
 // Register godoc
 // @Summary      Daftar pengguna baru
-// @Description  Mendaftarkan ibu/ayah/kader baru dengan nomor HP dan PIN 6 digit
+// @Description  Mendaftarkan ibu/ayah/kader baru dengan email dan password
 // @Tags         auth
 // @Accept       json
 // @Produce      json
@@ -35,8 +35,8 @@ func (h *AuthController) Register(c echo.Context) error {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid: "+err.Error(), nil, nil)
 	}
 
-	if req.NoHP == "" || req.PIN == "" || req.Nama == "" || req.Role == "" {
-		return helpers.StandardResponse(c, http.StatusBadRequest, "nama, no_hp, pin, dan role wajib diisi", nil, nil)
+	if req.Email == "" || req.Password == "" || req.Nama == "" || req.Role == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "nama, email, password, dan role wajib diisi", nil, nil)
 	}
 
 	resp, err := h.authUC.Register(req)
@@ -48,7 +48,7 @@ func (h *AuthController) Register(c echo.Context) error {
 }
 
 // Login godoc
-// @Summary      Login dengan nomor HP dan PIN
+// @Summary      Login dengan email dan password
 // @Description  Mengembalikan access token dan refresh token
 // @Tags         auth
 // @Accept       json
@@ -63,8 +63,8 @@ func (h *AuthController) Login(c echo.Context) error {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid: "+err.Error(), nil, nil)
 	}
 
-	if req.NoHP == "" || req.PIN == "" {
-		return helpers.StandardResponse(c, http.StatusBadRequest, "no_hp dan pin wajib diisi", nil, nil)
+	if req.Email == "" || req.Password == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "email dan password wajib diisi", nil, nil)
 	}
 
 	resp, err := h.authUC.Login(req)

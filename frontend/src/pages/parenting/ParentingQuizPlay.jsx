@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Circle, CircleX, Medal, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../lib/api';
+import { contentService } from '../../api/contentService';
 import '../../styles/pages/parenting-quiz-play.css';
 
 const QUIZ_TOPICS = {
@@ -83,17 +84,177 @@ const QUIZ_TOPICS = {
   },
 };
 
-export default function ParentingQuizPlay() {
-  const { topicId } = useParams();
-  const navigate = useNavigate();
+const FEATURE_FETCHERS = {
+  parenting: contentService.getParentingBySlug,
+  'pola-asuh': contentService.getPolaAsuhBySlug,
+  'gizi-ibu': contentService.getGiziIbuBySlug,
+  'gizi-anak': contentService.getGiziAnakBySlug,
+  mpasi: contentService.getMpasiBySlug,
+  'resep-mpasi': contentService.getMpasiBySlug,
+  'informasi-umum': contentService.getInformasiUmumBySlug,
+  'mental-orang-tua': contentService.getMentalOrangTuaBySlug,
+};
 
-  const topic = QUIZ_TOPICS[topicId];
+const FEATURE_LABELS = {
+  parenting: 'Stimulus Anak',
+  'pola-asuh': 'Pola Asuh',
+  'gizi-ibu': 'Gizi Ibu',
+  'gizi-anak': 'Gizi Anak',
+  mpasi: 'MPASI',
+  'resep-mpasi': 'Resep MPASI',
+  'informasi-umum': 'Informasi Umum',
+  'mental-orang-tua': 'Mental Orang Tua',
+};
+
+function detailPathForContent(feature, contentSlug) {
+  if (!feature || !contentSlug) return '/kuis-parenting';
+
+  const map = {
+    parenting: `/stimulus/${contentSlug}`,
+    'pola-asuh': `/pola-asuh/${contentSlug}`,
+    'gizi-ibu': `/gizi/ibu/${contentSlug}`,
+    'gizi-anak': `/gizi/anak/${contentSlug}`,
+    mpasi: `/resep-mpasi/${contentSlug}`,
+    'resep-mpasi': `/resep-mpasi/${contentSlug}`,
+    'informasi-umum': `/informasi-umum/${contentSlug}`,
+    'mental-orang-tua': `/mental-orang-tua/${contentSlug}`,
+  };
+
+  return map[feature] || '/kuis-parenting';
+}
+
+function normalizeLine(line) {
+  return (line || '')
+    .replace(/^\s*[-*]\s+/, '')
+    .replace(/^\s*\d+[.)]\s+/, '')
+    .replace(/^#+\s*/, '')
+    .replace(/\*\*/g, '')
+    .trim();
+}
+
+function toPlainList(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeLine(String(item))).filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    if (value.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed)
+          ? parsed.map((item) => normalizeLine(String(item))).filter(Boolean)
+          : [];
+      } catch {
+        // no-op: handled by line split below
+      }
+    }
+
+    return value
+      .split(/\r?\n/)
+      .map((line) => normalizeLine(line))
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function shorten(text, length = 90) {
+  const source = (text || '').replace(/\s+/g, ' ').trim();
+  if (!source) return '';
+  if (source.length <= length) return source;
+  return `${source.slice(0, length).trimEnd()}...`;
+}
+
+function buildContentQuiz(feature, contentSlug, content) {
+  const title = content?.judul || 'Materi Parenting';
+  const ringkasan = content?.ringkasan || content?.isi || 'Pelajari materi berikut lalu jawab kuis pemahaman.';
+  const phase = content?.phase || 'Semua usia';
+  const langkah = toPlainList(content?.langkah_praktis);
+  const isiLines = toPlainList(content?.isi);
+  const firstPracticalStep = langkah[0] || isiLines[0] || 'Pahami materi dengan pendampingan orang tua secara konsisten.';
+
+  return {
+    title: `Kuis Materi: ${title}`,
+    description: `Uji pemahamanmu untuk materi ${FEATURE_LABELS[feature] || 'konten'} ini sebelum lanjut ke materi berikutnya.`,
+    accent: '#0284c7',
+    questions: [
+      {
+        text: 'Apa topik utama dari materi ini?',
+        options: [
+          title,
+          'Administrasi sekolah dasar',
+          'Pengelolaan keuangan keluarga',
+          'Rekap belanja bulanan',
+        ],
+        answer: 0,
+        explanation: `Topik utama materi ini adalah "${title}".`,
+      },
+      {
+        text: 'Materi ini paling relevan untuk rentang usia/fase apa?',
+        options: [
+          phase,
+          'Khusus usia lanjut',
+          'Tanpa melihat fase usia',
+          'Hanya untuk remaja akhir',
+        ],
+        answer: 0,
+        explanation: `Rentang usia/fase yang dituju pada materi ini adalah "${phase}".`,
+      },
+      {
+        text: 'Langkah praktis awal yang dianjurkan adalah...',
+        options: [
+          shorten(firstPracticalStep, 100),
+          'Menerapkan kebiasaan secara acak tanpa jadwal',
+          'Menunggu sampai anak rewel dulu',
+          'Mengabaikan tahapan usia anak',
+        ],
+        answer: 0,
+        explanation: `Langkah awal yang dianjurkan adalah: ${shorten(firstPracticalStep, 120)}`,
+      },
+      {
+        text: 'Tujuan utama materi ini adalah...',
+        options: [
+          shorten(ringkasan, 95),
+          'Mengganti peran orang tua sepenuhnya',
+          'Membatasi komunikasi dengan anak',
+          'Menyamakan pendekatan untuk semua kondisi',
+        ],
+        answer: 0,
+        explanation: `Fokus materi ini adalah: ${shorten(ringkasan, 140)}`,
+      },
+    ],
+    meta: {
+      feature,
+      contentSlug,
+      contentTitle: title,
+    },
+  };
+}
+
+export default function ParentingQuizPlay() {
+  const { topicId, feature, contentSlug } = useParams();
+  const navigate = useNavigate();
+  const isContentQuiz = Boolean(feature && contentSlug);
+
+  const [dynamicTopic, setDynamicTopic] = useState(null);
+  const [dynamicTopicLoading, setDynamicTopicLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+
+  const topic = useMemo(() => {
+    if (isContentQuiz) return dynamicTopic;
+    return QUIZ_TOPICS[topicId];
+  }, [isContentQuiz, dynamicTopic, topicId]);
+
+  const quizId = useMemo(() => {
+    if (isContentQuiz) return `content:${feature}:${contentSlug}`;
+    return topicId;
+  }, [isContentQuiz, feature, contentSlug, topicId]);
 
   const question = topic?.questions[currentIndex];
   const progress = useMemo(() => {
@@ -101,13 +262,49 @@ export default function ParentingQuizPlay() {
     return Math.round(((currentIndex + (submitted ? 1 : 0)) / topic.questions.length) * 100);
   }, [currentIndex, submitted, topic]);
 
+  useEffect(() => {
+    if (!isContentQuiz) return;
+
+    const fetcher = FEATURE_FETCHERS[feature];
+    if (!fetcher || !contentSlug) {
+      setDynamicTopic(null);
+      return;
+    }
+
+    const loadContentQuiz = async () => {
+      setDynamicTopicLoading(true);
+      try {
+        const content = await fetcher(contentSlug);
+        if (!content) {
+          setDynamicTopic(null);
+          return;
+        }
+        setDynamicTopic(buildContentQuiz(feature, contentSlug, content));
+      } catch {
+        setDynamicTopic(null);
+      } finally {
+        setDynamicTopicLoading(false);
+      }
+    };
+
+    loadContentQuiz();
+  }, [isContentQuiz, feature, contentSlug]);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+    setSelected(null);
+    setSubmitted(false);
+    setScore(0);
+    setSelectedAnswers([]);
+  }, [quizId]);
+
   const loadHistory = async () => {
-    if (!topicId) return;
+    if (!quizId) return;
     setHistoryLoading(true);
     try {
       const resp = await api.get('/quizzes/history', {
         params: {
-          quiz_id: topicId,
+          quiz_id: quizId,
           limit: 5,
         },
       });
@@ -121,7 +318,20 @@ export default function ParentingQuizPlay() {
 
   useEffect(() => {
     loadHistory();
-  }, [topicId]);
+  }, [quizId]);
+
+  if (dynamicTopicLoading) {
+    return (
+      <section className="parenting-quiz-play-page">
+        <div className="container parenting-quiz-play-shell">
+          <div className="glass-card parenting-quiz-notfound">
+            <h1>Menyiapkan kuis materi...</h1>
+            <p>Harap tunggu sebentar.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (!topic) {
     return (
@@ -145,11 +355,11 @@ export default function ParentingQuizPlay() {
   const saveAttempt = async (finalScore) => {
     try {
       await api.post('/quizzes/attempt', {
-        quiz_id: topicId,
+        quiz_id: quizId,
         score: finalScore,
         total: 100,
         title: topic.title,
-        category: 'Parenting',
+        category: isContentQuiz ? `Materi ${FEATURE_LABELS[feature] || 'Konten'}` : 'Parenting',
       });
       await loadHistory();
     } catch (err) {
@@ -163,6 +373,8 @@ export default function ParentingQuizPlay() {
 
     const isCorrect = selected === question.answer;
     const nextScore = isCorrect ? score + 1 : score;
+    const nextSelectedAnswers = [...selectedAnswers, selected];
+    setSelectedAnswers(nextSelectedAnswers);
 
     if (currentIndex >= topic.questions.length - 1) {
       const finalPercentage = Math.round((nextScore / topic.questions.length) * 100);
@@ -182,6 +394,7 @@ export default function ParentingQuizPlay() {
     setSelected(null);
     setSubmitted(false);
     setScore(0);
+    setSelectedAnswers([]);
   };
 
   if (submitted) {
@@ -203,9 +416,40 @@ export default function ParentingQuizPlay() {
               <button onClick={handleRestart} className="parenting-quiz-btn parenting-quiz-btn-soft">
                 <RefreshCw size={16} /> Ulangi Kuis
               </button>
-              <button onClick={() => navigate('/kuis-parenting')} className="parenting-quiz-btn parenting-quiz-btn-primary">
-                Kuis Lainnya
-              </button>
+              {isContentQuiz ? (
+                <button
+                  onClick={() => navigate(detailPathForContent(feature, contentSlug))}
+                  className="parenting-quiz-btn parenting-quiz-btn-primary"
+                >
+                  Kembali ke Materi
+                </button>
+              ) : (
+                <button onClick={() => navigate('/kuis-parenting')} className="parenting-quiz-btn parenting-quiz-btn-primary">
+                  Kuis Lainnya
+                </button>
+              )}
+            </div>
+
+            <div className="parenting-quiz-review">
+              <h3>Review Jawaban</h3>
+              <ul className="parenting-quiz-review-list">
+                {topic.questions.map((item, idx) => {
+                  const selectedIndex = selectedAnswers[idx];
+                  const isCorrect = selectedIndex === item.answer;
+                  return (
+                    <li key={`${item.text}-${idx}`} className={isCorrect ? 'ok' : 'bad'}>
+                      <p className="parenting-quiz-review-question">{idx + 1}. {item.text}</p>
+                      <p>
+                        Jawaban kamu: <strong>{selectedIndex !== undefined ? item.options[selectedIndex] : '-'}</strong>
+                      </p>
+                      <p>
+                        Jawaban benar: <strong>{item.options[item.answer]}</strong>
+                      </p>
+                      <p className="parenting-quiz-review-explanation">{item.explanation}</p>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </div>
         </div>
@@ -216,12 +460,16 @@ export default function ParentingQuizPlay() {
   return (
     <section className="parenting-quiz-play-page">
       <div className="container parenting-quiz-play-shell">
-        <button type="button" onClick={() => navigate('/kuis-parenting')} className="parenting-quiz-back-btn">
-          <ArrowLeft size={16} /> Kembali ke daftar kuis
+        <button
+          type="button"
+          onClick={() => navigate(isContentQuiz ? detailPathForContent(feature, contentSlug) : '/kuis-parenting')}
+          className="parenting-quiz-back-btn"
+        >
+          <ArrowLeft size={16} /> {isContentQuiz ? 'Kembali ke materi' : 'Kembali ke daftar kuis'}
         </button>
 
         <div className="glass-card parenting-quiz-header">
-          <p className="parenting-quiz-kicker">Kuis Parenting</p>
+          <p className="parenting-quiz-kicker">{isContentQuiz ? 'Kuis Materi Konten' : 'Kuis Parenting'}</p>
           <h1>{topic.title}</h1>
           <p>{topic.description}</p>
 

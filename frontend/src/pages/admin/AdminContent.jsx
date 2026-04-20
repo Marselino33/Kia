@@ -16,14 +16,48 @@ const EMPTY = {
   read_minutes: 5,
   is_published: true
 };
-const KATEGORI = ['Gizi', 'Imunisasi', 'Kesehatan Ibu', 'Tumbuh Kembang', 'PHBS', 'Umum'];
+const KATEGORI = ['Parenting', 'Gizi', 'Kesehatan Ibu', 'PHBS', 'Mental Orang Tua', 'Umum'];
 const PHASE = ['kehamilan_1', 'kehamilan_2', 'kehamilan_3', 'bayi', 'baduta', 'balita', 'semua'];
+
+const FORM_PRESET = {
+  parenting: {
+    kategori: ['stimulus_anak', 'pola_asuh'],
+    phaseLabel: 'Usia Label',
+    phaseOptions: ['0-3 Bulan', '3-6 Bulan', '6-9 Bulan', '9-12 Bulan', '12-24 Bulan', '2-3 Tahun', '3-5 Tahun']
+  },
+  mental: {
+    kategori: ['baby-blues', 'ppd', 'kecemasan', 'burnout', 'stress', 'depresi'],
+    phaseLabel: 'Fase',
+    phaseOptions: ['kehamilan', 'setelah_melahirkan', 'menyusui', 'semua']
+  },
+  informasi: {
+    kategori: ['PHBS', 'gigi', 'perawatan-anak', 'keamanan', 'bencana', 'kesehatan-lingkungan', 'lainnya'],
+    phaseLabel: 'Fase',
+    phaseOptions: ['kehamilan', 'bayi', 'balita', 'semua']
+  },
+  gizi_ibu: {
+    kategori: ['trimester_1', 'trimester_2', 'trimester_3', 'menyusui'],
+    phaseLabel: 'Fase Kehamilan',
+    phaseOptions: ['trimester_1', 'trimester_2', 'trimester_3', 'menyusui']
+  },
+  gizi_anak: {
+    kategori: ['nutrisi', 'pemberian-makan', 'gizi-seimbang'],
+    phaseLabel: 'Rentang Usia',
+    phaseOptions: ['bayi_0_6', 'mpasi_6_24', 'balita_2_5']
+  },
+  default: {
+    kategori: KATEGORI,
+    phaseLabel: 'Phase',
+    phaseOptions: PHASE
+  }
+};
 
 // Wrapper component for category-specific content management
 export default function AdminContent({
-  categoryFilter,
+  featureKey,
   pageTitle,
-  pageSubtitle
+  pageSubtitle,
+  formType = 'default'
 }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,22 +66,23 @@ export default function AdminContent({
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({
     ...EMPTY,
-    kategori: categoryFilter || ''
+    kategori: ''
   });
   const [saving, setSaving] = useState(false);
+  const preset = FORM_PRESET[formType] || FORM_PRESET.default;
   const fetchData = () => {
     setLoading(true);
-    // If categoryFilter is provided, filter by category
-    const endpoint = categoryFilter ? `/admin/content?kategori=${encodeURIComponent(categoryFilter)}` : '/admin/content';
+    const base = '/admin/content?page=1&limit=100';
+    const endpoint = featureKey ? `${base}&feature=${encodeURIComponent(featureKey)}` : base;
     adminApi.get(endpoint).then(r => setList(r.data?.data || [])).catch(() => toast.error('Gagal memuat konten')).finally(() => setLoading(false));
   };
   useEffect(() => {
     fetchData();
-  }, [categoryFilter]);
+  }, [featureKey]);
   const openCreate = () => {
     setForm({
       ...EMPTY,
-      kategori: categoryFilter || ''
+      kategori: ''
     });
     setSelected(null);
     setModal('create');
@@ -58,7 +93,7 @@ export default function AdminContent({
       judul: item.judul || item.title || '',
       ringkasan: item.ringkasan || item.summary || '',
       isi: item.isi || item.body || '',
-      kategori: item.kategori || item.category || categoryFilter || '',
+      kategori: item.kategori || item.category || '',
       phase: item.phase || '',
       tags: item.tags || '',
       gambar_url: item.gambar_url || '',
@@ -94,15 +129,15 @@ export default function AdminContent({
     const payload = {
       ...form,
       read_minutes: parseInt(form.read_minutes) || 5,
-      kategori: categoryFilter || form.kategori
+      kategori: form.kategori || pageTitle || featureKey || 'Umum'
     };
     setSaving(true);
     try {
       if (modal === 'create') {
-        await adminApi.post('/admin/content', payload);
+        await adminApi.post(featureKey ? `/admin/content?feature=${encodeURIComponent(featureKey)}` : '/admin/content', payload);
         toast.success('Konten berhasil ditambahkan');
       } else {
-        await adminApi.put(`/admin/content/${selected.id}`, payload);
+        await adminApi.put(featureKey ? `/admin/content/${selected.id}?feature=${encodeURIComponent(featureKey)}` : `/admin/content/${selected.id}`, payload);
         toast.success('Konten berhasil diperbarui');
       }
       closeModal();
@@ -116,7 +151,7 @@ export default function AdminContent({
   const handleDelete = async () => {
     setSaving(true);
     try {
-      await adminApi.delete(`/admin/content/${selected.id}`);
+      await adminApi.delete(featureKey ? `/admin/content/${selected.id}?feature=${encodeURIComponent(featureKey)}` : `/admin/content/${selected.id}`);
       toast.success('Konten berhasil dihapus');
       closeModal();
       fetchData();
@@ -127,12 +162,13 @@ export default function AdminContent({
     }
   };
   const filtered = list.filter(c => (c.judul || c.title)?.toLowerCase().includes(search.toLowerCase()));
+  const canMutate = !!featureKey;
 
   // Use custom title if provided, otherwise use category
-  const title = pageTitle || (categoryFilter ? `Konten ${categoryFilter}` : 'Manajemen Konten');
+  const title = pageTitle || (featureKey ? `Konten ${featureKey}` : 'Manajemen Konten');
   const subtitle = pageSubtitle || `${list.length} artikel`;
   return <AdminLayout>
-            <AdminPageHeader title={title} subtitle={subtitle} action={<button onClick={openCreate} className="isx-admincontent-1"><Plus size={16} /> Tambah Artikel</button>} />
+            <AdminPageHeader title={title} subtitle={subtitle} action={canMutate ? <button onClick={openCreate} className="isx-admincontent-1"><Plus size={16} /> Tambah Artikel</button> : null} />
             <div className="isx-admincontent-2">
                 <AdminCard>
                     <div className="isx-admincontent-3">
@@ -162,11 +198,11 @@ export default function AdminContent({
                                                     </span>
                                                 </td>
                                     <td className="admin-td admin-td-right">
-                                                    <div className="isx-admincontent-10">
-                                                        <button onClick={() => openEdit(c)} className="isx-admincontent-11"><Pencil size={14} /></button>
-                                                        <button onClick={() => openDelete(c)} className="isx-admincontent-12"><Trash2 size={14} /></button>
-                                                    </div>
-                                                </td>
+                                            {canMutate ? <div className="isx-admincontent-10">
+                                              <button onClick={() => openEdit(c)} className="isx-admincontent-11"><Pencil size={14} /></button>
+                                              <button onClick={() => openDelete(c)} className="isx-admincontent-12"><Trash2 size={14} /></button>
+                                            </div> : <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Lihat saja</span>}
+                                          </td>
                                             </tr>)}
                                     </tbody>
                                 </table>}
@@ -188,9 +224,13 @@ export default function AdminContent({
                         </div>
                         <AdminInput label="Slug" name="slug" value={form.slug} required onChange={setF} placeholder="judul-artikel" />
                         <AdminInput label="Baca (menit)" name="read_minutes" type="number" value={form.read_minutes} onChange={setF} min={1} />
-                        <AdminInput label="Phase" name="phase" type="select" value={form.phase} onChange={setF}>
-                            <option value="">-- Pilih Phase --</option>
-                            {PHASE.map(p => <option key={p} value={p}>{p}</option>)}
+                        <AdminInput label="Kategori" name="kategori" type="select" value={form.kategori} onChange={setF}>
+                          <option value="">-- Pilih Kategori --</option>
+                          {preset.kategori.map(k => <option key={k} value={k}>{k}</option>)}
+                        </AdminInput>
+                        <AdminInput label={preset.phaseLabel} name="phase" type="select" value={form.phase} onChange={setF}>
+                            <option value="">-- Pilih {preset.phaseLabel} --</option>
+                            {(preset.phaseOptions || PHASE).map(p => <option key={p} value={p}>{p}</option>)}
                         </AdminInput>
                         <div className="isx-admincontent-16">
                             <AdminInput label="Ringkasan" name="ringkasan" type="textarea" value={form.ringkasan} onChange={setF} placeholder="Ringkasan singkat artikel" />
@@ -228,7 +268,7 @@ const btnP = {
   alignItems: 'center',
   gap: '0.4rem',
   padding: '0.6rem 1.25rem',
-  background: 'linear-gradient(135deg, #E8307D, #f472b6)',
+  background: 'linear-gradient(135deg, #42a5f5, #1565C0)',
   color: 'white',
   border: 'none',
   borderRadius: '0.5rem',
@@ -238,20 +278,20 @@ const btnP = {
 };
 const btnE = {
   padding: '0.4rem',
-  background: '#f0f9ff',
-  border: '1px solid #bae6fd',
+  background: '#e3f2fd',
+  border: '1px solid #bbdefb',
   borderRadius: '0.4rem',
   cursor: 'pointer',
-  color: '#0ea5e9',
+  color: '#1565C0',
   display: 'flex'
 };
 const btnD = {
   padding: '0.4rem',
-  background: '#fef2f2',
-  border: '1px solid #fecaca',
+  background: '#ffebee',
+  border: '1px solid #ffcdd2',
   borderRadius: '0.4rem',
   cursor: 'pointer',
-  color: '#ef4444',
+  color: '#c62828',
   display: 'flex'
 };
 const btnC = {
@@ -265,7 +305,7 @@ const btnC = {
 };
 const btnX = {
   padding: '0.6rem 1.25rem',
-  background: '#ef4444',
+  background: '#c62828',
   color: 'white',
   border: 'none',
   borderRadius: '0.5rem',

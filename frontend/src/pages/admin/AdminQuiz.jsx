@@ -262,7 +262,7 @@ const btnP = {
   alignItems: 'center',
   gap: '0.4rem',
   padding: '0.6rem 1.25rem',
-  background: 'linear-gradient(135deg, #E8307D, #f472b6)',
+  background: 'linear-gradient(135deg, #42a5f5, #1565C0)',
   color: 'white',
   border: 'none',
   borderRadius: '0.5rem',
@@ -272,11 +272,11 @@ const btnP = {
 };
 const btnE = {
   padding: '0.4rem',
-  background: '#f0f9ff',
-  border: '1px solid #bae6fd',
+  background: '#e3f2fd',
+  border: '1px solid #bbdefb',
   borderRadius: '0.4rem',
   cursor: 'pointer',
-  color: '#0ea5e9',
+  color: '#1565C0',
   display: 'flex'
 };
 const btnD = {

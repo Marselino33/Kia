@@ -181,7 +181,15 @@
 .stimulus-card-foot {
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
+}
+
+.stimulus-card-actions {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .stimulus-age-label {
@@ -200,6 +208,17 @@
   align-items: center;
   gap: 4px;
   padding: 0;
+}
+
+.stimulus-quiz-btn {
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+  color: #0369a1;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .stimulus-load-wrap {

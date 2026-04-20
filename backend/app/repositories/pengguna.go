@@ -19,9 +19,9 @@ func (r *PenggunaRepository) Create(pengguna *models.Pengguna) error {
 	return r.db.Create(pengguna).Error
 }
 
-func (r *PenggunaRepository) FindByNoHP(noHP string) (*models.Pengguna, error) {
+func (r *PenggunaRepository) FindByEmail(email string) (*models.Pengguna, error) {
 	var pengguna models.Pengguna
-	err := r.db.Where("no_hp = ?", noHP).First(&pengguna).Error
+	err := r.db.Where("email = ?", email).First(&pengguna).Error
 	if err != nil {
 		return nil, err
 	}

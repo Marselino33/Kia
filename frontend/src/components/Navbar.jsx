@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Heart, LogOut, Menu, X, LayoutDashboard, Search, ChevronDown } from 'lucide-react'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
+import { clearAdminToken } from '../lib/adminApi'
 
 const homeLink = { to: '/beranda', label: 'Beranda' }
 const infoLink = { to: '/informasi-umum', label: 'Informasi Umum' }
@@ -61,6 +62,7 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         await logout()
+        clearAdminToken()
         toast.success('Berhasil keluar')
         navigate('/')
     }

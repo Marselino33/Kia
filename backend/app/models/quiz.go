@@ -15,7 +15,7 @@ type Quiz struct {
 	Kategori    string         `json:"kategori"` // Gizi | Imunisasi | PHBS | dll
 	Phase       string         `json:"phase"`    // opsional filter fase
 	IsPublished bool           `json:"is_published" gorm:"default:true"`
-	Pertanyaan  []QuizQuestion `json:"pertanyaan,omitempty" gorm:"foreignKey:QuizID"`
+	Pertanyaan  []QuizQuestion `json:"pertanyaan,omitempty" gorm:"foreignKey:QuizID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
@@ -39,6 +39,7 @@ type QuizQuestion struct {
 	JawabanBenar string         `json:"jawaban_benar"`
 	Penjelasan   string         `json:"penjelasan" gorm:"type:text"`
 	Urutan       int            `json:"urutan" gorm:"default:0"`
+	Options      []QuizOption   `json:"options,omitempty" gorm:"foreignKey:QuestionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt    time.Time      `json:"created_at"`
 	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`
 }
@@ -51,6 +52,20 @@ func (q *QuizQuestion) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
+// QuizOption merepresentasikan opsi jawaban yang dinormalisasi.
+type QuizOption struct {
+	ID         int64          `json:"id" gorm:"primaryKey;autoIncrement"`
+	QuestionID string         `json:"question_id" gorm:"type:varchar(36);index;not null"`
+	OptionKey  string         `json:"option_key" gorm:"not null"`
+	OptionText string         `json:"option_text" gorm:"not null"`
+	IsCorrect  bool           `json:"is_correct" gorm:"default:false"`
+	Urutan     int            `json:"urutan" gorm:"default:0"`
+	CreatedAt  time.Time      `json:"created_at"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (QuizOption) TableName() string { return "quiz_options" }
 
 // QuizAttempt merepresentasikan riwayat pengguna mengerjakan kuis.
 type QuizAttempt struct {
@@ -70,6 +85,20 @@ func (q *QuizAttempt) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
+// QuizAttemptAnswer menyimpan jawaban per pertanyaan untuk attempt yang lebih detail.
+type QuizAttemptAnswer struct {
+	ID                 int64          `json:"id" gorm:"primaryKey;autoIncrement"`
+	AttemptID          string         `json:"attempt_id" gorm:"type:varchar(36);index;not null"`
+	QuestionID         string         `json:"question_id" gorm:"type:varchar(36);index;not null"`
+	SelectedOptionKey  string         `json:"selected_option_key"`
+	SelectedOptionText string         `json:"selected_option_text"`
+	IsCorrect          *bool          `json:"is_correct,omitempty"`
+	CreatedAt          time.Time      `json:"created_at"`
+	DeletedAt          gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (QuizAttemptAnswer) TableName() string { return "quiz_attempt_answers" }
 
 // ============================
 // Request structs

@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, ChevronRight } from 'lucide-react';
+import api from '../../lib/api';
 import '../../styles/pages/content-content-list.css'
 
 export default function ContentList() {
@@ -14,91 +15,40 @@ export default function ContentList() {
 
   const categories = [
     { id: 'all', label: 'Semua Konten' },
-    { id: 'pola-asuh', label: 'Pola Asuh' },
-    { id: 'stimulasi', label: 'Stimulasi Anak' },
-    { id: 'nutrisi', label: 'Nutrisi' },
-    { id: 'kesehatan', label: 'Kesehatan' },
-    { id: 'perkembangan', label: 'Perkembangan' },
-  ];
-
-  // Sample data
-  const sampleContents = [
-    {
-      id: 1,
-      slug: 'teknik-pola-asuh-modern',
-      title: 'Teknik Pola Asuh Modern untuk Anak Usia Dini',
-      category: 'pola-asuh',
-      excerpt: 'Pelajari teknik pola asuh yang efektif dan positif untuk mendukung perkembangan anak.',
-      readTime: '8 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-15',
-    },
-    {
-      id: 2,
-      slug: 'stimulasi-bayi-3-bulan',
-      title: 'Stimulasi yang Tepat untuk Bayi 3 Bulan',
-      category: 'stimulasi',
-      excerpt: 'Panduan lengkap stimulasi motorik dan sensorik untuk bayi usia 3 bulan.',
-      readTime: '10 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-14',
-    },
-    {
-      id: 3,
-      slug: 'nutrisi-optimal-ibu-hamil',
-      title: 'Nutrisi Optimal Saat Hamil',
-      category: 'nutrisi',
-      excerpt: 'Kebutuhan nutrisi penting untuk ibu hamil dan perkembangan janin yang sehat.',
-      readTime: '12 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-13',
-    },
-    {
-      id: 4,
-      slug: 'vaksinasi-lengkap-anak',
-      title: 'Jadwal Vaksinasi Lengkap untuk Anak',
-      category: 'kesehatan',
-      excerpt: 'Informasi lengkap tentang jadwal dan jenis vaksinasi yang direkomendasikan.',
-      readTime: '15 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-12',
-    },
-    {
-      id: 5,
-      slug: 'tahap-perkembangan-anak',
-      title: 'Tahap Perkembangan Anak 0-3 Tahun',
-      category: 'perkembangan',
-      excerpt: 'Memahami milestone perkembangan anak dari lahir hingga 3 tahun.',
-      readTime: '18 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-11',
-    },
-    {
-      id: 6,
-      slug: 'bonding-ibu-bayi',
-      title: 'Membangun Bonding dengan Bayi Sejak Dini',
-      category: 'pola-asuh',
-      excerpt: 'Cara membangun ikatan emosional yang kuat dengan bayi Anda.',
-      readTime: '7 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-      date: '2024-01-10',
-    },
+    { id: 'Parenting', label: 'Parenting' },
+    { id: 'Gizi', label: 'Gizi' },
+    { id: 'Kesehatan Ibu', label: 'Kesehatan Ibu' },
+    { id: 'PHBS', label: 'PHBS' },
+    { id: 'Mental Orang Tua', label: 'Mental Orang Tua' },
+    { id: 'Umum', label: 'Informasi Umum' },
   ];
 
   useEffect(() => {
-    // Simulate API call
     setLoading(true);
-    setTimeout(() => {
-      setContents(sampleContents);
-      setLoading(false);
-    }, 500);
+    api.get('/content')
+      .then((r) => {
+        const rows = r.data?.data || [];
+        const mapped = rows.map((item) => ({
+          id: item.id,
+          slug: item.slug,
+          title: item.judul,
+          category: item.kategori || 'Umum',
+          excerpt: item.ringkasan || '',
+          readTime: `${item.read_minutes || 5} menit`,
+          image: item.gambar_url || 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+          date: item.created_at,
+        }));
+        setContents(mapped);
+      })
+      .catch(() => setContents([]))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     let result = contents;
 
     if (selectedCategory !== 'all') {
-      result = result.filter((c) => c.category === selectedCategory);
+      result = result.filter((c) => String(c.category).toLowerCase() === String(selectedCategory).toLowerCase());
     }
 
     if (searchTerm) {
@@ -168,7 +118,7 @@ export default function ContentList() {
                   <div>
                     <div className="content-list-meta-top">
                       <span className="content-list-category-badge">
-                        {categories.find((c) => c.id === content.category)?.label}
+                        {categories.find((c) => c.id === content.category)?.label || content.category}
                       </span>
                       <span className="content-list-readtime">Waktu baca {content.readTime}</span>
                     </div>
@@ -177,11 +127,11 @@ export default function ContentList() {
                   </div>
                   <div className="content-list-meta-bottom">
                     <span className="content-list-date-text">
-                      {new Date(content.date).toLocaleDateString('id-ID', {
+                      {content.date ? new Date(content.date).toLocaleDateString('id-ID', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
-                      })}
+                      }) : '-'}
                     </span>
                     <button className="content-list-read-btn" type="button">
                       Baca <ChevronRight size={16} />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Baby, FileText, ChefHat, Brain, LogOut, Menu, X, Shield, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, Baby, FileText, ChefHat, Brain, LogOut, Menu, X, Shield, ChevronRight, HeartHandshake } from 'lucide-react';
 import '../../styles/pages/admin-admin-layout.css';
 import { clearAdminToken } from '../../lib/adminApi';
 import toast from 'react-hot-toast';
@@ -17,25 +17,34 @@ const NAV_ITEMS = [{
   label: 'Pengguna',
   icon: Users
 }, {
-  path: '/admin/content',
-  label: 'Semua Konten',
-  icon: FileText
-}, {
   path: '/admin/parenting',
-  label: 'Parenting (Anak)',
+  label: 'Stimulus Anak',
   icon: Baby
+},
+{
+  path: '/admin/pola-asuh',
+  label: 'Pola Asuh',
+  icon: HeartHandshake
 }, {
-  path: '/admin/kesehatan-ibu',
-  label: 'Kesehatan Ibu',
-  icon: FileText
-}, {
-  path: '/admin/phbs',
-  label: 'PHBS',
-  icon: FileText
-}, {
-  path: '/admin/gizi',
-  label: 'Gizi & Menu',
+  path: '/admin/gizi-ibu',
+  label: 'Gizi Ibu',
   icon: ChefHat
+}, {
+  path: '/admin/gizi-anak',
+  label: 'Gizi Anak',
+  icon: ChefHat
+}, {
+  path: '/admin/mpasi',
+  label: 'MPASI',
+  icon: ChefHat
+}, {
+  path: '/admin/mental-orang-tua',
+  label: 'Mental Orang Tua',
+  icon: Brain
+}, {
+  path: '/admin/informasi-umum',
+  label: 'Informasi Umum',
+  icon: FileText
 }, {
   path: '/admin/quiz',
   label: 'Quiz',

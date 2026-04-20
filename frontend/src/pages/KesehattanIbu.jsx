@@ -133,7 +133,7 @@ export default function KesehattanIbu() {
                                     <span className="isx-kesehattanibu-31">{option}</span>
                                 </label>)}
                         </div>
-                        <button onMouseEnter={e => e.currentTarget.style.background = '#E8307D'} onMouseLeave={e => e.currentTarget.style.background = '#f472b6'} className="isx-kesehattanibu-32">
+                        <button onMouseEnter={e => e.currentTarget.style.background = '#1565C0'} onMouseLeave={e => e.currentTarget.style.background = '#42a5f5'} className="isx-kesehattanibu-32">
                             Mulai â†’
                         </button>
                     </div>

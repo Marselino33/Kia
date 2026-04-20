@@ -11,6 +11,7 @@ export default function StimulusAnak() {
   const [selectedAgeRange, setSelectedAgeRange] = useState('all');
   const [loading, setLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(8);
+  const [error, setError] = useState('');
 
   const ageRanges = [
     { id: 'all', label: 'Lihat Semua' },
@@ -32,90 +33,39 @@ export default function StimulusAnak() {
     'visual': { bg: '#1e3a8a', text: '#ffffff', label: 'VISUAL' },
   };
 
-  // Sample data - will be replaced with API call
-  const sampleActivities = [
-    {
-      id: 1,
-      title: 'Latihan Tummy Time untuk Menguatkan Otot Leher',
-      category: 'motorik-kasar',
-      ageRange: 'bayi-1',
-      readTime: '5 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 2,
-      title: 'Mengenal Tekstur dengan Sensory Bin Sederhana',
-      category: 'sensorik',
-      ageRange: 'bayi-2',
-      readTime: '15 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 3,
-      title: 'Storytelling Interaktif untuk Kosa Kata Baru',
-      category: 'kognitif',
-      ageRange: 'bayi-3',
-      readTime: '20 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 4,
-      title: 'Melatih Fokus dengan Meronce Besar Besar',
-      category: 'motorik-halus',
-      ageRange: 'bayi-4',
-      readTime: '18 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 5,
-      title: 'Belajar Berbagi Melalui Permainan Role-play',
-      category: 'sosial',
-      ageRange: 'bayi-5',
-      readTime: '30 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 6,
-      title: 'Permainan Halang Rintang untuk Koordinasi',
-      category: 'motorik-kasar',
-      ageRange: 'bayi-5',
-      readTime: '15 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 7,
-      title: 'Stimulasi Visual dengan Kartu Kontras Tinggi',
-      category: 'visual',
-      ageRange: 'bayi-1',
-      readTime: '5 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-    {
-      id: 8,
-      title: 'Menyortir Bentuk untuk Melatih Logika Dasar',
-      category: 'kognitif',
-      ageRange: 'bayi-6',
-      readTime: '12 menit',
-      image: 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
-    },
-  ];
-
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setActivities(sampleActivities);
-      setLoading(false);
-    }, 500);
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const res = await api.get('/parenting');
+        const rows = Array.isArray(res?.data?.data) ? res.data.data : [];
+        const mapped = rows.map((item) => ({
+          id: item.id,
+          slug: item.slug,
+          title: item.judul,
+          category: (item.kategori || 'stimulus_anak').toLowerCase().replace(/\s+/g, '-'),
+          ageRange: item.phase || 'all',
+          readTime: `${item.read_minutes || 5} menit`,
+          image: item.gambar_url || 'https://images.unsplash.com/photo-1503454537688-e7b99cede977?w=400&h=300&fit=crop',
+        }));
+        setActivities(mapped);
+      } catch {
+        setError('Gagal memuat aktivitas parenting');
+        setActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   useEffect(() => {
     if (selectedAgeRange === 'all') {
       setFilteredActivities(activities);
     } else {
-      setFilteredActivities(
-        activities.filter((activity) => activity.ageRange === selectedAgeRange)
-      );
+      setFilteredActivities(activities.filter((activity) => activity.ageRange === selectedAgeRange));
     }
   }, [selectedAgeRange, activities]);
 
@@ -126,8 +76,8 @@ export default function StimulusAnak() {
     setDisplayCount(displayCount + 8);
   };
 
-  const handleActivityClick = (activityId) => {
-    navigate(`/stimulus/${activityId}`);
+  const handleActivityClick = (activitySlug) => {
+    navigate(`/stimulus/${activitySlug}`);
   };
 
   return (
@@ -175,6 +125,10 @@ export default function StimulusAnak() {
           <div className="stimulus-container stimulus-loading-wrap">
             <p className="stimulus-loading-text">Memuat aktivitas...</p>
           </div>
+        ) : error ? (
+          <div className="stimulus-container stimulus-loading-wrap">
+            <p className="stimulus-loading-text">{error}</p>
+          </div>
         ) : (
           <>
             <div className="stimulus-container stimulus-activity-grid">
@@ -182,8 +136,8 @@ export default function StimulusAnak() {
                 const categoryInfo = categoryBadgeColors[activity.category];
                 return (
                   <div
-                    key={activity.id}
-                    onClick={() => handleActivityClick(activity.id)}
+                    key={activity.id || activity.slug}
+                    onClick={() => handleActivityClick(activity.slug)}
                     className="stimulus-card"
                   >
                     {/* Image */}
@@ -195,7 +149,7 @@ export default function StimulusAnak() {
                       />
                       {/* Category Badge */}
                       <div className={`stimulus-category-badge stimulus-category-badge-${activity.category}`}>
-                        {categoryInfo.label}
+                        {(categoryInfo && categoryInfo.label) || (activity.category || 'PARENTING').toUpperCase()}
                       </div>
                     </div>
 
@@ -211,13 +165,25 @@ export default function StimulusAnak() {
                       <div className="stimulus-card-foot">
                         <span className="stimulus-age-label">
                           {(() => {
-                            const label = ageRanges.find(r => r.id === activity.ageRange)?.label || '';
+                            const label = ageRanges.find(r => r.id === activity.ageRange)?.label || activity.ageRange || '';
                             return label.split('-')[0].trim();
                           })()}
                         </span>
-                        <button className="stimulus-read-btn">
-                          Pelajari <ChevronRight size={16} />
-                        </button>
+                        <div className="stimulus-card-actions">
+                          <button className="stimulus-read-btn">
+                            Pelajari <ChevronRight size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className="stimulus-quiz-btn"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              navigate(`/kuis-parenting/konten/parenting/${activity.slug || activity.id}`);
+                            }}
+                          >
+                            Kuis Materi
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

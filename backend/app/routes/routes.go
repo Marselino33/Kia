@@ -30,6 +30,16 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	api.GET("/content", ctrl.Master.ListContent)
 	api.GET("/content/:slug", ctrl.Master.GetContentBySlug)
 
+	// Parenting / Stimulus Anak / Pola Asuh
+	api.GET("/parenting", ctrl.Master.ListParenting)
+	api.GET("/parenting/:slug", ctrl.Master.GetParentingBySlug)
+	api.GET("/pola-asuh", ctrl.Master.ListPolaAsuh)
+	api.GET("/pola-asuh/:slug", ctrl.Master.GetPolaAsuhBySlug)
+
+	// Mental Orang Tua
+	api.GET("/mental-orang-tua", ctrl.Master.ListMentalOrangTua)
+	api.GET("/mental-orang-tua/:slug", ctrl.Master.GetMentalOrangTuaBySlug)
+
 	// ─── Protected routes (Bearer JWT) ────────────────────────────────────────
 	protected := api.Group("", jwtMiddleware)
 
@@ -87,6 +97,13 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	admin.GET("/content/:id", ctrl.Admin.GetContent)
 	admin.PUT("/content/:id", ctrl.Admin.UpdateContent)
 	admin.DELETE("/content/:id", ctrl.Admin.DeleteContent)
+
+	// Pola Asuh CRUD (tabel khusus)
+	admin.GET("/pola-asuh", ctrl.Admin.ListPolaAsuh)
+	admin.POST("/pola-asuh", ctrl.Admin.CreatePolaAsuh)
+	admin.GET("/pola-asuh/:id", ctrl.Admin.GetPolaAsuh)
+	admin.PUT("/pola-asuh/:id", ctrl.Admin.UpdatePolaAsuh)
+	admin.DELETE("/pola-asuh/:id", ctrl.Admin.DeletePolaAsuh)
 
 	// Resep Gizi CRUD
 	admin.GET("/resep-gizi", ctrl.Admin.ListResepAdmin)

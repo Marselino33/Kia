@@ -61,7 +61,7 @@
   flex-shrink: 0;
 }
 .isx-quizpage-9--on {
-  background: #f472b6;
+  background: #42a5f5;
   color: #fff;
   font-weight: 700;
 }
@@ -109,7 +109,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #f472b6;
+  background: #42a5f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,7 +132,7 @@
 .isx-quizpage-17 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #f472b6;
+  color: #42a5f5;
   margin-bottom: 0.75rem;
 }
 
@@ -158,7 +158,7 @@
 .isx-quizpage-21 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #f472b6;
+  color: #42a5f5;
   margin-bottom: 0.75rem;
 }
 
@@ -194,7 +194,7 @@
 .isx-quizpage-27 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #f472b6;
+  color: #42a5f5;
   margin-bottom: 0.75rem;
 }
 
@@ -206,7 +206,7 @@
 }
 
 .isx-quizpage-29 {
-  background: #f472b6;
+  background: #42a5f5;
   padding: 1.25rem;
   border-radius: 1.25rem;
   color: #fff;
@@ -252,7 +252,7 @@
 .isx-quizpage-35 {
   width: 100%;
   background: #fff;
-  color: #f472b6;
+  color: #42a5f5;
   border: none;
   padding: 0.75rem;
   border-radius: 0.75rem;
@@ -411,7 +411,7 @@
 }
 
 .isx-quizpage-59 {
-  background: #f472b6;
+  background: #42a5f5;
   color: #fff;
   padding: 1rem 1.25rem;
   display: flex;
@@ -515,7 +515,7 @@
 
 .isx-quizpage-option-selected {
   background: #fdf2f8;
-  border-color: #f472b6;
+  border-color: #42a5f5;
   color: var(--primary-600);
 }
 

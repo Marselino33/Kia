@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, ChevronRight, Award, RotateCcw, Play, Activity } from 'lucide-react';
 import api from '../../lib/api';
 import toast from 'react-hot-toast';
@@ -135,55 +135,6 @@ const PARENTING_DATA = {
     milestones: []
   }
 };
-const QUIZZES = [{
-  id: 1,
-  title: 'Nutrisi Ibu Hamil',
-  description: 'Uji pengetahuan Anda tentang asupan gizi selama kehamilan.',
-  category: 'Gizi',
-  questions: [{
-    id: 1,
-    text: 'Berapa dosis asam folat yang dianjurkan per hari untuk ibu hamil?',
-    options: ['100 mcg', '200 mcg', '400-600 mcg', '1000 mcg'],
-    correct: 2,
-    explanation: 'WHO dan Kemenkes merekomendasikan 400-600 mcg asam folat per hari untuk mencegah cacat neural tube.'
-  }, {
-    id: 2,
-    text: 'Zat gizi apa yang paling penting untuk mencegah anemia pada ibu hamil?',
-    options: ['Vitamin C', 'Zat Besi (Fe)', 'Kalsium', 'Zinc'],
-    correct: 1,
-    explanation: 'Zat besi dibutuhkan untuk produksi hemoglobin. Ibu hamil membutuhkan 27mg zat besi per hari.'
-  }, {
-    id: 3,
-    text: 'Berat badan ideal yang harus naik selama kehamilan (BMI normal) adalah...',
-    options: ['2-5 kg', '5-9 kg', '11.5-16 kg', '20-25 kg'],
-    correct: 2,
-    explanation: 'Untuk ibu dengan BMI normal (18.5-24.9), kenaikan berat badan ideal 11.5-16 kg selama kehamilan.'
-  }]
-}, {
-  id: 2,
-  title: 'Imunisasi Dasar Bayi',
-  description: 'Seberapa jauh Anda tahu tentang jadwal imunisasi bayi?',
-  category: 'Imunisasi',
-  questions: [{
-    id: 1,
-    text: 'Imunisasi apa yang diberikan pertama kali saat bayi lahir?',
-    options: ['BCG saja', 'Polio saja', 'HB-0, BCG, dan Polio 0', 'DPT-HB-Hib'],
-    correct: 2,
-    explanation: 'Segera setelah lahir, bayi mendapat HB-0 (Hepatitis B), BCG (TBC), dan Polio 0.'
-  }, {
-    id: 2,
-    text: 'Pada usia berapa imunisasi Campak-Rubella pertama diberikan?',
-    options: ['6 bulan', '9 bulan', '12 bulan', '18 bulan'],
-    correct: 1,
-    explanation: 'Imunisasi Campak-Rubella (MR) pertama diberikan pada usia 9 bulan.'
-  }, {
-    id: 3,
-    text: 'Imunisasi DPT melindungi anak dari penyakit...',
-    options: ['Difteri, Polio, Tetanus', 'Difteri, Pertusis, Tetanus', 'Dengue, Pneumo, Typhoid', 'Difteri, Polio, Tifoid'],
-    correct: 1,
-    explanation: 'DPT adalah singkatan dari Difteri, Pertusis (batuk rejan), dan Tetanus.'
-  }]
-}];
 function QuizCard({
   quiz,
   onStart
@@ -201,6 +152,7 @@ function QuizCard({
         </div>;
 }
 export default function QuizPage() {
+  const [quizzes, setQuizzes] = useState([]);
   const [activeQuiz, setActiveQuiz] = useState(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -212,6 +164,32 @@ export default function QuizPage() {
   const [activeStage, setActiveStage] = useState('0-3');
   const [checkedMilestones, setCheckedMilestones] = useState({});
   const stage = PARENTING_DATA[activeStage];
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await api.get('/quiz')
+        const rows = Array.isArray(res?.data?.data) ? res.data.data : []
+        setQuizzes(rows.map((item) => ({
+          id: item.id,
+          title: item.judul,
+          description: item.deskripsi || '',
+          category: item.kategori || 'Umum',
+          questions: (item.pertanyaan || []).map((question) => ({
+            id: question.id,
+            text: question.teks,
+            options: Array.isArray(question.pilihan) ? question.pilihan : (question.pilihan || '').split('|').filter(Boolean),
+            correct: 0,
+            explanation: question.penjelasan || '',
+          })),
+        })))
+      } catch {
+        setQuizzes([])
+      }
+    }
+
+    load()
+  }, [])
   const toggleMilestone = idx => {
     const key = `${activeStage}-${idx}`;
     setCheckedMilestones(prev => ({
@@ -343,7 +321,7 @@ export default function QuizPage() {
                     </div>
                     <div className="container isx-quizpage-41">
                         <div className="grid-3">
-                            {QUIZZES.map(q => <QuizCard key={q.id} quiz={q} onStart={startQuiz} />)}
+                            {quizzes.map(q => <QuizCard key={q.id} quiz={q} onStart={startQuiz} />)}
                         </div>
                     </div>
                 </div> : finished ? <div className="isx-quizpage-42">

@@ -1,10 +1,12 @@
+import { useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { getInformasiUmumBySlug, informasiUmumItems } from './informasiUmumData'
 import '../../styles/pages/informasi-umum-detail.css'
 
 export default function InformasiUmumDetail() {
   const { slug } = useParams()
-  const item = getInformasiUmumBySlug(slug)
+
+  const item = useMemo(() => getInformasiUmumBySlug(slug), [slug])
 
   if (!item) return <Navigate to="/informasi-umum" replace />
 

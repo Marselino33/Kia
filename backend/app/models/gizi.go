@@ -1,39 +1,56 @@
 package models
 
-import "time"
+import (
+	"time"
 
-// ResepGizi merepresentasikan satu resep makanan bergizi.
-type ResepGizi struct {
-	ID           int64     `json:"id"`
-	Nama         string    `json:"nama"`
-	Slug         string    `json:"slug"`
-	Deskripsi    string    `json:"deskripsi"`
-	Kategori     string    `json:"kategori"`      // sarapan | makan_siang | makan_malam | camilan
-	UsiaKategori string    `json:"usia_kategori"` // ibu_hamil | bayi_0_6 | mpasi_6_24 | ibu_menyusui | balita_2_5
-	DurasiMenit  int       `json:"durasi_menit"`
-	Kalori       int       `json:"kalori"`
-	Nutrisi      []string  `json:"nutrisi"`
-	GambarURL    string    `json:"gambar_url"`
-	IsFavorit    bool      `json:"is_favorit"`
-	CreatedAt    time.Time `json:"created_at"`
+	"gorm.io/gorm"
+)
+
+// ResepGiziDB adalah versi database-backed dari Resep MPASI.
+type ResepGiziDB struct {
+	ID           int64          `json:"id" gorm:"primaryKey;autoIncrement"`
+	Nama         string         `json:"nama" gorm:"not null"`
+	Slug         string         `json:"slug" gorm:"uniqueIndex;not null"`
+	Deskripsi    string         `json:"deskripsi" gorm:"type:text"`
+	Kategori     string         `json:"kategori"`      // sarapan | makan_siang | makan_malam | camilan
+	UsiaKategori string         `json:"usia_kategori"` // ibu_hamil | bayi_0_6 | mpasi_6_24 | ibu_menyusui | balita_2_5
+	DurasiMenit  int            `json:"durasi_menit"`
+	Kalori       int            `json:"kalori"`
+	Nutrisi      string         `json:"nutrisi" gorm:"type:text"` // JSON array string
+	GambarURL    string         `json:"gambar_url"`
+	IsPublished  bool           `json:"is_published" gorm:"default:true"`
+	AdminID      string         `json:"admin_id" gorm:"column:admin_id;type:varchar(36);index"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
-// JadwalMakan merepresentasikan rencana makan pengguna.
-type JadwalMakan struct {
-	ID         int64      `json:"id"`
-	PenggunaID string     `json:"pengguna_id"`
-	ResepID    int64      `json:"resep_id"`
-	Resep      *ResepGizi `json:"resep,omitempty"`
-	Tanggal    string     `json:"tanggal"`
-	WaktuMakan string     `json:"waktu_makan"`
-	Catatan    string     `json:"catatan,omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
+func (ResepGiziDB) TableName() string { return "resep_gizi" }
+
+// CreateResepRequest adalah body request admin untuk POST /admin/resep-gizi.
+type CreateResepRequest struct {
+	Nama         string `json:"nama" validate:"required"`
+	Slug         string `json:"slug" validate:"required"`
+	Deskripsi    string `json:"deskripsi"`
+	Kategori     string `json:"kategori"`
+	UsiaKategori string `json:"usia_kategori"`
+	DurasiMenit  int    `json:"durasi_menit"`
+	Kalori       int    `json:"kalori"`
+	Nutrisi      string `json:"nutrisi"` // JSON array string
+	GambarURL    string `json:"gambar_url"`
+	IsPublished  *bool  `json:"is_published"`
 }
 
-// AddJadwalMakanRequest adalah body request untuk POST /gizi/jadwal.
-type AddJadwalMakanRequest struct {
-	ResepID    int64  `json:"resep_id" validate:"required"`
-	Tanggal    string `json:"tanggal" validate:"required"` // "YYYY-MM-DD"
-	WaktuMakan string `json:"waktu_makan" validate:"required"`
-	Catatan    string `json:"catatan,omitempty"`
+// UpdateResepRequest adalah body request admin untuk PUT /admin/resep-gizi/:id.
+type UpdateResepRequest struct {
+	Nama         string `json:"nama"`
+	Slug         string `json:"slug"`
+	Deskripsi    string `json:"deskripsi"`
+	Kategori     string `json:"kategori"`
+	UsiaKategori string `json:"usia_kategori"`
+	DurasiMenit  int    `json:"durasi_menit"`
+	Kalori       int    `json:"kalori"`
+	Nutrisi      string `json:"nutrisi"`
+	GambarURL    string `json:"gambar_url"`
+	IsPublished  *bool  `json:"is_published"`
 }

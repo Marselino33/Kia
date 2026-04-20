@@ -1,12 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronRight, AlertCircle, Pill, Smile, Users } from 'lucide-react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import api from '../../lib/api'
 import '../../styles/pages/mental-health.css'
 import { mentalContents } from './mentalContentData'
 
 export default function KesehatanMental() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const [contentItems, setContentItems] = useState(mentalContents)
 
   const saveLastMentalSlug = (slug) => {
     const safeSlug = slug || 'baby-blues'
@@ -20,11 +22,11 @@ export default function KesehatanMental() {
   const getMentalHref = (slug) => `/mental-health/${slug || 'baby-blues'}`
 
   const getLastMentalSlug = () => {
-    const fallback = mentalContents[0]?.slug || 'baby-blues'
+    const fallback = contentItems[0]?.slug || mentalContents[0]?.slug || 'baby-blues'
     try {
       const saved = localStorage.getItem('lastMentalContentSlug')
       if (!saved) return fallback
-      const exists = mentalContents.some((item) => item.slug === saved)
+      const exists = contentItems.some((item) => item.slug === saved)
       return exists ? saved : fallback
     } catch {
       return fallback
@@ -36,6 +38,33 @@ export default function KesehatanMental() {
       navigate('/mental-health-check', { replace: true })
     }
   }, [navigate, searchParams])
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await api.get('/mental-orang-tua')
+        const rows = Array.isArray(res?.data?.data) ? res.data.data : []
+        if (!rows.length) return
+        setContentItems(rows.map((item) => ({
+          slug: item.slug,
+          title: item.judul,
+          category: item.kategori || 'EDUKASI',
+          readTime: `${item.read_minutes || 5} menit baca`,
+          excerpt: item.ringkasan || item.isi || '',
+          image: item.gambar_url || 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop',
+          quote: item.ringkasan || item.judul,
+          intro: item.ringkasan || item.isi || '',
+          signs: [item.ringkasan || item.judul],
+          actions: ['Baca detail artikel'],
+          consultWhen: ['Jika perlu dukungan profesional'],
+        })))
+      } catch {
+        setContentItems(mentalContents)
+      }
+    }
+
+    load()
+  }, [])
 
   const mentalHealthConditions = [
     {
@@ -225,7 +254,7 @@ export default function KesehatanMental() {
           </div>
 
           <div className="mental-content-grid">
-            {mentalContents.map((item) => (
+            {contentItems.map((item) => (
               <a
                 key={item.slug}
                 className="mental-content-card"

@@ -29,7 +29,7 @@
 .isx-kesehattanibu-4 {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #f472b6;
+  color: #1565C0;
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -44,7 +44,7 @@
 }
 
 .isx-kesehattanibu-6 {
-  color: #f472b6;
+  color: #1565C0;
 }
 
 .isx-kesehattanibu-7 {
@@ -168,7 +168,7 @@
 .isx-kesehattanibu-24 {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #f472b6;
+  color: #1565C0;
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -212,7 +212,7 @@
 }
 .isx-kesehattanibu-29--on {
   background: #fce7f3;
-  border: 2px solid #f472b6;
+  border: 2px solid #1565C0;
 }
 .isx-kesehattanibu-29--off {
   background: #f9fafb;
@@ -220,7 +220,7 @@
 }
 
 .isx-kesehattanibu-30 {
-  accent-color: #f472b6;
+  accent-color: #1565C0;
   cursor: pointer;
   width: 20px;
   height: 20px;
@@ -234,7 +234,7 @@
 .isx-kesehattanibu-32 {
   width: 100%;
   margin-top: 1.5rem;
-  background: #f472b6;
+  background: #1565C0;
   color: #fff;
   border: none;
   padding: 1rem;

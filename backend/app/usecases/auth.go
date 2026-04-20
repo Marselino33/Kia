@@ -37,17 +37,17 @@ func NewAuthUseCase(penggunaRepo *repositories.PenggunaRepository, jwtSecret str
 
 // Register mendaftarkan pengguna baru dan mengembalikan token pair.
 func (u *AuthUseCase) Register(req models.RegisterRequest) (*models.AuthResponse, error) {
-	// Cek nomor HP sudah terdaftar
-	existing, err := u.penggunaRepo.FindByNoHP(req.NoHP)
+	// Cek email sudah terdaftar
+	existing, err := u.penggunaRepo.FindByEmail(req.Email)
 	if existing != nil {
-		return nil, errors.New("nomor HP sudah terdaftar")
+		return nil, errors.New("email sudah terdaftar")
 	}
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 
-	// Hash PIN dengan bcrypt
-	pinHash, err := bcrypt.GenerateFromPassword([]byte(req.PIN), bcrypt.DefaultCost)
+	// Hash password dengan bcrypt
+	pinHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +59,8 @@ func (u *AuthUseCase) Register(req models.RegisterRequest) (*models.AuthResponse
 
 	pengguna := &models.Pengguna{
 		Nama:    req.Nama,
-		NoHP:    req.NoHP,
-		PinHash: string(pinHash),
+		Email:   req.Email,
+		PasswordHash: string(pinHash),
 		Role:    req.Role,
 		Desa:    desa,
 	}
@@ -72,15 +72,15 @@ func (u *AuthUseCase) Register(req models.RegisterRequest) (*models.AuthResponse
 	return u.buildAuthResponse(pengguna)
 }
 
-// Login memvalidasi nomor HP + PIN dan mengembalikan token pair.
+// Login memvalidasi email + password dan mengembalikan token pair.
 func (u *AuthUseCase) Login(req models.LoginRequest) (*models.AuthResponse, error) {
-	pengguna, err := u.penggunaRepo.FindByNoHP(req.NoHP)
+	pengguna, err := u.penggunaRepo.FindByEmail(req.Email)
 	if err != nil {
-		return nil, errors.New("nomor HP atau PIN salah")
+		return nil, errors.New("email atau password salah")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(pengguna.PinHash), []byte(req.PIN)); err != nil {
-		return nil, errors.New("nomor HP atau PIN salah")
+	if err := bcrypt.CompareHashAndPassword([]byte(pengguna.PasswordHash), []byte(req.Password)); err != nil {
+		return nil, errors.New("email atau password salah")
 	}
 
 	return u.buildAuthResponse(pengguna)
@@ -138,11 +138,11 @@ func (u *AuthUseCase) buildAuthResponse(pengguna *models.Pengguna) (*models.Auth
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		Pengguna: models.PenggunaPublic{
-			ID:   pengguna.ID,
-			Nama: pengguna.Nama,
-			Role: pengguna.Role,
-			NoHP: pengguna.NoHP,
-			Desa: pengguna.Desa,
+			ID:    pengguna.ID,
+			Nama:  pengguna.Nama,
+			Role:  pengguna.Role,
+			Email: pengguna.Email,
+			Desa:  pengguna.Desa,
 		},
 	}, nil
 }

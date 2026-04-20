@@ -56,7 +56,6 @@
   margin-bottom: 16px;
 }
 
-.stimulus-detail-hero-card,
 .stimulus-detail-section,
 .stimulus-detail-sidebar-card {
   background: #ffffff;
@@ -65,85 +64,20 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
-.stimulus-detail-hero-card {
-  overflow: hidden;
+.stimulus-detail-intro-card {
+  padding: 22px 24px;
+  margin-top: 22px;
 }
 
-.stimulus-detail-hero-media {
-  position: relative;
-  min-height: 420px;
-  background: #e2e8f0;
+.stimulus-detail-video-priority {
+  margin-top: 22px;
 }
 
-.stimulus-detail-hero-image {
-  width: 100%;
-  height: 100%;
-  min-height: 420px;
-  object-fit: cover;
-  display: block;
-}
-
-.stimulus-detail-hero-overlay {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 22px 24px 20px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.74));
-  color: #fff;
-}
-
-.stimulus-detail-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
-}
-
-.stimulus-detail-title {
+.stimulus-detail-intro-text {
   margin: 0;
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
-  line-height: 1.1;
-  max-width: 760px;
-}
-
-.stimulus-detail-subtitle {
-  margin: 10px 0 0;
-  max-width: 720px;
+  color: #475569;
+  line-height: 1.7;
   font-size: 15px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.stimulus-detail-play-btn {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.stimulus-detail-play-btn::before {
-  content: '';
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #0ea5e9;
-  box-shadow: 0 18px 45px rgba(14, 165, 233, 0.35);
-  position: absolute;
-}
-
-.stimulus-detail-play-btn svg {
-  position: relative;
-  margin-left: 4px;
 }
 
 .stimulus-detail-section {
@@ -208,6 +142,45 @@
   font-size: 14px;
 }
 
+.stimulus-detail-video-toggle {
+  border: 1px solid #c7e4ff;
+  background: #f0f9ff;
+  color: #0f5fbf;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.stimulus-detail-video-embed-wrap {
+  position: relative;
+  margin-top: 14px;
+  padding-top: 56.25%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #0f172a;
+}
+
+.stimulus-detail-video-embed-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.stimulus-detail-video-note {
+  margin-top: 12px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.stimulus-detail-video-embed-top {
+  margin-top: 6px;
+}
+
 .stimulus-detail-gear-section {
   background: linear-gradient(180deg, #f8fbff, #ffffff);
 }
@@ -230,6 +203,28 @@
   gap: 10px;
   color: #0f172a;
   font-weight: 700;
+}
+
+.stimulus-detail-gear-card div,
+.stimulus-detail-benefit-card div {
+  min-width: 0;
+}
+
+.stimulus-detail-gear-card strong,
+.stimulus-detail-benefit-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stimulus-detail-gear-card p,
+.stimulus-detail-benefit-card p {
+  margin: 2px 0 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
 }
 
 .stimulus-detail-gear-card svg,

@@ -6,17 +6,17 @@ package models
 
 // LoginRequest adalah body request untuk endpoint POST /auth/login.
 type LoginRequest struct {
-	NoHP string `json:"no_hp" validate:"required"`
-	PIN  string `json:"pin" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 // RegisterRequest adalah body request untuk endpoint POST /auth/register.
 type RegisterRequest struct {
-	Nama string `json:"nama" validate:"required"`
-	NoHP string `json:"no_hp" validate:"required"`
-	PIN  string `json:"pin" validate:"required"`
-	Role string `json:"role" validate:"required,oneof=ibu ayah kader"`
-	Desa string `json:"desa"`
+	Nama  string `json:"nama" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+	Role  string `json:"role" validate:"required,oneof=ibu ayah kader"`
+	Desa  string `json:"desa"`
 }
 
 // RefreshTokenRequest adalah body request untuk endpoint POST /auth/refresh.
@@ -52,20 +52,20 @@ type UpdateAnakRequest struct {
 
 // AdminCreatePenggunaRequest adalah body request admin untuk POST /admin/pengguna.
 type AdminCreatePenggunaRequest struct {
-	Nama string `json:"nama" validate:"required"`
-	NoHP string `json:"no_hp" validate:"required"`
-	PIN  string `json:"pin" validate:"required"`
-	Role string `json:"role" validate:"required"` // ibu | ayah | kader | admin
-	Desa string `json:"desa"`
+	Nama  string `json:"nama" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+	Role  string `json:"role" validate:"required"` // ibu | ayah | kader | admin
+	Desa  string `json:"desa"`
 }
 
 // AdminUpdatePenggunaRequest adalah body request admin untuk PUT /admin/pengguna/:id.
 type AdminUpdatePenggunaRequest struct {
-	Nama string `json:"nama"`
-	NoHP string `json:"no_hp"`
-	PIN  string `json:"pin"`
-	Role string `json:"role"`
-	Desa string `json:"desa"`
+	Nama  string `json:"nama"`
+	Email string `json:"email"`
+	Password string `json:"password"`
+	Role  string `json:"role"`
+	Desa  string `json:"desa"`
 }
 
 // ==============================

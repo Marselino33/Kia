@@ -3,10 +3,10 @@ import { Heart, Home, Utensils, BookOpen, Pill, ClipboardList, Settings, Users, 
 
 const NAV_ITEMS = [
   { id: 'dashboard', icon: Home, label: 'Beranda', path: '/admin', section: 'main' },
-  { id: 'nutrition', icon: Utensils, label: 'Gizi & Menu', path: '/admin/gizi', section: 'main' },
+  { id: 'nutrition', icon: Utensils, label: 'Gizi & Menu', path: '/admin/gizi-ibu', section: 'main' },
   { id: 'parenting', icon: BookOpen, label: 'Parenting & Kuis', path: '/admin/parenting', section: 'main' },
-  { id: 'health', icon: Pill, label: 'Kesehatan Ibu', path: '/admin/kesehatan-ibu', section: 'main' },
-  { id: 'phbs', icon: ClipboardList, label: 'PHBS', path: '/admin/phbs', section: 'main' },
+  { id: 'health', icon: Pill, label: 'Mental Orang Tua', path: '/admin/mental-orang-tua', section: 'main' },
+  { id: 'informasi-umum', icon: ClipboardList, label: 'Informasi Umum', path: '/admin/informasi-umum', section: 'main' },
   { divider: true, section: 'main' },
   { id: 'users', icon: Users, label: 'Manajemen Pengguna', path: '/admin/pengguna', section: 'management' },
   { id: 'settings', icon: Settings, label: 'Pengaturan', path: '#', section: 'management' },

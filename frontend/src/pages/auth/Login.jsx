@@ -144,27 +144,31 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="isx-login-24">
-          <div className="divider" />
-          <span>Atau masuk dengan</span>
-          <div className="divider" />
-        </div>
+        {loginRole === 'user' && (
+          <>
+            <div className="isx-login-24">
+              <div className="divider" />
+              <span>Atau masuk dengan</span>
+              <div className="divider" />
+            </div>
 
-        <div className="isx-login-25">
-          <button type="button" className="btn btn-secondary isx-login-26" onClick={() => handleSocialLogin('Google')}>
-            <Globe size={16} /> Google
-          </button>
-          <button type="button" className="btn btn-secondary isx-login-27" onClick={() => handleSocialLogin('Facebook')}>
-            <Facebook size={16} /> Facebook
-          </button>
-        </div>
+            <div className="isx-login-25">
+              <button type="button" className="btn btn-secondary isx-login-26" onClick={() => handleSocialLogin('Google')}>
+                <Globe size={16} /> Google
+              </button>
+              <button type="button" className="btn btn-secondary isx-login-27" onClick={() => handleSocialLogin('Facebook')}>
+                <Facebook size={16} /> Facebook
+              </button>
+            </div>
 
-        <p className="isx-login-28">
-          Belum punya akun?{' '}
-          <Link to="/daftar" className="isx-login-29">
-            Daftar Sekarang
-          </Link>
-        </p>
+            <p className="isx-login-28">
+              Belum punya akun?{' '}
+              <Link to="/daftar" className="isx-login-29">
+                Daftar Sekarang
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </div>;
 }

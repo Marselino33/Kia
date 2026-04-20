@@ -3,10 +3,13 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"sejiwa-backend/app/helpers"
+	"sejiwa-backend/app/middleware"
 	"sejiwa-backend/app/models"
+	"sejiwa-backend/app/repositories"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -15,11 +18,13 @@ import (
 
 // AdminController menangani semua endpoint CRUD untuk admin panel SEJIWA.
 type AdminController struct {
-	db *gorm.DB
+	db       *gorm.DB
+	quizRepo *repositories.QuizRepository
+	kontenV2 *repositories.KontenV2Repository
 }
 
-func NewAdminController(db *gorm.DB) *AdminController {
-	return &AdminController{db: db}
+func NewAdminController(db *gorm.DB, quizRepo *repositories.QuizRepository, kontenV2 *repositories.KontenV2Repository) *AdminController {
+	return &AdminController{db: db, quizRepo: quizRepo, kontenV2: kontenV2}
 }
 
 // adminBcryptHash menghasilkan bcrypt hash dari string plain.
@@ -46,9 +51,20 @@ func (h *AdminController) Dashboard(c echo.Context) error {
 	var totalPengguna, totalAnak, totalContent, totalResep, totalQuiz int64
 	h.db.Model(&models.Pengguna{}).Count(&totalPengguna)
 	h.db.Model(&models.Anak{}).Count(&totalAnak)
-	h.db.Model(&models.Content{}).Count(&totalContent)
 	h.db.Model(&models.ResepGiziDB{}).Count(&totalResep)
 	h.db.Model(&models.Quiz{}).Count(&totalQuiz)
+
+	featureTables := []string{"stimulus_anak", "informasi_umum", "gizi_ibu", "gizi_anak", "mpasi", "mental_orang_tua", "contents"}
+	for _, table := range featureTables {
+		var count int64
+		if err := h.db.Table(table).Model(&models.Content{}).Count(&count).Error; err != nil {
+			if isMissingTableError(err) {
+				continue
+			}
+			continue
+		}
+		totalContent += count
+	}
 
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", map[string]interface{}{
 		"total_pengguna": totalPengguna,
@@ -85,13 +101,13 @@ func (h *AdminController) CreatePengguna(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid: "+err.Error(), nil, nil)
 	}
-	if req.Nama == "" || req.NoHP == "" || req.PIN == "" || req.Role == "" {
-		return helpers.StandardResponse(c, http.StatusBadRequest, "nama, no_hp, pin, dan role wajib diisi", nil, nil)
+	if req.Nama == "" || req.Email == "" || req.Password == "" || req.Role == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "nama, email, password, dan role wajib diisi", nil, nil)
 	}
 
-	hash, err := adminBcryptHash(req.PIN)
+	hash, err := adminBcryptHash(req.Password)
 	if err != nil {
-		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal hash PIN", nil, nil)
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal hash password", nil, nil)
 	}
 
 	desa := req.Desa
@@ -99,11 +115,11 @@ func (h *AdminController) CreatePengguna(c echo.Context) error {
 		desa = "Hutabulu Mejan"
 	}
 	p := models.Pengguna{
-		Nama:    req.Nama,
-		NoHP:    req.NoHP,
-		PinHash: hash,
-		Role:    req.Role,
-		Desa:    desa,
+		Nama:         req.Nama,
+		Email:        req.Email,
+		PasswordHash: hash,
+		Role:         req.Role,
+		Desa:         desa,
 	}
 	if err := h.db.Create(&p).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "gagal membuat pengguna: "+err.Error(), nil, nil)
@@ -126,8 +142,8 @@ func (h *AdminController) UpdatePengguna(c echo.Context) error {
 	if req.Nama != "" {
 		p.Nama = req.Nama
 	}
-	if req.NoHP != "" {
-		p.NoHP = req.NoHP
+	if req.Email != "" {
+		p.Email = req.Email
 	}
 	if req.Role != "" {
 		p.Role = req.Role
@@ -135,12 +151,12 @@ func (h *AdminController) UpdatePengguna(c echo.Context) error {
 	if req.Desa != "" {
 		p.Desa = req.Desa
 	}
-	if req.PIN != "" {
-		hash, err := adminBcryptHash(req.PIN)
+	if req.Password != "" {
+		hash, err := adminBcryptHash(req.Password)
 		if err != nil {
-			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal hash PIN", nil, nil)
+			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal hash password", nil, nil)
 		}
-		p.PinHash = hash
+		p.PasswordHash = hash
 	}
 
 	if err := h.db.Save(&p).Error; err != nil {
@@ -253,8 +269,6 @@ func (h *AdminController) DeleteAnak(c echo.Context) error {
 // ============================================================
 
 func (h *AdminController) ListContent(c echo.Context) error {
-	var list []models.Content
-
 	// Parsing Pagination Params
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	if page < 1 {
@@ -266,13 +280,58 @@ func (h *AdminController) ListContent(c echo.Context) error {
 	}
 	offset := (page - 1) * limit
 
-	// Support category filtering & search
+	feature := c.QueryParam("feature")
+	tableName := tableNameForFeature(feature)
 	kategori := c.QueryParam("kategori")
 	search := c.QueryParam("search")
 
-	query := h.db.Model(&models.Content{})
+	if tableName == "" {
+		all, err := queryAllContents(h.db, false)
+		if err != nil {
+			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data konten", nil, nil)
+		}
+		filtered := all
+		if kategori != "" {
+			filtered = make([]models.Content, 0)
+			for _, item := range all {
+				if strings.EqualFold(item.Kategori, kategori) {
+					filtered = append(filtered, item)
+				}
+			}
+		}
+		if search != "" {
+			term := strings.ToLower(search)
+			searched := make([]models.Content, 0)
+			for _, item := range filtered {
+				if strings.Contains(strings.ToLower(item.Judul), term) {
+					searched = append(searched, item)
+				}
+			}
+			filtered = searched
+		}
+		total := len(filtered)
+		start := offset
+		if start > total {
+			start = total
+		}
+		end := start + limit
+		if end > total {
+			end = total
+		}
+		list := filtered[start:end]
+		pagination := &models.Pagination{
+			Page:      page,
+			PageSize:  limit,
+			Total:     total,
+			TotalPage: (total + limit - 1) / limit,
+		}
+		return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, pagination)
+	}
+
+	var list []models.Content
+	query := h.db.Table(tableName).Model(&models.Content{})
 	if kategori != "" {
-		query = query.Where("kategori = ?", kategori)
+		query = query.Where("LOWER(kategori) = LOWER(?)", kategori)
 	}
 	if search != "" {
 		query = query.Where("judul ILIKE ?", "%"+search+"%")
@@ -281,35 +340,47 @@ func (h *AdminController) ListContent(c echo.Context) error {
 	var total int64
 	query.Count(&total)
 
-	if err := query.Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data konten", nil, nil)
 	}
-	pagination := &models.Pagination{
-		Page:      page,
-		PageSize:  limit,
-		Total:     int(total),
-		TotalPage: (int(total) + limit - 1) / limit,
-	}
+	pagination := &models.Pagination{Page: page, PageSize: limit, Total: int(total), TotalPage: (int(total) + limit - 1) / limit}
 
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, pagination)
 }
 
 func (h *AdminController) GetContent(c echo.Context) error {
 	id := c.Param("id")
+	feature := c.QueryParam("feature")
+	tableName := tableNameForFeature(feature)
+
 	var ct models.Content
-	if err := h.db.First(&ct, "id = ?", id).Error; err != nil {
+	query := h.db.Model(&models.Content{})
+	if tableName != "" {
+		query = h.db.Table(tableName).Model(&models.Content{})
+	}
+	if err := query.First(&ct, "id = ?", id).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusNotFound, "konten tidak ditemukan", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", ct, nil)
 }
 
 func (h *AdminController) CreateContent(c echo.Context) error {
+	feature := c.QueryParam("feature")
+	tableName := tableNameForFeature(feature)
+	if tableName == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "feature konten tidak valid", nil, nil)
+	}
+
 	var req models.CreateContentRequest
 	if err := c.Bind(&req); err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid: "+err.Error(), nil, nil)
 	}
 	if req.Slug == "" || req.Judul == "" {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "slug dan judul wajib diisi", nil, nil)
+	}
+	adminID := middleware.GetPenggunaID(c)
+	if adminID == "" {
+		adminID = c.Request().Header.Get("X-Admin-ID")
 	}
 
 	isPublished := true
@@ -322,6 +393,7 @@ func (h *AdminController) CreateContent(c echo.Context) error {
 	}
 
 	ct := models.Content{
+		AdminID:     adminID,
 		Slug:        req.Slug,
 		Judul:       req.Judul,
 		Ringkasan:   req.Ringkasan,
@@ -333,7 +405,8 @@ func (h *AdminController) CreateContent(c echo.Context) error {
 		ReadMinutes: readMinutes,
 		IsPublished: isPublished,
 	}
-	if err := h.db.Create(&ct).Error; err != nil {
+
+	if err := h.db.Table(tableName).Create(&ct).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "gagal membuat konten: "+err.Error(), nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusCreated, "konten berhasil dibuat", ct, nil)
@@ -341,8 +414,14 @@ func (h *AdminController) CreateContent(c echo.Context) error {
 
 func (h *AdminController) UpdateContent(c echo.Context) error {
 	id := c.Param("id")
+	feature := c.QueryParam("feature")
+	tableName := tableNameForFeature(feature)
+	if tableName == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "feature konten tidak valid", nil, nil)
+	}
+
 	var ct models.Content
-	if err := h.db.First(&ct, "id = ?", id).Error; err != nil {
+	if err := h.db.Table(tableName).First(&ct, "id = ?", id).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusNotFound, "konten tidak ditemukan", nil, nil)
 	}
 	var req models.UpdateContentRequest
@@ -379,7 +458,20 @@ func (h *AdminController) UpdateContent(c echo.Context) error {
 	if req.IsPublished != nil {
 		ct.IsPublished = *req.IsPublished
 	}
-	if err := h.db.Save(&ct).Error; err != nil {
+
+	err := h.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Table(tableName).Save(&ct).Error; err != nil {
+			return err
+		}
+		if h.kontenV2 != nil {
+			if err := h.kontenV2.UpsertFromLegacy(tx, feature, ct); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal memperbarui konten", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "konten diperbarui", ct, nil)
@@ -387,7 +479,25 @@ func (h *AdminController) UpdateContent(c echo.Context) error {
 
 func (h *AdminController) DeleteContent(c echo.Context) error {
 	id := c.Param("id")
-	if err := h.db.Delete(&models.Content{}, "id = ?", id).Error; err != nil {
+	feature := c.QueryParam("feature")
+	tableName := tableNameForFeature(feature)
+	if tableName == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "feature konten tidak valid", nil, nil)
+	}
+
+	err := h.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Table(tableName).Delete(&models.Content{}, "id = ?", id).Error; err != nil {
+			return err
+		}
+		if h.kontenV2 != nil {
+			if err := h.kontenV2.DeleteByID(tx, id); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal menghapus konten", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "konten dihapus", nil, nil)
@@ -515,8 +625,16 @@ func (h *AdminController) DeleteResep(c echo.Context) error {
 // ============================================================
 
 func (h *AdminController) ListQuiz(c echo.Context) error {
+	if h.quizRepo != nil {
+		list, err := h.quizRepo.ListWithQuestions()
+		if err != nil {
+			return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data quiz", nil, nil)
+		}
+		return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, nil)
+	}
+
 	var list []models.Quiz
-	if err := h.db.Preload("Pertanyaan").Find(&list).Error; err != nil {
+	if err := h.db.Preload("Pertanyaan.Options").Find(&list).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data quiz", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, nil)
@@ -524,8 +642,16 @@ func (h *AdminController) ListQuiz(c echo.Context) error {
 
 func (h *AdminController) GetQuiz(c echo.Context) error {
 	id := c.Param("id")
+	if h.quizRepo != nil {
+		q, err := h.quizRepo.FindWithQuestions(id)
+		if err != nil {
+			return helpers.StandardResponse(c, http.StatusNotFound, "quiz tidak ditemukan", nil, nil)
+		}
+		return helpers.StandardResponse(c, http.StatusOK, "berhasil", q, nil)
+	}
+
 	var q models.Quiz
-	if err := h.db.Preload("Pertanyaan").First(&q, "id = ?", id).Error; err != nil {
+	if err := h.db.Preload("Pertanyaan.Options").First(&q, "id = ?", id).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusNotFound, "quiz tidak ditemukan", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", q, nil)
@@ -562,9 +688,14 @@ func (h *AdminController) CreateQuiz(c echo.Context) error {
 			Penjelasan:   pReq.Penjelasan,
 			Urutan:       pReq.Urutan,
 		}
-		h.db.Create(&pt)
+		if err := h.db.Create(&pt).Error; err != nil {
+			return helpers.StandardResponse(c, http.StatusBadRequest, "gagal membuat pertanyaan: "+err.Error(), nil, nil)
+		}
+		if h.quizRepo != nil {
+			_ = h.quizRepo.SaveQuestionOptions(pt.ID, pReq.Pilihan, pReq.JawabanBenar, pReq.Urutan)
+		}
 	}
-	h.db.Preload("Pertanyaan").First(&q, "id = ?", q.ID)
+	h.db.Preload("Pertanyaan.Options").First(&q, "id = ?", q.ID)
 	return helpers.StandardResponse(c, http.StatusCreated, "quiz berhasil dibuat", q, nil)
 }
 
@@ -627,6 +758,9 @@ func (h *AdminController) CreateQuestion(c echo.Context) error {
 	if err := h.db.Create(&pt).Error; err != nil {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "gagal membuat pertanyaan: "+err.Error(), nil, nil)
 	}
+	if h.quizRepo != nil {
+		_ = h.quizRepo.SaveQuestionOptions(pt.ID, req.Pilihan, req.JawabanBenar, req.Urutan)
+	}
 	return helpers.StandardResponse(c, http.StatusCreated, "pertanyaan berhasil dibuat", pt, nil)
 }
 
@@ -636,4 +770,185 @@ func (h *AdminController) DeleteQuestion(c echo.Context) error {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal menghapus pertanyaan", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "pertanyaan dihapus", nil, nil)
+}
+
+// ============================================================
+// POLA ASUH (tabel khusus pola_asuh)
+// ============================================================
+
+func (h *AdminController) ListPolaAsuh(c echo.Context) error {
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+	search := c.QueryParam("search")
+	phase := c.QueryParam("phase")
+	status := c.QueryParam("status")
+
+	var list []models.PolaAsuh
+	query := h.db.Model(&models.PolaAsuh{})
+	if search != "" {
+		query = query.Where("judul ILIKE ?", "%"+search+"%")
+	}
+	if phase != "" && phase != "all" {
+		query = query.Where("phase = ?", phase)
+	}
+	if status != "" && status != "all" {
+		isPublished := status == "published"
+		query = query.Where("is_published = ?", isPublished)
+	}
+
+	var total int64
+	query.Count(&total)
+
+	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data", nil, nil)
+	}
+
+	pagination := &models.Pagination{
+		Page:      page,
+		PageSize:  limit,
+		Total:     int(total),
+		TotalPage: (int(total) + limit - 1) / limit,
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, pagination)
+}
+
+func (h *AdminController) CreatePolaAsuh(c echo.Context) error {
+	var req struct {
+		Slug           string `json:"slug"`
+		Judul          string `json:"judul"`
+		Ringkasan      string `json:"ringkasan"`
+		Isi            string `json:"isi"`
+		Kategori       string `json:"kategori"`
+		Phase          string `json:"phase"`
+		LangkahPraktis string `json:"langkah_praktis"`
+		GambarURL      string `json:"gambar_url"`
+		ReadMinutes    int    `json:"read_minutes"`
+		IsPublished    *bool  `json:"is_published"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid", nil, nil)
+	}
+	if req.Judul == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "judul wajib diisi", nil, nil)
+	}
+	if req.Slug == "" {
+		req.Slug = strings.ToLower(strings.ReplaceAll(req.Judul, " ", "-"))
+	}
+
+	adminID := middleware.GetPenggunaID(c)
+	if adminID == "" {
+		adminID = c.Request().Header.Get("X-Admin-ID")
+	}
+
+	isPublished := true
+	if req.IsPublished != nil {
+		isPublished = *req.IsPublished
+	}
+	readMinutes := req.ReadMinutes
+	if readMinutes == 0 {
+		readMinutes = 5
+	}
+
+	p := models.PolaAsuh{
+		AdminID:        adminID,
+		Slug:           req.Slug,
+		Judul:          req.Judul,
+		Ringkasan:      req.Ringkasan,
+		Isi:            req.Isi,
+		Kategori:       req.Kategori,
+		Phase:          req.Phase,
+		LangkahPraktis: req.LangkahPraktis,
+		GambarURL:      req.GambarURL,
+		ReadMinutes:    readMinutes,
+		IsPublished:    isPublished,
+	}
+
+	if err := h.db.Create(&p).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "gagal membuat konten: "+err.Error(), nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusCreated, "konten berhasil dibuat", p, nil)
+}
+
+func (h *AdminController) GetPolaAsuh(c echo.Context) error {
+	id := c.Param("id")
+	var p models.PolaAsuh
+	if err := h.db.First(&p, "id = ?", id).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusNotFound, "konten tidak ditemukan", nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", p, nil)
+}
+
+func (h *AdminController) UpdatePolaAsuh(c echo.Context) error {
+	id := c.Param("id")
+	var p models.PolaAsuh
+	if err := h.db.First(&p, "id = ?", id).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusNotFound, "konten tidak ditemukan", nil, nil)
+	}
+
+	var req struct {
+		Slug           string `json:"slug"`
+		Judul          string `json:"judul"`
+		Ringkasan      string `json:"ringkasan"`
+		Isi            string `json:"isi"`
+		Kategori       string `json:"kategori"`
+		Phase          string `json:"phase"`
+		LangkahPraktis string `json:"langkah_praktis"`
+		GambarURL      string `json:"gambar_url"`
+		ReadMinutes    int    `json:"read_minutes"`
+		IsPublished    *bool  `json:"is_published"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid", nil, nil)
+	}
+
+	if req.Slug != "" {
+		p.Slug = req.Slug
+	}
+	if req.Judul != "" {
+		p.Judul = req.Judul
+	}
+	if req.Ringkasan != "" {
+		p.Ringkasan = req.Ringkasan
+	}
+	if req.Isi != "" {
+		p.Isi = req.Isi
+	}
+	if req.Kategori != "" {
+		p.Kategori = req.Kategori
+	}
+	if req.Phase != "" {
+		p.Phase = req.Phase
+	}
+	if req.LangkahPraktis != "" {
+		p.LangkahPraktis = req.LangkahPraktis
+	}
+	if req.GambarURL != "" {
+		p.GambarURL = req.GambarURL
+	}
+	if req.ReadMinutes > 0 {
+		p.ReadMinutes = req.ReadMinutes
+	}
+	if req.IsPublished != nil {
+		p.IsPublished = *req.IsPublished
+	}
+
+	if err := h.db.Save(&p).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal memperbarui konten", nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "konten berhasil diperbarui", p, nil)
+}
+
+func (h *AdminController) DeletePolaAsuh(c echo.Context) error {
+	id := c.Param("id")
+	if err := h.db.Delete(&models.PolaAsuh{}, "id = ?", id).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal menghapus konten", nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "konten dihapus", nil, nil)
 }

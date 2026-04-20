@@ -1,11 +1,47 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import api from '../../lib/api'
 import { getMentalContentBySlug, mentalContents } from './mentalContentData'
 import '../../styles/pages/mental-health-detail.css'
 
 export default function MentalContentDetail() {
   const { slug } = useParams()
-  const item = getMentalContentBySlug(slug)
+  const [apiItem, setApiItem] = useState(null)
+  const [relatedItems, setRelatedItems] = useState([])
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [detailRes, listRes] = await Promise.all([
+          api.get(`/mental-orang-tua/${slug}`),
+          api.get('/mental-orang-tua'),
+        ])
+        const detail = detailRes?.data?.data
+        if (detail) {
+          setApiItem({
+            slug: detail.slug,
+            title: detail.judul,
+            category: detail.kategori || 'EDUKASI',
+            readTime: `${detail.read_minutes || 5} menit baca`,
+            image: detail.gambar_url || mentalContents[0]?.image,
+            quote: detail.ringkasan || detail.judul,
+            intro: detail.ringkasan || detail.isi || '',
+            signs: (detail.isi || '').split('\n').filter(Boolean).slice(0, 4),
+            actions: ['Baca detail artikel'],
+            consultWhen: ['Jika perlu dukungan profesional'],
+          })
+        }
+        const rows = Array.isArray(listRes?.data?.data) ? listRes.data.data : []
+        setRelatedItems(rows.filter((entry) => entry.slug !== slug).slice(0, 4))
+      } catch {
+        setApiItem(null)
+      }
+    }
+
+    load()
+  }, [slug])
+
+  const item = useMemo(() => apiItem || getMentalContentBySlug(slug), [apiItem, slug])
 
   useEffect(() => {
     if (!item) return
@@ -18,7 +54,15 @@ export default function MentalContentDetail() {
 
   if (!item) return <Navigate to="/mental-health" replace />
 
-  const related = mentalContents.filter((entry) => entry.slug !== item.slug)
+  const related = relatedItems.length
+    ? relatedItems.map((entry) => ({
+        slug: entry.slug,
+        category: entry.kategori || 'EDUKASI',
+        title: entry.judul,
+        readTime: `${entry.read_minutes || 5} menit baca`,
+        image: entry.gambar_url || mentalContents[0]?.image,
+      }))
+    : mentalContents.filter((entry) => entry.slug !== item.slug)
 
   return (
     <main className="mental-detail-page">

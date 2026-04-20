@@ -10,6 +10,7 @@ import (
 	"sejiwa-backend/app/helpers"
 	"sejiwa-backend/app/middleware"
 	"sejiwa-backend/app/models"
+	"sejiwa-backend/app/repositories"
 	"sejiwa-backend/app/usecases"
 
 	"github.com/labstack/echo/v4"
@@ -20,17 +21,18 @@ import (
 type MasterController struct {
 	masterUC *usecases.MasterContentUseCase
 	db       *gorm.DB
+	quizRepo *repositories.QuizRepository
 }
 
-func NewMasterController(masterUC *usecases.MasterContentUseCase, db *gorm.DB) *MasterController {
-	return &MasterController{masterUC: masterUC, db: db}
+func NewMasterController(masterUC *usecases.MasterContentUseCase, db *gorm.DB, quizRepo *repositories.QuizRepository) *MasterController {
+	return &MasterController{masterUC: masterUC, db: db, quizRepo: quizRepo}
 }
 
 // GetContentBySlug returns a single article detail from database
 func (h *MasterController) GetContentBySlug(c echo.Context) error {
 	slug := c.Param("slug")
-	var content models.Content
-	if err := h.db.Where("slug = ? AND is_published = ?", slug, true).First(&content).Error; err != nil {
+	content, _, err := findContentBySlug(h.db, slug)
+	if err != nil || content == nil || !content.IsPublished {
 		return helpers.StandardResponse(c, http.StatusNotFound, "artikel tidak ditemukan", nil, nil)
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", content, nil)
@@ -256,29 +258,209 @@ func (h *MasterController) ListContent(c echo.Context) error {
 	kategori := c.QueryParam("kategori")
 	q := c.QueryParam("q")
 	limitStr := c.QueryParam("limit")
-
-	query := h.db.Model(&models.Content{}).Where("is_published = ?", true)
-
-	if phase != "" {
-		query = query.Where("phase = ?", phase)
-	}
-	if kategori != "" {
-		query = query.Where("LOWER(kategori) = LOWER(?)", kategori)
-	}
-	if q != "" {
-		query = query.Where("judul ILIKE ?", "%"+strings.ToLower(q)+"%")
-	}
-
+	limit := 0
 	if limitStr != "" {
-		if limit, err := strconv.Atoi(limitStr); err == nil && limit > 0 {
-			query = query.Limit(limit)
+		if parsed, err := strconv.Atoi(limitStr); err == nil && parsed > 0 {
+			limit = parsed
 		}
 	}
 
-	var list []models.Content
-	if err := query.Order("created_at DESC").Find(&list).Error; err != nil {
+	list, err := queryAllContents(h.db, true)
+	if err != nil {
 		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data konten", nil, nil)
 	}
 
+	filtered := list
+	if phase != "" {
+		filtered = make([]models.Content, 0)
+		for _, item := range list {
+			if strings.EqualFold(item.Phase, phase) {
+				filtered = append(filtered, item)
+			}
+		}
+	}
+	if kategori != "" {
+		categoryFiltered := make([]models.Content, 0)
+		for _, item := range filtered {
+			if strings.EqualFold(item.Kategori, kategori) {
+				categoryFiltered = append(categoryFiltered, item)
+			}
+		}
+		filtered = categoryFiltered
+	}
+	if q != "" {
+		term := strings.ToLower(q)
+		searched := make([]models.Content, 0)
+		for _, item := range filtered {
+			if strings.Contains(strings.ToLower(item.Judul), term) || strings.Contains(strings.ToLower(item.Ringkasan), term) {
+				searched = append(searched, item)
+			}
+		}
+		filtered = searched
+	}
+	if limit > 0 && len(filtered) > limit {
+		filtered = filtered[:limit]
+	}
+
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", filtered, nil)
+}
+
+// ─── Public feature-specific content endpoints ─────────────────────────────
+
+// ListFeatureContent returns published content from a specific feature table.
+func (h *MasterController) listFeatureContents(c echo.Context, tableName string) error {
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit < 1 {
+		limit = 20
+	}
+	offset := (page - 1) * limit
+
+	kategori := c.QueryParam("kategori")
+	phase := c.QueryParam("phase")
+	q := c.QueryParam("q")
+
+	var list []models.Content
+	query := h.db.Table(tableName).Model(&models.Content{}).Where("is_published = ?", true)
+	if kategori != "" {
+		query = query.Where("LOWER(kategori) = LOWER(?)", kategori)
+	}
+	if phase != "" {
+		query = query.Where("LOWER(phase) = LOWER(?)", phase)
+	}
+	if q != "" {
+		query = query.Where("judul ILIKE ?", "%"+q+"%")
+	}
+
+	var total int64
+	query.Count(&total)
+
+	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		if isMissingTableError(err) {
+			return helpers.StandardResponse(c, http.StatusOK, "berhasil", []models.Content{}, nil)
+		}
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data", nil, nil)
+	}
+
+	pagination := &models.Pagination{
+		Page:      page,
+		PageSize:  limit,
+		Total:     int(total),
+		TotalPage: (int(total) + limit - 1) / limit,
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, pagination)
+}
+
+func (h *MasterController) getFeatureContentBySlug(c echo.Context, tableName string) error {
+	slug := c.Param("slug")
+	var item models.Content
+	if err := h.db.Table(tableName).Model(&models.Content{}).Where("slug = ? AND is_published = ?", slug, true).First(&item).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusNotFound, "konten tidak ditemukan", nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", item, nil)
+}
+
+func (h *MasterController) ListParenting(c echo.Context) error {
+	return h.listFeatureContents(c, "stimulus_anak")
+}
+func (h *MasterController) GetParentingBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "stimulus_anak")
+}
+
+func (h *MasterController) GetPolaAsuhBySlug(c echo.Context) error {
+	slug := c.Param("slug")
+	var item models.PolaAsuh
+	if err := h.db.Where("slug = ? AND is_published = ?", slug, true).First(&item).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return helpers.StandardResponse(c, http.StatusNotFound, "artikel tidak ditemukan", nil, nil)
+		}
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data", nil, nil)
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", item, nil)
+}
+
+func (h *MasterController) ListPolaAsuh(c echo.Context) error {
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit < 1 {
+		limit = 20
+	}
+	offset := (page - 1) * limit
+
+	q := c.QueryParam("q")
+	phase := c.QueryParam("phase")
+
+	var list []models.PolaAsuh
+	query := h.db.Model(&models.PolaAsuh{}).Where("is_published = ?", true)
+	if phase != "" {
+		query = query.Where("LOWER(phase) = LOWER(?) OR LOWER(kategori) = LOWER(?)", phase, phase)
+	}
+	if q != "" {
+		query = query.Where("judul ILIKE ?", "%"+q+"%")
+	}
+
+	var total int64
+	query.Count(&total)
+
+	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&list).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data", nil, nil)
+	}
+
+	pagination := &models.Pagination{
+		Page:      page,
+		PageSize:  limit,
+		Total:     int(total),
+		TotalPage: (int(total) + limit - 1) / limit,
+	}
+	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, pagination)
+}
+
+func (h *MasterController) ListInformasiUmum(c echo.Context) error {
+	return h.listFeatureContents(c, "informasi_umum")
+}
+func (h *MasterController) GetInformasiUmumBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "informasi_umum")
+}
+func (h *MasterController) ListMentalOrangTua(c echo.Context) error {
+	return h.listFeatureContents(c, "mental_orang_tua")
+}
+func (h *MasterController) GetMentalOrangTuaBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "mental_orang_tua")
+}
+func (h *MasterController) ListGiziIbu(c echo.Context) error {
+	return h.listFeatureContents(c, "gizi_ibu")
+}
+func (h *MasterController) GetGiziIbuBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "gizi_ibu")
+}
+func (h *MasterController) ListGiziAnak(c echo.Context) error {
+	return h.listFeatureContents(c, "gizi_anak")
+}
+func (h *MasterController) GetGiziAnakBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "gizi_anak")
+}
+func (h *MasterController) ListMpasi(c echo.Context) error {
+	return h.listFeatureContents(c, "mpasi")
+}
+func (h *MasterController) GetMpasiBySlug(c echo.Context) error {
+	return h.getFeatureContentBySlug(c, "mpasi")
+}
+
+// ListPublicQuiz returns all published quizzes for users
+func (h *MasterController) ListPublicQuiz(c echo.Context) error {
+	var list []models.Quiz
+	query := h.db.Preload("Pertanyaan.Options").Where("is_published = ?", true)
+	if kategori := c.QueryParam("kategori"); kategori != "" {
+		query = query.Where("LOWER(kategori) = LOWER(?)", kategori)
+	}
+	if err := query.Order("created_at DESC").Find(&list).Error; err != nil {
+		return helpers.StandardResponse(c, http.StatusInternalServerError, "gagal mengambil data quiz", nil, nil)
+	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, nil)
 }

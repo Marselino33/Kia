@@ -252,6 +252,61 @@
   flex-wrap: wrap;
 }
 
+.parenting-quiz-review {
+  margin-top: 1.25rem;
+  text-align: left;
+  border-top: 1px solid #dbeafe;
+  padding-top: 1rem;
+}
+
+.parenting-quiz-review h3 {
+  margin: 0 0 0.8rem;
+  color: #1e3a8a;
+  font-size: 1rem;
+}
+
+.parenting-quiz-review-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.parenting-quiz-review-list li {
+  border-radius: 12px;
+  padding: 0.8rem;
+  border: 1px solid #dbeafe;
+  background: #f8fafc;
+}
+
+.parenting-quiz-review-list li.ok {
+  border-color: #67e8f9;
+  background: #ecfeff;
+}
+
+.parenting-quiz-review-list li.bad {
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+
+.parenting-quiz-review-list p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #0f172a;
+  line-height: 1.6;
+}
+
+.parenting-quiz-review-question {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.parenting-quiz-review-explanation {
+  margin-top: 0.3rem !important;
+  color: #334155;
+}
+
 .parenting-quiz-link {
   display: inline-block;
   margin-top: 0.8rem;
