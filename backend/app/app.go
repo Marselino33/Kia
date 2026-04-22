@@ -355,7 +355,11 @@ func (m *Main) Init() (err error) {
 	}
 
 	// Seed akun admin default
-	seed.SeedAdmin(m.db)
+	primaryAdmin := seed.SeedAdmin(m.db)
+	if primaryAdmin != nil {
+		seed.SeedFeatureContentDummies(m.db, primaryAdmin.ID)
+	}
+	seed.SeedQuizDummies(m.db)
 
 	m.repo = repositories.Init(repositories.Options{
 		Config:   m.cfg,

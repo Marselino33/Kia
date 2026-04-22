@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -49,29 +50,219 @@ func adminBcryptHash(plain string) (string, error) {
 // @Router       /admin/dashboard [get]
 func (h *AdminController) Dashboard(c echo.Context) error {
 	var totalPengguna, totalAnak, totalContent, totalResep, totalQuiz int64
+	var quizAttempts int64
 	h.db.Model(&models.Pengguna{}).Count(&totalPengguna)
 	h.db.Model(&models.Anak{}).Count(&totalAnak)
 	h.db.Model(&models.ResepGiziDB{}).Count(&totalResep)
 	h.db.Model(&models.Quiz{}).Count(&totalQuiz)
+	h.db.Model(&models.QuizAttempt{}).Count(&quizAttempts)
 
-	featureTables := []string{"stimulus_anak", "informasi_umum", "gizi_ibu", "gizi_anak", "mpasi", "mental_orang_tua", "contents"}
-	for _, table := range featureTables {
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	var penggunaBaruHariIni int64
+	h.db.Model(&models.Pengguna{}).Where("created_at >= ?", startOfDay).Count(&penggunaBaruHariIni)
+
+	type dashboardDistribution struct {
+		Label   string `json:"label"`
+		Value   int    `json:"value"`
+		Percent int    `json:"percent"`
+		Color   string `json:"color"`
+	}
+	type dashboardActivity struct {
+		Waktu        time.Time `json:"waktu"`
+		Admin        string    `json:"admin"`
+		Aksi         string    `json:"aksi"`
+		TargetKonten string    `json:"target_konten"`
+		Modul        string    `json:"modul"`
+		Status       string    `json:"status"`
+	}
+
+	groupDefinitions := []struct {
+		Label  string
+		Color  string
+		Tables []string
+	}{
+		{Label: "Gizi & Nutrisi", Color: "#2563eb", Tables: []string{"gizi_ibu", "gizi_anak", "mpasi"}},
+		{Label: "Parenting", Color: "#0f766e", Tables: []string{"stimulus_anak", "pola_asuh"}},
+		{Label: "Kesehatan Mental", Color: "#ea580c", Tables: []string{"mental_orang_tua"}},
+		{Label: "Informasi Umum", Color: "#8b5cf6", Tables: []string{"informasi_umum"}},
+	}
+
+	collectCount := func(tableName string) int64 {
 		var count int64
-		if err := h.db.Table(table).Model(&models.Content{}).Count(&count).Error; err != nil {
+		if err := h.db.Table(tableName).Count(&count).Error; err != nil {
 			if isMissingTableError(err) {
+				return 0
+			}
+			return 0
+		}
+		return count
+	}
+
+	type activityCandidate struct {
+		Waktu        time.Time
+		Admin        string
+		Aksi         string
+		TargetKonten string
+		Modul        string
+		Status       string
+	}
+
+	collectContentActivities := func(tableName, modul string, limit int) []activityCandidate {
+		var items []models.Content
+		query := h.db.Table(tableName).Preload("Admin").Order("updated_at DESC")
+		if err := query.Limit(limit).Find(&items).Error; err != nil {
+			if isMissingTableError(err) {
+				return nil
+			}
+			return nil
+		}
+		activities := make([]activityCandidate, 0, len(items))
+		for _, item := range items {
+			action := "UPDATE"
+			if item.UpdatedAt.Sub(item.CreatedAt) < time.Second {
+				if item.IsPublished {
+					action = "PUBLISH"
+				} else {
+					action = "DRAFT"
+				}
+			}
+			adminName := "System"
+			if item.Admin != nil && strings.TrimSpace(item.Admin.Nama) != "" {
+				adminName = item.Admin.Nama
+			}
+			status := "Draft"
+			if item.IsPublished {
+				status = "Terbit"
+			}
+			activities = append(activities, activityCandidate{
+				Waktu:        item.UpdatedAt,
+				Admin:        adminName,
+				Aksi:         action,
+				TargetKonten: item.Judul,
+				Modul:        modul,
+				Status:       status,
+			})
+		}
+		return activities
+	}
+
+	collectPolaAsuhActivities := func(limit int) []activityCandidate {
+		var items []models.PolaAsuh
+		query := h.db.Preload("Admin").Order("updated_at DESC")
+		if err := query.Limit(limit).Find(&items).Error; err != nil {
+			if isMissingTableError(err) {
+				return nil
+			}
+			return nil
+		}
+		activities := make([]activityCandidate, 0, len(items))
+		for _, item := range items {
+			action := "UPDATE"
+			if item.UpdatedAt.Sub(item.CreatedAt) < time.Second {
+				if item.IsPublished {
+					action = "PUBLISH"
+				} else {
+					action = "DRAFT"
+				}
+			}
+			adminName := "System"
+			if item.Admin != nil && strings.TrimSpace(item.Admin.Nama) != "" {
+				adminName = item.Admin.Nama
+			}
+			status := "Draft"
+			if item.IsPublished {
+				status = "Terbit"
+			}
+			activities = append(activities, activityCandidate{
+				Waktu:        item.UpdatedAt,
+				Admin:        adminName,
+				Aksi:         action,
+				TargetKonten: item.Judul,
+				Modul:        "Pola Asuh",
+				Status:       status,
+			})
+		}
+		return activities
+	}
+
+	recentCandidates := make([]activityCandidate, 0, 12)
+	for _, group := range groupDefinitions {
+		groupCount := 0
+		for _, tableName := range group.Tables {
+			count := collectCount(tableName)
+			totalContent += count
+			groupCount += int(count)
+
+			if tableName == "pola_asuh" {
+				recentCandidates = append(recentCandidates, collectPolaAsuhActivities(2)...)
 				continue
 			}
-			continue
+
+			modulLabel := group.Label
+			if tableName == "stimulus_anak" {
+				modulLabel = "Parenting"
+			}
+			recentCandidates = append(recentCandidates, collectContentActivities(tableName, modulLabel, 2)...)
 		}
-		totalContent += count
+		_ = groupCount
+	}
+
+	distribution := make([]dashboardDistribution, 0, len(groupDefinitions))
+	for _, group := range groupDefinitions {
+		count := 0
+		for _, tableName := range group.Tables {
+			count += int(collectCount(tableName))
+		}
+		percent := 0
+		if totalContent > 0 {
+			percent = int((float64(count) / float64(totalContent)) * 100)
+		}
+		distribution = append(distribution, dashboardDistribution{
+			Label:   group.Label,
+			Value:   count,
+			Percent: percent,
+			Color:   group.Color,
+		})
+	}
+
+	sort.SliceStable(recentCandidates, func(i, j int) bool {
+		return recentCandidates[i].Waktu.After(recentCandidates[j].Waktu)
+	})
+	if len(recentCandidates) > 5 {
+		recentCandidates = recentCandidates[:5]
+	}
+
+	recentActivities := make([]dashboardActivity, 0, len(recentCandidates))
+	for _, item := range recentCandidates {
+		recentActivities = append(recentActivities, dashboardActivity{
+			Waktu:        item.Waktu,
+			Admin:        item.Admin,
+			Aksi:         item.Aksi,
+			TargetKonten: item.TargetKonten,
+			Modul:        item.Modul,
+			Status:       item.Status,
+		})
+	}
+
+	engagementKuis := 0
+	if totalQuiz > 0 {
+		engagementKuis = int((quizAttempts * 100) / totalQuiz)
+		if engagementKuis > 100 {
+			engagementKuis = 100
+		}
 	}
 
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", map[string]interface{}{
-		"total_pengguna": totalPengguna,
-		"total_anak":     totalAnak,
-		"total_content":  totalContent,
-		"total_resep":    totalResep,
-		"total_quiz":     totalQuiz,
+		"total_pengguna":       totalPengguna,
+		"total_anak":           totalAnak,
+		"total_content":        totalContent,
+		"total_resep":          totalResep,
+		"total_quiz":           totalQuiz,
+		"quiz_attempts":        quizAttempts,
+		"pengguna_baru_hari_ini": penggunaBaruHariIni,
+		"engagement_kuis":      engagementKuis,
+		"content_distribution":  distribution,
+		"recent_activities":    recentActivities,
 	}, nil)
 }
 

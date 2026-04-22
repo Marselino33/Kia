@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"sejiwa-backend/app/helpers"
 	"sejiwa-backend/app/models"
@@ -63,9 +64,18 @@ func (h *AuthController) Login(c echo.Context) error {
 		return helpers.StandardResponse(c, http.StatusBadRequest, "request tidak valid: "+err.Error(), nil, nil)
 	}
 
-	if req.Email == "" || req.Password == "" {
-		return helpers.StandardResponse(c, http.StatusBadRequest, "email dan password wajib diisi", nil, nil)
+	identifier := strings.TrimSpace(req.Identifier)
+	if identifier == "" {
+		identifier = strings.TrimSpace(req.Email)
 	}
+	if identifier == "" {
+		identifier = strings.TrimSpace(req.Username)
+	}
+
+	if identifier == "" || req.Password == "" {
+		return helpers.StandardResponse(c, http.StatusBadRequest, "username/email dan password wajib diisi", nil, nil)
+	}
+	req.Identifier = identifier
 
 	resp, err := h.authUC.Login(req)
 	if err != nil {

@@ -6,7 +6,9 @@ package models
 
 // LoginRequest adalah body request untuk endpoint POST /auth/login.
 type LoginRequest struct {
-	Email string `json:"email" validate:"required,email"`
+	Identifier string `json:"identifier"`
+	Email string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password" validate:"required"`
 }
 

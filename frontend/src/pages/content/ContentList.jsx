@@ -10,7 +10,7 @@ export default function ContentList() {
   const [contents, setContents] = useState([]);
   const [filteredContents, setFilteredContents] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('kategori') || 'all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [loading, setLoading] = useState(true);
 
   const categories = [
@@ -61,6 +61,11 @@ export default function ContentList() {
 
     setFilteredContents(result);
   }, [selectedCategory, searchTerm, contents]);
+
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('kategori') || 'all');
+    setSearchTerm(searchParams.get('search') || '');
+  }, [searchParams]);
 
 
   return (

@@ -83,12 +83,20 @@ export default function Navbar() {
 
     const isGroupActive = (items) => items.some((item) => isPathActive(item.to))
 
+    const handleSearchSubmit = (event) => {
+        event.preventDefault()
+        const keyword = searchQuery.trim()
+        if (!keyword) return
+        navigate(`/konten?search=${encodeURIComponent(keyword)}`)
+        setMobileOpen(false)
+    }
+
     return (
         <header style={{
             position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
             background: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'white',
             backdropFilter: scrolled ? 'blur(10px)' : 'none',
-            borderBottom: scrolled ? '1px solid rgba(0,0,0,0.05)' : '1px solid transparent',
+            borderBottom: scrolled ? '1px solid var(--border-color)' : '1px solid transparent',
             transition: 'all 0.3s ease',
         }}>
             <div className="container" style={{ display: 'flex', alignItems: 'center', height: '80px', gap: '2rem' }}>
@@ -105,7 +113,7 @@ export default function Navbar() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 background: '#ecfeff',
-                                border: '1px solid rgba(6, 182, 212, 0.25)'
+                                border: '1px solid var(--primary-200)'
                             }}>
                                 <img
                                     src="/logo-kia-cerdas.png"
@@ -132,7 +140,7 @@ export default function Navbar() {
                         <>
                             <div style={{
                                 width: 32, height: 32, borderRadius: '8px',
-                                background: '#06b6d4',
+                                background: 'var(--primary-500)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                                 <Heart size={16} color="white" fill="white" />
@@ -143,7 +151,7 @@ export default function Navbar() {
                 </Link>
 
                 {/* Search Bar */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', margin: '0 1rem' }}>
+                <form onSubmit={handleSearchSubmit} style={{ flex: 1, display: 'flex', alignItems: 'center', margin: '0 1rem' }}>
                     <div className="search-bar" style={{
                         flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem',
                         background: '#f3f4f6', padding: '0.6rem 1rem', borderRadius: '30px',
@@ -161,14 +169,14 @@ export default function Navbar() {
                             }}
                         />
                     </div>
-                </div>
+                </form>
 
                 {/* Desktop Nav */}
                 <nav style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
                     <Link to={homeLink.to} style={{
                         fontSize: '0.9rem', fontWeight: 600,
-                        color: isPathActive(homeLink.to) ? '#06b6d4' : '#4b5563',
-                        borderBottom: isPathActive(homeLink.to) ? '2px solid #06b6d4' : 'none',
+                        color: isPathActive(homeLink.to) ? 'var(--primary-500)' : 'var(--text-secondary)',
+                        borderBottom: isPathActive(homeLink.to) ? '2px solid var(--primary-500)' : 'none',
                         paddingBottom: '0.25rem',
                         transition: 'all 0.2s'
                     }}>
@@ -191,8 +199,8 @@ export default function Navbar() {
                                     onClick={() => setActiveDropdown(open ? null : group.key)}
                                     style={{
                                         fontSize: '0.9rem', fontWeight: 600,
-                                        color: groupActive ? '#06b6d4' : '#4b5563',
-                                        borderBottom: groupActive ? '2px solid #06b6d4' : 'none',
+                                        color: groupActive ? 'var(--primary-500)' : 'var(--text-secondary)',
+                                        borderBottom: groupActive ? '2px solid var(--primary-500)' : 'none',
                                         paddingBottom: '0.25rem',
                                         transition: 'all 0.2s',
                                         border: 'none',
@@ -233,7 +241,7 @@ export default function Navbar() {
                                                     display: 'block',
                                                     padding: '0.65rem 0.75rem',
                                                     borderRadius: '8px',
-                                                    color: isPathActive(item.to) ? '#06b6d4' : '#4b5563',
+                                                    color: isPathActive(item.to) ? 'var(--primary-500)' : 'var(--text-secondary)',
                                                     fontWeight: isPathActive(item.to) ? 700 : 600,
                                                     fontSize: '0.85rem',
                                                     textDecoration: 'none'
@@ -251,8 +259,8 @@ export default function Navbar() {
 
                     <Link to={infoLink.to} style={{
                         fontSize: '0.9rem', fontWeight: 600,
-                        color: isPathActive(infoLink.to) ? '#06b6d4' : '#4b5563',
-                        borderBottom: isPathActive(infoLink.to) ? '2px solid #06b6d4' : 'none',
+                        color: isPathActive(infoLink.to) ? 'var(--primary-500)' : 'var(--text-secondary)',
+                        borderBottom: isPathActive(infoLink.to) ? '2px solid var(--primary-500)' : 'none',
                         paddingBottom: '0.25rem',
                         transition: 'all 0.2s'
                     }}>
@@ -281,7 +289,7 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            <Link to="/login" state={{ from: location.pathname, source: 'navbar-login' }} className="btn" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#06b6d4', background: 'transparent', padding: '0.5rem 1rem' }}>Masuk</Link>
+                            <Link to="/login" state={{ from: location.pathname, source: 'navbar-login' }} className="btn" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--primary-500)', background: 'transparent', padding: '0.5rem 1rem' }}>Masuk</Link>
                         </>
                     )}
 

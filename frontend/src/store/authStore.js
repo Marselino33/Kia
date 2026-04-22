@@ -114,6 +114,7 @@ const useAuthStore = create(
 
         try {
           const resp = await authApi.post('/auth/login', {
+            identifier: email,
             email,
             password,
           })
@@ -202,7 +203,7 @@ const useAuthStore = create(
         set({ user: null, accessToken: null, refreshToken: null, error: null })
       },
 
-      isAuthenticated: () => !!get().accessToken || !!get().user,
+      isAuthenticated: () => !!get().accessToken && !!get().user,
       isAdmin: () => get().user?.user_metadata?.role === 'admin',
     }),
     {

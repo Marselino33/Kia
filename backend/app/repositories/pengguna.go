@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"sejiwa-backend/app/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -22,6 +23,21 @@ func (r *PenggunaRepository) Create(pengguna *models.Pengguna) error {
 func (r *PenggunaRepository) FindByEmail(email string) (*models.Pengguna, error) {
 	var pengguna models.Pengguna
 	err := r.db.Where("email = ?", email).First(&pengguna).Error
+	if err != nil {
+		return nil, err
+	}
+	return &pengguna, nil
+}
+
+func (r *PenggunaRepository) FindByIdentifier(identifier string) (*models.Pengguna, error) {
+	var pengguna models.Pengguna
+	normalized := strings.TrimSpace(identifier)
+	err := r.db.Where(
+		"LOWER(email) = LOWER(?) OR LOWER(nama) = LOWER(?) OR no_hp = ?",
+		normalized,
+		normalized,
+		normalized,
+	).First(&pengguna).Error
 	if err != nil {
 		return nil, err
 	}

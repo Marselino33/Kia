@@ -11,7 +11,6 @@ import Footer from './components/Footer'
 import Landing from './pages/Landing'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
-import Dashboard from './pages/Dashboard'
 import ContentList from './pages/content/ContentList'
 import ContentDetail from './pages/content/ContentDetail'
 import QuizPage from './pages/quiz/QuizPage'
@@ -73,12 +72,60 @@ function ProtectedRoute({ children }) {
   return children
 }
 
+function UserRoute({ children }) {
+  const user = useAuthStore((s) => s.user)
+  const loading = useAuthStore((s) => s.loading)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const location = useLocation()
+  const isAdmin = user?.user_metadata?.role === 'admin'
+  const hasAdminToken = isAdminLoggedIn()
+
+  if (loading) return <div className="loading-screen"><div className="spinner" /></div>
+
+  if (!user && !isAuthenticated()) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          from: location.pathname,
+          intendedPath: location.pathname,
+          reason: 'protected'
+        }}
+      />
+    )
+  }
+
+  if (isAdmin && hasAdminToken) {
+    return <Navigate to="/admin" replace />
+  }
+
+  if (isAdmin && !hasAdminToken) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          from: location.pathname,
+          intendedPath: location.pathname,
+          reason: 'protected'
+        }}
+      />
+    )
+  }
+
+  return children
+}
+
 function GuestRoute({ children }) {
   const user = useAuthStore((s) => s.user)
   const loading = useAuthStore((s) => s.loading)
+  const isAdmin = user?.user_metadata?.role === 'admin'
+  const hasAdminToken = isAdminLoggedIn()
 
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
-  if (user) return <Navigate to="/user/pengguna" replace />
+  if (isAdmin && hasAdminToken) return <Navigate to="/admin" replace />
+  if (user && !isAdmin) return <Navigate to="/profil" replace />
   return children
 }
 
@@ -86,18 +133,19 @@ function AdminRoute({ children }) {
   const user = useAuthStore((s) => s.user)
   const loading = useAuthStore((s) => s.loading)
   const isAdmin = user?.user_metadata?.role === 'admin'
+  const hasAdminToken = isAdminLoggedIn()
 
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
-  if (!isAdminLoggedIn()) return <Navigate to="/admin/login" replace />
-  // server side middleware / admin api already valid, but we also check app state when available
-  if (!isAdmin) return <Navigate to="/login" replace />
+  if (!hasAdminToken) return <Navigate to="/admin/login" replace />
+  if (!user) return <Navigate to="/admin/login" replace />
+  if (!isAdmin) return <Navigate to="/profil" replace />
   return children
 }
 
 // Layout wrapper for non-admin pages
 function MainLayout({ children }) {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8FAFC' }}>
       <Navbar />
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
@@ -147,17 +195,17 @@ export default function App() {
               <Route path="/kesehatan-ibu" element={<KesehattanIbu />} />
 
               {/* Protected */}
-              <Route path="/user/pengguna" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/user/pengguna" element={<Navigate to="/profil" replace />} />
               <Route path="/beranda" element={<Landing />} />
-              <Route path="/dashboard" element={<Navigate to="/user/pengguna" replace />} />
+              <Route path="/dashboard" element={<Navigate to="/profil" replace />} />
               <Route path="/mental-health" element={<KesehatanMental />} />
               <Route path="/mental-health/:slug" element={<MentalContentDetail />} />
               <Route path="/mental-content-detail/:slug" element={<MentalContentDetail />} />
-              <Route path="/mental-health-check" element={<ProtectedRoute><MentalHealthCheck /></ProtectedRoute>} />
-              <Route path="/kuis" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
-              <Route path="/tumbuh-kembang" element={<ProtectedRoute><GrowthTracker /></ProtectedRoute>} />
-              <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/bookmark" element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
+              <Route path="/mental-health-check" element={<UserRoute><MentalHealthCheck /></UserRoute>} />
+              <Route path="/kuis" element={<UserRoute><QuizPage /></UserRoute>} />
+              <Route path="/tumbuh-kembang" element={<UserRoute><GrowthTracker /></UserRoute>} />
+              <Route path="/profil" element={<UserRoute><Profile /></UserRoute>} />
+              <Route path="/bookmark" element={<UserRoute><Bookmarks /></UserRoute>} />
               
               {/* Gizi Menu - Alias ke Resep MPASI */}
               <Route path="/gizi-menu" element={<ResepMPASI />} />
@@ -172,9 +220,9 @@ export default function App() {
               <Route path="/pola-asuh/:id" element={<PolaAsuhDetail />} />
 
               {/* Parenting - Kuis Pemahaman */}
-              <Route path="/kuis-parenting" element={<ProtectedRoute><KuisParenting /></ProtectedRoute>} />
-              <Route path="/kuis-parenting/main/:topicId" element={<ProtectedRoute><ParentingQuizPlay /></ProtectedRoute>} />
-              <Route path="/kuis-parenting/konten/:feature/:contentSlug" element={<ProtectedRoute><ParentingQuizPlay /></ProtectedRoute>} />
+              <Route path="/kuis-parenting" element={<UserRoute><KuisParenting /></UserRoute>} />
+              <Route path="/kuis-parenting/main/:topicId" element={<UserRoute><ParentingQuizPlay /></UserRoute>} />
+              <Route path="/kuis-parenting/konten/:feature/:contentSlug" element={<UserRoute><ParentingQuizPlay /></UserRoute>} />
 
               {/* Gizi - Ibu Hamil & Menyusui */}
               <Route path="/gizi-ibu-trimester1" element={<GiziIbuTrimester1 />} />

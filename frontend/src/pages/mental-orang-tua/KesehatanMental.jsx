@@ -3,15 +3,26 @@ import { ChevronRight, AlertCircle, Pill, Smile, Users } from 'lucide-react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../../lib/api'
 import '../../styles/pages/mental-health.css'
-import { mentalContents } from './mentalContentData'
 
 export default function KesehatanMental() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [contentItems, setContentItems] = useState(mentalContents)
+  const [contentItems, setContentItems] = useState([])
+  const [loadingContents, setLoadingContents] = useState(true)
+  const [contentError, setContentError] = useState('')
+
+  const findMentalSlug = (keywords) => {
+    const keywordList = Array.isArray(keywords) ? keywords : [keywords]
+    const found = contentItems.find((item) => {
+      const haystack = `${item.title} ${item.category}`.toLowerCase()
+      return keywordList.some((keyword) => haystack.includes(String(keyword).toLowerCase()))
+    })
+    return found?.slug || contentItems[0]?.slug || ''
+  }
 
   const saveLastMentalSlug = (slug) => {
-    const safeSlug = slug || 'baby-blues'
+    const safeSlug = slug || contentItems[0]?.slug || ''
+    if (!safeSlug) return
     try {
       localStorage.setItem('lastMentalContentSlug', safeSlug)
     } catch {
@@ -19,10 +30,11 @@ export default function KesehatanMental() {
     }
   }
 
-  const getMentalHref = (slug) => `/mental-health/${slug || 'baby-blues'}`
+  const getMentalHref = (slug) => `/mental-health/${slug || contentItems[0]?.slug || ''}`
 
   const getLastMentalSlug = () => {
-    const fallback = contentItems[0]?.slug || mentalContents[0]?.slug || 'baby-blues'
+    const fallback = contentItems[0]?.slug || ''
+    if (!fallback) return ''
     try {
       const saved = localStorage.getItem('lastMentalContentSlug')
       if (!saved) return fallback
@@ -41,10 +53,17 @@ export default function KesehatanMental() {
 
   useEffect(() => {
     const load = async () => {
+      setLoadingContents(true)
+      setContentError('')
       try {
         const res = await api.get('/mental-orang-tua')
         const rows = Array.isArray(res?.data?.data) ? res.data.data : []
-        if (!rows.length) return
+        if (!rows.length) {
+          setContentItems([])
+          setContentError('Data konten mental belum tersedia dari backend.')
+          return
+        }
+
         setContentItems(rows.map((item) => ({
           slug: item.slug,
           title: item.judul,
@@ -59,7 +78,10 @@ export default function KesehatanMental() {
           consultWhen: ['Jika perlu dukungan profesional'],
         })))
       } catch {
-        setContentItems(mentalContents)
+        setContentItems([])
+        setContentError('Gagal memuat konten mental dari backend.')
+      } finally {
+        setLoadingContents(false)
       }
     }
 
@@ -192,9 +214,9 @@ export default function KesehatanMental() {
                 Panduan lengkap mengidentifikasi gejala baby blues dan postpartum depression,
                 serta langkah penanganan untuk kesejahteraan ibu dan keluarga.
               </p>
-              <a className="mental-primary-btn" href={getMentalHref(getLastMentalSlug())} onClick={() => saveLastMentalSlug(getLastMentalSlug())}>
+              <Link className="mental-primary-btn" to={getMentalHref(getLastMentalSlug() || findMentalSlug(['baby blues', 'ppd', 'depresi']))} onClick={() => saveLastMentalSlug(getLastMentalSlug() || findMentalSlug(['baby blues', 'ppd', 'depresi']))}>
                 Mulai Membaca <ChevronRight size={18} />
-              </a>
+              </Link>
             </div>
             <div className="mental-hero-image-wrap">
               <img
@@ -219,11 +241,11 @@ export default function KesehatanMental() {
 
           <div className="mental-grid-two">
             {mentalHealthConditions.map((condition) => {
-              const targetSlug = condition.id === 'baby-blues' ? 'baby-blues' : 'postpartum-depression'
-              return <a
+              const targetSlug = condition.id === 'baby-blues' ? findMentalSlug(['baby blues']) : findMentalSlug(['ppd', 'depresi'])
+              return <Link
                 key={condition.id}
                 className={`mental-condition-card ${condition.id === 'baby-blues' ? 'mental-condition-blue' : 'mental-condition-red'}`}
-                href={getMentalHref(targetSlug)}
+                to={getMentalHref(targetSlug)}
                 onClick={() => saveLastMentalSlug(targetSlug)}
               >
                 <h3 className="mental-condition-title">
@@ -239,7 +261,7 @@ export default function KesehatanMental() {
                     </li>
                   ))}
                 </ul>
-              </a>})}
+              </Link>})}
           </div>
         </div>
       </section>
@@ -253,27 +275,33 @@ export default function KesehatanMental() {
             </p>
           </div>
 
-          <div className="mental-content-grid">
-            {contentItems.map((item) => (
-              <a
-                key={item.slug}
-                className="mental-content-card"
-                href={getMentalHref(item.slug)}
-                onClick={() => saveLastMentalSlug(item.slug)}
-              >
-                <img src={item.image} alt={item.title} className="mental-content-image" />
-                <div className="mental-content-body">
-                  <span className="mental-content-category">{item.category}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.excerpt}</p>
-                  <div className="mental-content-footer">
-                    <span>{item.readTime}</span>
-                    <span className="mental-content-link">Baca Detail</span>
+          {loadingContents ? (
+            <div className="mental-content-empty">Memuat konten mental...</div>
+          ) : contentItems.length === 0 ? (
+            <div className="mental-content-empty">{contentError || 'Belum ada konten mental.'}</div>
+          ) : (
+            <div className="mental-content-grid">
+              {contentItems.map((item) => (
+                <Link
+                  key={item.slug}
+                  className="mental-content-card"
+                  to={getMentalHref(item.slug)}
+                  onClick={() => saveLastMentalSlug(item.slug)}
+                >
+                  <img src={item.image} alt={item.title} className="mental-content-image" />
+                  <div className="mental-content-body">
+                    <span className="mental-content-category">{item.category}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.excerpt}</p>
+                    <div className="mental-content-footer">
+                      <span>{item.readTime}</span>
+                      <span className="mental-content-link">Baca Detail</span>
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

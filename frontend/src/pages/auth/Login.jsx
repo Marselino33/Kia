@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, User, LogIn, Globe, Facebook, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, LogIn, ArrowLeft } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import toast from 'react-hot-toast';
 import { setAdminToken, clearAdminToken } from '../../lib/adminApi';
 import '../../styles/pages/auth-login.css';
 export default function Login() {
-  const [loginRole, setLoginRole] = useState('user');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -21,7 +20,7 @@ export default function Login() {
   const fromSource = location.state?.source;
   const isProtectedRedirect = location.state?.reason === 'protected';
   const backTarget = fromPath && fromPath !== '/login' && fromPath !== '/admin/login' && !isProtectedRedirect ? fromPath : '/';
-  const postLoginTarget = fromPath && !String(fromPath).startsWith('/admin') && fromPath !== '/login' && fromPath !== '/admin/login' ? fromPath : '/user/pengguna';
+  const postLoginTarget = fromPath && !String(fromPath).startsWith('/admin') && fromPath !== '/login' && fromPath !== '/admin/login' ? fromPath : '/profil';
 
   const handleBack = () => {
     if (isProtectedRedirect) {
@@ -44,29 +43,24 @@ export default function Login() {
     setLoading(true);
     try {
       const session = await login(email, password);
-      const role = session?.pengguna?.role;
+      const role = session?.pengguna?.role || session?.user?.user_metadata?.role;
+      const accessToken = session?.access_token || session?.accessToken;
 
-      if (loginRole === 'admin') {
-        if (role !== 'admin') throw new Error('Akun ini bukan admin');
-        if (session?.access_token) setAdminToken(session.access_token);
+      if (role === 'admin') {
+        if (accessToken) setAdminToken(accessToken);
         toast.success('Login admin berhasil');
         navigate('/admin');
         return;
       }
 
       clearAdminToken();
-      toast.success('Selamat datang kembali! ðŸ‘‹');
+      toast.success('Selamat datang kembali!');
       navigate(postLoginTarget);
     } catch (err) {
       toast.error(err.message || 'Email atau password salah');
     } finally {
       setLoading(false);
     }
-  };
-  const handleSocialLogin = provider => {
-    toast('Fitur ' + provider + ' belum tersedia.', {
-      icon: 'âš ï¸'
-    });
   };
   return <div className="bg-dots isx-login-1">
       <div className="orb orb-pink isx-login-2" />
@@ -93,30 +87,10 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="isx-login-12">
           <div className="form-group">
-            <label className="form-label">Masuk Sebagai</label>
-            <div className="isx-login-role-switch">
-              <button
-                type="button"
-                className={loginRole === 'user' ? 'isx-login-role-btn isx-login-role-btn-active' : 'isx-login-role-btn'}
-                onClick={() => setLoginRole('user')}
-              >
-                User
-              </button>
-              <button
-                type="button"
-                className={loginRole === 'admin' ? 'isx-login-role-btn isx-login-role-btn-active' : 'isx-login-role-btn'}
-                onClick={() => setLoginRole('admin')}
-              >
-                Admin
-              </button>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Email</label>
+            <label className="form-label">Username atau Email</label>
             <div className="isx-login-13">
               <Mail size={16} className="isx-login-14" />
-              <input type="email" className="form-input isx-login-15" placeholder="nama@email.com" value={email} onChange={e => setEmail(e.target.value)} id="login-email" />
+              <input type="text" className="form-input isx-login-15" placeholder="Masukkan username atau email" value={email} onChange={e => setEmail(e.target.value)} id="login-email" />
             </div>
           </div>
 
@@ -124,7 +98,7 @@ export default function Login() {
             <label className="form-label">Kata Sandi</label>
             <div className="isx-login-16">
               <Lock size={16} className="isx-login-17" />
-              <input type={showPass ? 'text' : 'password'} className="form-input isx-login-18" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" value={password} onChange={e => setPassword(e.target.value)} id="login-password" />
+              <input type={showPass ? 'text' : 'password'} className="form-input isx-login-18" placeholder="Masukkan kata sandi" value={password} onChange={e => setPassword(e.target.value)} id="login-password" />
               <button type="button" onClick={() => setShowPass(!showPass)} className="isx-login-19">
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -139,36 +113,11 @@ export default function Login() {
 
           <button type="submit" className="btn btn-primary isx-login-22" disabled={loading} id="btn-login">
             {loading ? <span className="animate-spin isx-login-23" /> : <>
-                <LogIn size={16} /> {loginRole === 'admin' ? 'Masuk Admin' : 'Masuk'}
+                <LogIn size={16} /> Masuk
               </>}
           </button>
         </form>
 
-        {loginRole === 'user' && (
-          <>
-            <div className="isx-login-24">
-              <div className="divider" />
-              <span>Atau masuk dengan</span>
-              <div className="divider" />
-            </div>
-
-            <div className="isx-login-25">
-              <button type="button" className="btn btn-secondary isx-login-26" onClick={() => handleSocialLogin('Google')}>
-                <Globe size={16} /> Google
-              </button>
-              <button type="button" className="btn btn-secondary isx-login-27" onClick={() => handleSocialLogin('Facebook')}>
-                <Facebook size={16} /> Facebook
-              </button>
-            </div>
-
-            <p className="isx-login-28">
-              Belum punya akun?{' '}
-              <Link to="/daftar" className="isx-login-29">
-                Daftar Sekarang
-              </Link>
-            </p>
-          </>
-        )}
       </div>
     </div>;
 }

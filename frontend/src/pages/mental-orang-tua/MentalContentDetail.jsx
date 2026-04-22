@@ -1,16 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import api from '../../lib/api'
-import { getMentalContentBySlug, mentalContents } from './mentalContentData'
 import '../../styles/pages/mental-health-detail.css'
+
+function buildList(text) {
+  return String(text || '')
+    .split(/\n|\.|;/)
+    .map((line) => line.replace(/^[-*\d.)\s]+/, '').trim())
+    .filter(Boolean)
+    .slice(0, 5)
+}
 
 export default function MentalContentDetail() {
   const { slug } = useParams()
   const [apiItem, setApiItem] = useState(null)
   const [relatedItems, setRelatedItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true)
+      setLoadFailed(false)
       try {
         const [detailRes, listRes] = await Promise.all([
           api.get(`/mental-orang-tua/${slug}`),
@@ -18,30 +29,37 @@ export default function MentalContentDetail() {
         ])
         const detail = detailRes?.data?.data
         if (detail) {
+          const signs = buildList(detail.isi)
+          const defaultAction = detail.ringkasan || detail.judul
           setApiItem({
             slug: detail.slug,
             title: detail.judul,
             category: detail.kategori || 'EDUKASI',
             readTime: `${detail.read_minutes || 5} menit baca`,
-            image: detail.gambar_url || mentalContents[0]?.image,
+            image: detail.gambar_url || 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop',
             quote: detail.ringkasan || detail.judul,
             intro: detail.ringkasan || detail.isi || '',
-            signs: (detail.isi || '').split('\n').filter(Boolean).slice(0, 4),
-            actions: ['Baca detail artikel'],
+            signs: signs.length ? signs : [defaultAction],
+            actions: ['Validasi emosi dan minta dukungan keluarga', 'Atur waktu istirahat dan jeda harian'],
             consultWhen: ['Jika perlu dukungan profesional'],
           })
+        } else {
+          setApiItem(null)
         }
         const rows = Array.isArray(listRes?.data?.data) ? listRes.data.data : []
         setRelatedItems(rows.filter((entry) => entry.slug !== slug).slice(0, 4))
       } catch {
+        setLoadFailed(true)
         setApiItem(null)
+      } finally {
+        setLoading(false)
       }
     }
 
     load()
   }, [slug])
 
-  const item = useMemo(() => apiItem || getMentalContentBySlug(slug), [apiItem, slug])
+  const item = useMemo(() => apiItem, [apiItem])
 
   useEffect(() => {
     if (!item) return
@@ -52,17 +70,38 @@ export default function MentalContentDetail() {
     }
   }, [item])
 
-  if (!item) return <Navigate to="/mental-health" replace />
+  if (loading) {
+    return (
+      <main className="mental-detail-page">
+        <div className="mental-detail-container">
+          <p>Memuat detail konten mental...</p>
+        </div>
+      </main>
+    )
+  }
 
-  const related = relatedItems.length
-    ? relatedItems.map((entry) => ({
-        slug: entry.slug,
-        category: entry.kategori || 'EDUKASI',
-        title: entry.judul,
-        readTime: `${entry.read_minutes || 5} menit baca`,
-        image: entry.gambar_url || mentalContents[0]?.image,
-      }))
-    : mentalContents.filter((entry) => entry.slug !== item.slug)
+  if (!item && loadFailed) {
+    return <Navigate to="/mental-health" replace />
+  }
+
+  if (!item) {
+    return (
+      <main className="mental-detail-page">
+        <div className="mental-detail-container">
+          <p>Konten mental tidak ditemukan.</p>
+          <Link to="/mental-health">Kembali ke daftar konten mental</Link>
+        </div>
+      </main>
+    )
+  }
+
+  const related = relatedItems.map((entry) => ({
+    slug: entry.slug,
+    category: entry.kategori || 'EDUKASI',
+    title: entry.judul,
+    readTime: `${entry.read_minutes || 5} menit baca`,
+    image: entry.gambar_url || 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop',
+  }))
 
   return (
     <main className="mental-detail-page">

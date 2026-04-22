@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Mail, Save, Edit2, Camera, Shield } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../lib/api';
 import toast from 'react-hot-toast';
+import { clearAdminToken } from '../../lib/adminApi';
 import '../../styles/pages/profile-profile.css';
 export default function Profile() {
   const {
     user,
     logout
   } = useAuthStore();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -41,6 +44,11 @@ export default function Profile() {
     }
   };
   const avatarLetter = form.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?';
+  const handleLogout = async () => {
+    await logout();
+    clearAdminToken();
+    navigate('/login', { replace: true });
+  };
   return <div className="isx-profile-1">
             <div className="container isx-profile-2">
                 <h1 className="isx-profile-3">Profil Saya</h1>
@@ -161,7 +169,7 @@ export default function Profile() {
                 </div>
 
                 {/* Logout */}
-                <button onClick={logout} className="btn btn-secondary isx-profile-34">
+                <button onClick={handleLogout} className="btn btn-secondary isx-profile-34">
                     Keluar dari Akun
                 </button>
             </div>

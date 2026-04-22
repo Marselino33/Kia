@@ -2,18 +2,21 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { clearAdminToken } from '../lib/adminApi'
+import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
 import AdminSidebar from './AdminSidebar'
 
 export default function AdminLayout({ children }) {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const logout = useAuthStore((state) => state.logout)
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('Yakin ingin keluar?')) {
+      await logout()
       clearAdminToken()
       toast.success('Berhasil keluar')
-      navigate('/admin/login')
+      navigate('/login', { replace: true })
     }
   }
 

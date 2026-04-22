@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"sejiwa-backend/app/models"
@@ -74,7 +75,15 @@ func (u *AuthUseCase) Register(req models.RegisterRequest) (*models.AuthResponse
 
 // Login memvalidasi email + password dan mengembalikan token pair.
 func (u *AuthUseCase) Login(req models.LoginRequest) (*models.AuthResponse, error) {
-	pengguna, err := u.penggunaRepo.FindByEmail(req.Email)
+	identifier := strings.TrimSpace(req.Identifier)
+	if identifier == "" {
+		identifier = strings.TrimSpace(req.Email)
+	}
+	if identifier == "" {
+		identifier = strings.TrimSpace(req.Username)
+	}
+
+	pengguna, err := u.penggunaRepo.FindByIdentifier(identifier)
 	if err != nil {
 		return nil, errors.New("email atau password salah")
 	}

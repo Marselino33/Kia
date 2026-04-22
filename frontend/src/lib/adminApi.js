@@ -42,7 +42,9 @@ adminApi.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
             clearAdminToken()
-            window.location.href = '/admin/login'
+            if (window.location.pathname.startsWith('/admin')) {
+                window.location.href = '/admin/login'
+            }
         }
         return Promise.reject(error)
     }

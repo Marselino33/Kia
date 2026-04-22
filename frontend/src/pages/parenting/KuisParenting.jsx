@@ -50,7 +50,7 @@ export default function KuisParenting() {
     <section className="kuis-parenting-page">
       <div className="kuis-parenting-container">
         <div className="kuis-parenting-breadcrumb">
-          <span onClick={() => navigate('/user/pengguna')} className="kuis-parenting-link">Pengguna</span>
+          <span onClick={() => navigate('/profil')} className="kuis-parenting-link">Profil</span>
           <span className="kuis-parenting-sep">&gt;</span>
           <span onClick={() => navigate('/pola-asuh')} className="kuis-parenting-link">Parenting</span>
           <span className="kuis-parenting-sep">&gt;</span>

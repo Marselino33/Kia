@@ -13,6 +13,25 @@ export default function StimulusAnak() {
   const [displayCount, setDisplayCount] = useState(8);
   const [error, setError] = useState('');
 
+  const normalizePhase = (value) => String(value || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+  const ageRangeMatchers = {
+    'bayi-1': ['0-3 bulan', '29 hari - 3 bulan', '0 - 3 bulan'],
+    'bayi-2': ['3-6 bulan', '3 - 6 bulan'],
+    'bayi-3': ['6-9 bulan', '6 - 9 bulan'],
+    'bayi-4': ['9-12 bulan', '9 - 12 bulan'],
+    'bayi-5': ['12-18 bulan', '12 - 18 bulan', '12-24 bulan', '12 - 24 bulan'],
+    'bayi-6': ['18-24 bulan', '18 - 24 bulan', '12-24 bulan', '12 - 24 bulan'],
+    toddler: ['2-3 tahun', '2 - 3 tahun', '3-5 tahun', '3 - 5 tahun'],
+  };
+
+  const phaseMatchesRange = (phase, selectedRange) => {
+    if (selectedRange === 'all') return true;
+    const normalizedPhase = normalizePhase(phase);
+    const patterns = ageRangeMatchers[selectedRange] || [];
+    return patterns.some((pattern) => normalizedPhase.includes(pattern));
+  };
+
   const ageRanges = [
     { id: 'all', label: 'Lihat Semua' },
     { id: 'bayi-1', label: 'Bayi 29 hari - 3 bulan' },
@@ -65,9 +84,13 @@ export default function StimulusAnak() {
     if (selectedAgeRange === 'all') {
       setFilteredActivities(activities);
     } else {
-      setFilteredActivities(activities.filter((activity) => activity.ageRange === selectedAgeRange));
+      setFilteredActivities(activities.filter((activity) => phaseMatchesRange(activity.ageRange, selectedAgeRange)));
     }
   }, [selectedAgeRange, activities]);
+
+  useEffect(() => {
+    setDisplayCount(8);
+  }, [selectedAgeRange]);
 
   const displayedActivities = filteredActivities.slice(0, displayCount);
   const hasMore = displayedActivities.length < filteredActivities.length;
