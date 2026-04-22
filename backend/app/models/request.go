@@ -7,18 +7,18 @@ package models
 // LoginRequest adalah body request untuk endpoint POST /auth/login.
 type LoginRequest struct {
 	Identifier string `json:"identifier"`
-	Email string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password" validate:"required"`
+	Email      string `json:"email"`
+	Username   string `json:"username"`
+	Password   string `json:"password" validate:"required"`
 }
 
 // RegisterRequest adalah body request untuk endpoint POST /auth/register.
 type RegisterRequest struct {
-	Nama  string `json:"nama" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Nama     string `json:"nama" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
-	Role  string `json:"role" validate:"required,oneof=ibu ayah kader"`
-	Desa  string `json:"desa"`
+	Role     string `json:"role" validate:"required,oneof=ibu ayah kader"`
+	Desa     string `json:"desa"`
 }
 
 // RefreshTokenRequest adalah body request untuk endpoint POST /auth/refresh.
@@ -54,20 +54,20 @@ type UpdateAnakRequest struct {
 
 // AdminCreatePenggunaRequest adalah body request admin untuk POST /admin/pengguna.
 type AdminCreatePenggunaRequest struct {
-	Nama  string `json:"nama" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Nama     string `json:"nama" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
-	Role  string `json:"role" validate:"required"` // ibu | ayah | kader | admin
-	Desa  string `json:"desa"`
+	Role     string `json:"role" validate:"required"` // ibu | ayah | kader | admin
+	Desa     string `json:"desa"`
 }
 
 // AdminUpdatePenggunaRequest adalah body request admin untuk PUT /admin/pengguna/:id.
 type AdminUpdatePenggunaRequest struct {
-	Nama  string `json:"nama"`
-	Email string `json:"email"`
+	Nama     string `json:"nama"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
-	Role  string `json:"role"`
-	Desa  string `json:"desa"`
+	Role     string `json:"role"`
+	Desa     string `json:"desa"`
 }
 
 // ==============================
@@ -88,11 +88,17 @@ type MentalHealthPredictRequest struct {
 	Q10 int `json:"q10" validate:"min=0,max=3"`
 }
 
-// MentalHealthPredictResult adalah respons dari service ML.
+// MentalHealthPredictResult adalah respons dari service ML (versi 2.0 - 3-class).
+// Include backward compatibility fields.
 type MentalHealthPredictResult struct {
-	Label  string  `json:"label"`
-	Score  float64 `json:"score"`
-	Advice string  `json:"advice"`
+	Label         string             `json:"label"`         // "RENDAH" | "SEDANG" | "TINGGI"
+	LabelBinary   string             `json:"label_binary"`  // "tidak" | "stres" (mapping dari 3-class)
+	Score         float64            `json:"score"`         // confidence model (0-1)
+	SkorTotal     int                `json:"skor_total"`    // total skor mental (0-40)
+	Advice        string             `json:"advice"`        // pesan rekomendasi sesuai level
+	IsFallback    bool               `json:"is_fallback"`   // true jika menggunakan rule-based fallback
+	Probabilities map[string]float64 `json:"probabilities"` // probabilitas per kelas {RENDAH, SEDANG, TINGGI}
+	ModelVersion  string             `json:"model_version"` // versi model yang digunakan
 }
 
 // ==============================

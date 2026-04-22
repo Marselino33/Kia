@@ -88,13 +88,70 @@ export default function MentalHealthCheck() {
 
         {result && (
           <div className="mh-check-result">
-            <h2 className="mh-check-result-title">Hasil: {result.label.toUpperCase()}</h2>
-            <p>Skor stres: {(result.score * 100).toFixed(1)}%</p>
-            <p>{result.advice}</p>
+            {/* Level Stres (3-class) */}
+            <h2 className={`mh-check-result-title mh-level-${result.label.toLowerCase()}`}>
+              {result.label === 'RENDAH' && '✅ Stres Rendah'}
+              {result.label === 'SEDANG' && '⚠️ Stres Sedang'}
+              {result.label === 'TINGGI' && '🚨 Stres Tinggi'}
+            </h2>
+
+            {/* Skor Total & Confidence */}
+            <div className="mh-score-section">
+              <div className="mh-score-item">
+                <span className="mh-score-label">Skor Kesehatan Mental:</span>
+                <span className="mh-score-value">{result.skor_total} / 40</span>
+              </div>
+              <div className="mh-score-item">
+                <span className="mh-score-label">Tingkat Keyakinan Model:</span>
+                <span className="mh-score-value">{(result.score * 100).toFixed(1)}%</span>
+              </div>
+              {result.is_fallback && (
+                <div className="mh-fallback-warning">
+                  ⚠️ Hasil didasarkan pada aturan (keyakinan rendah)
+                </div>
+              )}
+            </div>
+
+            {/* Progress Bar untuk skor_total (0-40) */}
+            <div className="mh-score-bar-container">
+              <div 
+                className={`mh-score-bar mh-score-${result.label.toLowerCase()}`}
+                style={{ width: `${Math.min((result.skor_total / 40) * 100, 100)}%` }}
+              ></div>
+            </div>
+            <div className="mh-score-markers">
+              <span>0</span><span>10</span><span>20</span><span>30</span><span>40</span>
+            </div>
+
+            {/* Detail Probabilitas (optional - bisa ditoggle) */}
+            <div className="mh-probabilities">
+              <p className="mh-prob-title">Probabilitas Per Kelas:</p>
+              <div className="mh-prob-bars">
+                {Object.entries(result.probabilities || {}).map(([label, prob]) => (
+                  <div key={label} className="mh-prob-item">
+                    <span className="mh-prob-label">{label}</span>
+                    <div className="mh-prob-bar-bg">
+                      <div 
+                        className={`mh-prob-bar mh-prob-${label.toLowerCase()}`}
+                        style={{ width: `${prob * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="mh-prob-value">{(prob * 100).toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Advice */}
+            <p className="mh-check-advice">{result.advice}</p>
+
+            {/* Catatan & CTA */}
             <p className="mh-check-note">
               Catatan: Layanan ini hanya sebagai gambaran awal. Untuk kondisi berat, konsultasi klinis diperlukan.
             </p>
-            <Link to="/profil" className="btn mh-check-profile-link">Lihat Profil</Link>
+            <Link to="/profil" className="btn mh-check-profile-link">
+              Lihat Profil & Riwayat
+            </Link>
           </div>
         )}
       </div>
