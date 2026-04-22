@@ -40,6 +40,12 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	api.GET("/mental-orang-tua", ctrl.Master.ListMentalOrangTua)
 	api.GET("/mental-orang-tua/:slug", ctrl.Master.GetMentalOrangTuaBySlug)
 
+	// Gizi Ibu & Anak
+	api.GET("/gizi/ibu", ctrl.Master.ListGiziIbu)
+	api.GET("/gizi/ibu/:slug", ctrl.Master.GetGiziIbuBySlug)
+	api.GET("/gizi/anak", ctrl.Master.ListGiziAnak)
+	api.GET("/gizi/anak/:slug", ctrl.Master.GetGiziAnakBySlug)
+
 	// ─── Protected routes (Bearer JWT) ────────────────────────────────────────
 	protected := api.Group("", jwtMiddleware)
 
