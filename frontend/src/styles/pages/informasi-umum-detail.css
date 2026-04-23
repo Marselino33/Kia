@@ -82,6 +82,30 @@
   line-height: 1.56;
 }
 
+.informasi-umum-article-body {
+  margin-top: 10px;
+  color: #3f4a5d;
+  line-height: 1.72;
+}
+
+.informasi-umum-article-body p {
+  margin: 0 0 12px;
+}
+
+.informasi-umum-article-body ul,
+.informasi-umum-article-body ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+
+.informasi-umum-article-body li {
+  margin: 0 0 7px;
+}
+
+.informasi-umum-article-body > *:last-child {
+  margin-bottom: 0;
+}
+
 .informasi-umum-detail-panels {
   margin-top: 16px;
   display: grid;

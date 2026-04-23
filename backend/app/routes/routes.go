@@ -40,6 +40,10 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	api.GET("/mental-orang-tua", ctrl.Master.ListMentalOrangTua)
 	api.GET("/mental-orang-tua/:slug", ctrl.Master.GetMentalOrangTuaBySlug)
 
+	// Informasi Umum
+	api.GET("/informasi-umum", ctrl.Master.ListInformasiUmum)
+	api.GET("/informasi-umum/:slug", ctrl.Master.GetInformasiUmumBySlug)
+
 	// Gizi Ibu & Anak
 	api.GET("/gizi/ibu", ctrl.Master.ListGiziIbu)
 	api.GET("/gizi/ibu/:slug", ctrl.Master.GetGiziIbuBySlug)
