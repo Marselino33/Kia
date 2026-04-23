@@ -1,0 +1,2 @@
+INFORMASI_UMUM status=0 jumlah_data=N/A
+CONTENT status=0 jumlah_data=N/A
