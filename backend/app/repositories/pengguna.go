@@ -1,7 +1,7 @@
-package repositories
+﻿package repositories
 
 import (
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 	"strings"
 
 	"gorm.io/gorm"
@@ -56,3 +56,4 @@ func (r *PenggunaRepository) FindByID(id string) (*models.Pengguna, error) {
 func (r *PenggunaRepository) Update(pengguna *models.Pengguna) error {
 	return r.db.Save(pengguna).Error
 }
+

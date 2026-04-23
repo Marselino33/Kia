@@ -6,9 +6,10 @@ import (
 	"log"
 	"strings"
 
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type contentSeedItem struct {
@@ -54,7 +55,7 @@ type quizQuestionSeed struct {
 // Menghasilkan 5 data per fitur utama: stimulus_anak, gizi_ibu, gizi_anak, mpasi, informasi_umum, mental_orang_tua, contents, pola_asuh.
 func SeedFeatureContentDummies(db *gorm.DB, adminID string) {
 	if strings.TrimSpace(adminID) == "" {
-		log.Println("⚠️ Seed dummy konten dilewati: adminID kosong")
+		log.Println("âš ï¸ Seed dummy konten dilewati: adminID kosong")
 		return
 	}
 
@@ -117,17 +118,22 @@ func SeedFeatureContentDummies(db *gorm.DB, adminID string) {
 	}
 
 	seedPolaAsuhDummies(db, adminID)
-	log.Println("✅ Seed: Data dummy konten fitur selesai diproses")
+	log.Println("âœ… Seed: Data dummy konten fitur selesai diproses")
 }
 
 func upsertFeatureContent(db *gorm.DB, tableName string, adminID string, item contentSeedItem) {
 	var existing models.Content
-	err := db.Table(tableName).Model(&models.Content{}).Where("slug = ?", item.Slug).First(&existing).Error
+	err := db.Table(tableName).Model(&models.Content{}).Unscoped().Where("slug = ?", item.Slug).First(&existing).Error
 	if err == nil {
+		if existing.DeletedAt.Valid {
+			if errRestore := db.Table(tableName).Unscoped().Model(&models.Content{}).Where("id = ?", existing.ID).Update("deleted_at", nil).Error; errRestore != nil {
+				log.Printf("warning: seed gagal restore konten %s (%s): %v", item.Slug, tableName, errRestore)
+			}
+		}
 		return
 	}
 	if err != nil && err != gorm.ErrRecordNotFound {
-		log.Printf("⚠️ Seed: gagal cek konten %s (%s): %v", item.Slug, tableName, err)
+		log.Printf("warning: seed gagal cek konten %s (%s): %v", item.Slug, tableName, err)
 		return
 	}
 
@@ -145,8 +151,10 @@ func upsertFeatureContent(db *gorm.DB, tableName string, adminID string, item co
 		IsPublished: true,
 	}
 
-	if err := db.Table(tableName).Create(&payload).Error; err != nil {
-		log.Printf("⚠️ Seed: gagal insert konten %s (%s): %v", item.Slug, tableName, err)
+	if err := db.Table(tableName).
+		Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "slug"}}, DoNothing: true}).
+		Create(&payload).Error; err != nil {
+		log.Printf("warning: seed gagal insert konten %s (%s): %v", item.Slug, tableName, err)
 	}
 }
 
@@ -161,12 +169,17 @@ func seedPolaAsuhDummies(db *gorm.DB, adminID string) {
 
 	for _, item := range items {
 		var existing models.PolaAsuh
-		err := db.Where("slug = ?", item.Slug).First(&existing).Error
+		err := db.Unscoped().Where("slug = ?", item.Slug).First(&existing).Error
 		if err == nil {
+			if existing.DeletedAt.Valid {
+				if errRestore := db.Unscoped().Model(&models.PolaAsuh{}).Where("id = ?", existing.ID).Update("deleted_at", nil).Error; errRestore != nil {
+					log.Printf("warning: seed gagal restore pola asuh %s: %v", item.Slug, errRestore)
+				}
+			}
 			continue
 		}
 		if err != nil && err != gorm.ErrRecordNotFound {
-			log.Printf("⚠️ Seed: gagal cek pola asuh %s: %v", item.Slug, err)
+			log.Printf("warning: seed gagal cek pola asuh %s: %v", item.Slug, err)
 			continue
 		}
 
@@ -185,8 +198,10 @@ func seedPolaAsuhDummies(db *gorm.DB, adminID string) {
 			IsPublished:    true,
 		}
 
-		if err := db.Create(&payload).Error; err != nil {
-			log.Printf("⚠️ Seed: gagal insert pola asuh %s: %v", item.Slug, err)
+		if err := db.
+			Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "slug"}}, DoNothing: true}).
+			Create(&payload).Error; err != nil {
+			log.Printf("warning: seed gagal insert pola asuh %s: %v", item.Slug, err)
 		}
 	}
 }
@@ -252,7 +267,7 @@ func SeedQuizDummies(db *gorm.DB) {
 		upsertQuizWithQuestions(db, quiz)
 	}
 
-	log.Println("✅ Seed: Data dummy kuis selesai diproses")
+	log.Println("âœ… Seed: Data dummy kuis selesai diproses")
 }
 
 func upsertQuizWithQuestions(db *gorm.DB, seed quizSeed) {
@@ -262,7 +277,7 @@ func upsertQuizWithQuestions(db *gorm.DB, seed quizSeed) {
 		return
 	}
 	if err != nil && err != gorm.ErrRecordNotFound {
-		log.Printf("⚠️ Seed: gagal cek quiz %s: %v", seed.Judul, err)
+		log.Printf("âš ï¸ Seed: gagal cek quiz %s: %v", seed.Judul, err)
 		return
 	}
 
@@ -274,7 +289,7 @@ func upsertQuizWithQuestions(db *gorm.DB, seed quizSeed) {
 		IsPublished: true,
 	}
 	if err := db.Create(&quiz).Error; err != nil {
-		log.Printf("⚠️ Seed: gagal membuat quiz %s: %v", seed.Judul, err)
+		log.Printf("âš ï¸ Seed: gagal membuat quiz %s: %v", seed.Judul, err)
 		return
 	}
 
@@ -294,7 +309,7 @@ func upsertQuizWithQuestions(db *gorm.DB, seed quizSeed) {
 			Urutan:       idx + 1,
 		}
 		if err := db.Create(&question).Error; err != nil {
-			log.Printf("⚠️ Seed: gagal membuat pertanyaan quiz %s: %v", seed.Judul, err)
+			log.Printf("âš ï¸ Seed: gagal membuat pertanyaan quiz %s: %v", seed.Judul, err)
 			continue
 		}
 
@@ -307,7 +322,7 @@ func upsertQuizWithQuestions(db *gorm.DB, seed quizSeed) {
 				Urutan:     (idx+1)*10 + optIdx,
 			}
 			if err := db.Create(&opt).Error; err != nil {
-				log.Printf("⚠️ Seed: gagal membuat opsi quiz %s: %v", seed.Judul, err)
+				log.Printf("âš ï¸ Seed: gagal membuat opsi quiz %s: %v", seed.Judul, err)
 			}
 		}
 	}

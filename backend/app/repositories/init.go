@@ -1,7 +1,7 @@
-package repositories
+﻿package repositories
 
 import (
-	"sejiwa-backend/pkg/config"
+	"kia/pkg/config"
 
 	"gorm.io/gorm"
 )
@@ -26,3 +26,4 @@ func Init(opts Options) *Main {
 		KontenV2: NewKontenV2Repository(opts.Postgres),
 	}
 }
+

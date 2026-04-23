@@ -1,4 +1,4 @@
-package controllers
+﻿package controllers
 
 import (
 	"errors"
@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/middleware"
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/repositories"
-	"sejiwa-backend/app/usecases"
+	"kia/app/helpers"
+	"kia/app/middleware"
+	"kia/app/models"
+	"kia/app/repositories"
+	"kia/app/usecases"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -305,7 +305,7 @@ func (h *MasterController) ListContent(c echo.Context) error {
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", filtered, nil)
 }
 
-// ─── Public feature-specific content endpoints ─────────────────────────────
+// â”€â”€â”€ Public feature-specific content endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // ListFeatureContent returns published content from a specific feature table.
 func (h *MasterController) listFeatureContents(c echo.Context, tableName string) error {
@@ -464,3 +464,4 @@ func (h *MasterController) ListPublicQuiz(c echo.Context) error {
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", list, nil)
 }
+

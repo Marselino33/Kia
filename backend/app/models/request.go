@@ -76,16 +76,16 @@ type AdminUpdatePenggunaRequest struct {
 
 // MentalHealthPredictRequest adalah body request untuk POST /mental-health/predict.
 type MentalHealthPredictRequest struct {
-	Q1  int `json:"q1" validate:"min=0,max=3"`
-	Q2  int `json:"q2" validate:"min=0,max=3"`
-	Q3  int `json:"q3" validate:"min=0,max=3"`
-	Q4  int `json:"q4" validate:"min=0,max=3"`
-	Q5  int `json:"q5" validate:"min=0,max=3"`
-	Q6  int `json:"q6" validate:"min=0,max=3"`
-	Q7  int `json:"q7" validate:"min=0,max=3"`
-	Q8  int `json:"q8" validate:"min=0,max=3"`
-	Q9  int `json:"q9" validate:"min=0,max=3"`
-	Q10 int `json:"q10" validate:"min=0,max=3"`
+	Q1  int `json:"q1" validate:"min=0,max=4"`
+	Q2  int `json:"q2" validate:"min=0,max=4"`
+	Q3  int `json:"q3" validate:"min=0,max=4"`
+	Q4  int `json:"q4" validate:"min=0,max=4"`
+	Q5  int `json:"q5" validate:"min=0,max=4"`
+	Q6  int `json:"q6" validate:"min=0,max=4"`
+	Q7  int `json:"q7" validate:"min=0,max=4"`
+	Q8  int `json:"q8" validate:"min=0,max=4"`
+	Q9  int `json:"q9" validate:"min=0,max=4"`
+	Q10 int `json:"q10" validate:"min=0,max=4"`
 }
 
 // MentalHealthPredictResult adalah respons dari service ML (versi 2.0 - 3-class).

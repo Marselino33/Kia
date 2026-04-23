@@ -1,12 +1,12 @@
-package usecases
+﻿package usecases
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/repositories"
+	"kia/app/models"
+	"kia/app/repositories"
 )
 
 // AnakUseCase menangani CRUD data anak beserta perhitungan usia dan vaksin berikutnya.
@@ -172,3 +172,4 @@ func FormatUsiaTeks(bulan int) string {
 	}
 	return fmt.Sprintf("%d tahun %d bulan", tahun, sisa)
 }
+

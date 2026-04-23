@@ -1,12 +1,12 @@
-package controllers
+﻿package controllers
 
 import (
 	"net/http"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/middleware"
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/usecases"
+	"kia/app/helpers"
+	"kia/app/middleware"
+	"kia/app/models"
+	"kia/app/usecases"
 
 	"github.com/labstack/echo/v4"
 )
@@ -136,3 +136,4 @@ func (h *AnakController) Delete(c echo.Context) error {
 
 	return helpers.StandardResponse(c, http.StatusOK, "data anak berhasil dihapus", nil, nil)
 }
+

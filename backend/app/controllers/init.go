@@ -1,9 +1,9 @@
-package controllers
+﻿package controllers
 
 import (
-	"sejiwa-backend/app/repositories"
-	"sejiwa-backend/app/usecases"
-	"sejiwa-backend/pkg/config"
+	"kia/app/repositories"
+	"kia/app/usecases"
+	"kia/pkg/config"
 
 	"gorm.io/gorm"
 )
@@ -35,3 +35,4 @@ func Init(opts Options) *Main {
 		Mental: NewMentalHealthController(opts.Config),
 	}
 }
+

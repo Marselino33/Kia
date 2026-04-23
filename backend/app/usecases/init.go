@@ -1,8 +1,8 @@
-package usecases
+﻿package usecases
 
 import (
-	"sejiwa-backend/app/repositories"
-	"sejiwa-backend/pkg/config"
+	"kia/app/repositories"
+	"kia/pkg/config"
 )
 
 type Main struct {
@@ -23,3 +23,4 @@ func Init(opts Options) *Main {
 		Master: NewMasterContentUseCase(),
 	}
 }
+

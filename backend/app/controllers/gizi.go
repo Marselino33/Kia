@@ -1,11 +1,11 @@
-package controllers
+﻿package controllers
 
 import (
 	"net/http"
 	"strconv"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/models"
+	"kia/app/helpers"
+	"kia/app/models"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -109,3 +109,4 @@ func (h *GiziController) AddJadwal(c echo.Context) error {
 func (h *GiziController) ListJadwal(c echo.Context) error {
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", []interface{}{}, nil)
 }
+

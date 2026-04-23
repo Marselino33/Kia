@@ -1,7 +1,8 @@
-package main
+﻿package main
 
-import "sejiwa-backend/cmd/command"
+import "kia/cmd/command"
 
 func main() {
 	command.Execute()
 }
+

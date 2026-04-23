@@ -1,11 +1,11 @@
-package repositories
+﻿package repositories
 
 import (
 	"encoding/json"
 	"fmt"
 	"strings"
 
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -132,3 +132,4 @@ func matchesChoice(choice string, answer string) bool {
 	}
 	return choice == answer
 }
+

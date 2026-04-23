@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"kia/app/controllers"
-	appMiddleware "kia/app/middleware"
+	"sejiwa-backend/app/controllers"
+	appMiddleware "sejiwa-backend/app/middleware"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -20,7 +20,7 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 
 	api := e.Group("/api/v1")
 
-	// Public routes
+	// ─── Public routes ────────────────────────────────────────────────────────
 	auth := api.Group("/auth")
 	auth.POST("/register", ctrl.Auth.Register)
 	auth.POST("/login", ctrl.Auth.Login)
@@ -46,10 +46,10 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	api.GET("/gizi/anak", ctrl.Master.ListGiziAnak)
 	api.GET("/gizi/anak/:slug", ctrl.Master.GetGiziAnakBySlug)
 
-	// Protected routes (Bearer JWT)
+	// ─── Protected routes (Bearer JWT) ────────────────────────────────────────
 	protected := api.Group("", jwtMiddleware)
 
-	// Profile & bookmarks
+	// profile & bookmarks (backend stubs)
 	protected.GET("/profile", ctrl.Master.GetProfile)
 	protected.PUT("/profile", ctrl.Master.UpdateProfile)
 	protected.GET("/bookmarks", ctrl.Master.ListBookmarks)
@@ -66,15 +66,18 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	protected.PUT("/anak/:id", ctrl.Anak.Update)
 	protected.DELETE("/anak/:id", ctrl.Anak.Delete)
 
-	// Gizi & Menu
+	// ─── Gizi & Menu ──────────────────────────────────────────────────────────
+	// Public: list & detail resep
 	api.GET("/gizi/resep", ctrl.Gizi.ListResep)
 	api.GET("/gizi/resep/:slug", ctrl.Gizi.GetResepBySlug)
 	api.POST("/mental-health/predict", ctrl.Mental.Predict)
+
+	// Protected: jadwal makan & favorit
 	protected.GET("/gizi/jadwal", ctrl.Gizi.ListJadwal)
 	protected.POST("/gizi/jadwal", ctrl.Gizi.AddJadwal)
 	protected.POST("/gizi/resep/:id/favorit", ctrl.Gizi.ToggleFavorit)
 
-	// Admin routes (JWT + role=admin)
+	// ─── Admin routes (JWT + role=admin) ──────────────────────────────────────
 	admin := api.Group("/admin", jwtMiddleware, appMiddleware.AdminMiddleware())
 
 	// Dashboard stats
@@ -101,7 +104,7 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	admin.PUT("/content/:id", ctrl.Admin.UpdateContent)
 	admin.DELETE("/content/:id", ctrl.Admin.DeleteContent)
 
-	// Pola Asuh CRUD
+	// Pola Asuh CRUD (tabel khusus)
 	admin.GET("/pola-asuh", ctrl.Admin.ListPolaAsuh)
 	admin.POST("/pola-asuh", ctrl.Admin.CreatePolaAsuh)
 	admin.GET("/pola-asuh/:id", ctrl.Admin.GetPolaAsuh)
@@ -122,7 +125,34 @@ func ConfigureRouter(e *echo.Echo, ctrl *controllers.Main, jwtMiddleware echo.Mi
 	admin.PUT("/quiz/:id", ctrl.Admin.UpdateQuiz)
 	admin.DELETE("/quiz/:id", ctrl.Admin.DeleteQuiz)
 
-	// Quiz questions sub-resource
+	// Quiz Questions sub-resource
 	admin.POST("/quiz/:id/questions", ctrl.Admin.CreateQuestion)
 	admin.DELETE("/quiz/:id/questions/:qid", ctrl.Admin.DeleteQuestion)
-}
+// Parenting Quiz CRUD
+admin.GET(`"/parenting-quiz`", ctrl.Admin.ListParentingQuiz)
+admin.POST(`"/parenting-quiz`", ctrl.Admin.CreateParentingQuiz)
+admin.GET(`"/parenting-quiz/:id`", ctrl.Admin.GetParentingQuiz)
+admin.PUT(`"/parenting-quiz/:id`", ctrl.Admin.UpdateParentingQuiz)
+admin.DELETE(`"/parenting-quiz/:id`", ctrl.Admin.DeleteParentingQuiz)
+
+// Parenting Quiz Questions sub-resource
+admin.POST(`"/parenting-quiz/:id/questions`", ctrl.Admin.CreateParentingQuizQuestion)
+admin.DELETE(`"/parenting-quiz/:id/questions/:qid`", ctrl.Admin.DeleteParentingQuizQuestion)
+
+// Parenting Quiz Attempts
+protected.POST(`"/parenting-quiz/attempt`", ctrl.ParentingQuiz.RecordAttempt)
+protected.GET(`"/parenting-quiz/history`", ctrl.ParentingQuiz.ListAttemptHistory)
+// Parenting Quiz CRUD
+admin.GET(`"/parenting-quiz`", ctrl.Admin.ListParentingQuiz)
+admin.POST(`"/parenting-quiz`", ctrl.Admin.CreateParentingQuiz)
+admin.GET(`"/parenting-quiz/:id`", ctrl.Admin.GetParentingQuiz)
+admin.PUT(`"/parenting-quiz/:id`", ctrl.Admin.UpdateParentingQuiz)
+admin.DELETE(`"/parenting-quiz/:id`", ctrl.Admin.DeleteParentingQuiz)
+
+// Parenting Quiz Questions sub-resource
+admin.POST(`"/parenting-quiz/:id/questions`", ctrl.Admin.CreateParentingQuizQuestion)
+admin.DELETE(`"/parenting-quiz/:id/questions/:qid`", ctrl.Admin.DeleteParentingQuizQuestion)
+
+// Parenting Quiz Attempts
+protected.POST(`"/parenting-quiz/attempt`", ctrl.ParentingQuiz.RecordAttempt)
+protected.GET(`"/parenting-quiz/history`", ctrl.ParentingQuiz.ListAttemptHistory)

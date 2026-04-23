@@ -1,11 +1,11 @@
-package command
+﻿package command
 
 import (
 	"log"
 
 	"github.com/spf13/cobra"
 
-	application "sejiwa-backend/app"
+	application "kia/app"
 )
 
 func init() {
@@ -14,8 +14,8 @@ func init() {
 
 var cmdRoot = &cobra.Command{
 	Use:   "sejiwa-backend",
-	Short: "SEJIWA – Sistem Imunisasi Ibu dan Anak, Desa Hutabulu Mejan.",
-	Long:  `SEJIWA Backend API – mengelola data pengguna, anak, jadwal imunisasi KIA 2024, dan riwayat imunisasi.`,
+	Short: "SEJIWA â€“ Sistem Imunisasi Ibu dan Anak, Desa Hutabulu Mejan.",
+	Long:  `SEJIWA Backend API â€“ mengelola data pengguna, anak, jadwal imunisasi KIA 2024, dan riwayat imunisasi.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		app := application.New()
 		err := app.Init()
@@ -37,3 +37,4 @@ func Execute() {
 		log.Fatalf("Error in executing the root command: %+v", err)
 	}
 }
+

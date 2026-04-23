@@ -1,7 +1,7 @@
-package helpers
+﻿package helpers
 
 import (
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -48,3 +48,4 @@ func Response(c echo.Context, statusCode int, message []string) error {
 		Message:    message,
 	})
 }
+

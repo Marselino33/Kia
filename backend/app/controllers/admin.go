@@ -1,4 +1,4 @@
-package controllers
+﻿package controllers
 
 import (
 	"net/http"
@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/middleware"
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/repositories"
+	"kia/app/helpers"
+	"kia/app/middleware"
+	"kia/app/models"
+	"kia/app/repositories"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -930,7 +930,7 @@ func (h *AdminController) DeleteQuiz(c echo.Context) error {
 	return helpers.StandardResponse(c, http.StatusOK, "quiz dihapus", nil, nil)
 }
 
-// QUIZ QUESTIONS – sub-resource
+// QUIZ QUESTIONS â€“ sub-resource
 
 func (h *AdminController) CreateQuestion(c echo.Context) error {
 	quizID := c.Param("id")
@@ -1143,3 +1143,4 @@ func (h *AdminController) DeletePolaAsuh(c echo.Context) error {
 	}
 	return helpers.StandardResponse(c, http.StatusOK, "konten dihapus", nil, nil)
 }
+

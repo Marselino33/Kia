@@ -1,10 +1,10 @@
-package middleware
+﻿package middleware
 
 import (
 	"net/http"
 	"strings"
 
-	"sejiwa-backend/app/usecases"
+	"kia/app/usecases"
 
 	"github.com/labstack/echo/v4"
 )
@@ -70,3 +70,4 @@ func GetRole(c echo.Context) string {
 	role, _ := c.Get("role").(string)
 	return role
 }
+

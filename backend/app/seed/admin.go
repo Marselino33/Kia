@@ -1,9 +1,9 @@
-package seed
+﻿package seed
 
 import (
 	"log"
 
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ func SeedAdmin(db *gorm.DB) *models.Pengguna {
 	if err == nil {
 		hash, errHash := bcrypt.GenerateFromPassword([]byte(primaryAdminPassword), bcrypt.DefaultCost)
 		if errHash != nil {
-			log.Println("⚠️ Seed: gagal hash password admin utama:", errHash)
+			log.Println("âš ï¸ Seed: gagal hash password admin utama:", errHash)
 			return &admin
 		}
 
@@ -35,7 +35,7 @@ func SeedAdmin(db *gorm.DB) *models.Pengguna {
 			"password_hash": string(hash),
 		}
 		if errUpdate := db.Model(&admin).Updates(updates).Error; errUpdate != nil {
-			log.Println("⚠️ Seed: gagal sinkronisasi profil admin utama:", errUpdate)
+			log.Println("âš ï¸ Seed: gagal sinkronisasi profil admin utama:", errUpdate)
 		} else {
 			admin.Nama = primaryAdminName
 			admin.Role = "admin"
@@ -43,18 +43,18 @@ func SeedAdmin(db *gorm.DB) *models.Pengguna {
 			admin.PasswordHash = string(hash)
 		}
 
-		log.Println("✅ Seed: Admin utama tersedia (Email: admin@sejiwa.id, Password: 123456)")
+		log.Println("âœ… Seed: Admin utama tersedia (Email: admin@sejiwa.id, Password: 123456)")
 		return &admin
 	}
 
 	if err != gorm.ErrRecordNotFound {
-		log.Println("❌ Seed: Gagal memeriksa admin utama:", err)
+		log.Println("âŒ Seed: Gagal memeriksa admin utama:", err)
 		return nil
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(primaryAdminPassword), bcrypt.DefaultCost)
 	if err != nil {
-		log.Println("❌ Seed: Gagal hash password admin:", err)
+		log.Println("âŒ Seed: Gagal hash password admin:", err)
 		return nil
 	}
 
@@ -67,10 +67,11 @@ func SeedAdmin(db *gorm.DB) *models.Pengguna {
 	}
 
 	if err := db.Create(&admin).Error; err != nil {
-		log.Println("❌ Seed: Gagal membuat admin utama:", err)
+		log.Println("âŒ Seed: Gagal membuat admin utama:", err)
 		return nil
 	}
 
-	log.Println("✅ Seed: Admin utama berhasil dibuat (Email: admin@sejiwa.id, Password: 123456)")
+	log.Println("âœ… Seed: Admin utama berhasil dibuat (Email: admin@sejiwa.id, Password: 123456)")
 	return &admin
 }
+

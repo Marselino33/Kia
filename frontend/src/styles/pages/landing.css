@@ -1,4 +1,4 @@
-﻿.container {
+.container {
   max-width: 1200px;
   margin: auto;
   padding: 0 1.5rem;
@@ -108,6 +108,78 @@ background: url("https://images.unsplash.com/photo-1585521537019-3346a1be7dee?au
 
 .parent-grid {
   grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+}
+
+.kuis-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.kuis-card:hover {
+  transform: translateY(-4px);
+}
+
+.scale-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.scale-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.scale-option:hover {
+  border-color: #3b82f6;
+}
+
+.scale-option.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.scale-option input[type="radio"] {
+  display: none;
+}
+
+.scale-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.scale-number {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.result-display {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin: 1rem 0;
+}
+
+.result-display h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.result-display p {
+  margin: 0;
+  opacity: 0.9;
 }
 
 .card {

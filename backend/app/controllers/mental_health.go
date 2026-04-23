@@ -1,4 +1,4 @@
-package controllers
+﻿package controllers
 
 import (
 	"bytes"
@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"time"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/pkg/config"
+	"kia/app/helpers"
+	"kia/app/models"
+	"kia/pkg/config"
 
 	"github.com/labstack/echo/v4"
 )
@@ -73,3 +73,4 @@ func (h *MentalHealthController) Predict(c echo.Context) error {
 
 	return helpers.StandardResponse(c, http.StatusOK, "berhasil", result, nil)
 }
+

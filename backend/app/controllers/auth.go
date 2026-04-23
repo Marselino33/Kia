@@ -1,12 +1,12 @@
-package controllers
+﻿package controllers
 
 import (
 	"net/http"
 	"strings"
 
-	"sejiwa-backend/app/helpers"
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/usecases"
+	"kia/app/helpers"
+	"kia/app/models"
+	"kia/app/usecases"
 
 	"github.com/labstack/echo/v4"
 )
@@ -111,3 +111,4 @@ func (h *AuthController) RefreshToken(c echo.Context) error {
 
 	return helpers.StandardResponse(c, http.StatusOK, "token diperbarui", resp, nil)
 }
+

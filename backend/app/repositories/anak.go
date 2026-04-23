@@ -1,7 +1,7 @@
-package repositories
+﻿package repositories
 
 import (
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"gorm.io/gorm"
 )
@@ -50,3 +50,4 @@ func (r *AnakRepository) Update(anak *models.Anak) error {
 func (r *AnakRepository) Delete(id, penggunaID string) error {
 	return r.db.Where("id = ? AND pengguna_id = ?", id, penggunaID).Delete(&models.Anak{}).Error
 }
+

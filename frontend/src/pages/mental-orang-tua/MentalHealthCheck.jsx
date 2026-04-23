@@ -63,20 +63,24 @@ export default function MentalHealthCheck() {
           {questions.map((q, i) => (
             <div key={i} className="mh-check-question-card">
               <p className="mh-check-question">{i + 1}. {q}</p>
-              <div className="mh-check-options">
-                {[0, 1, 2, 3].map((v) => (
-                  <label key={v} className="mh-check-option-label">
-                    <input
-                      type="radio"
-                      name={`q${i}`}
-                      value={v}
-                      checked={answers[i] === v}
-                      onChange={() => handleChange(i, v)}
-                      className="mh-check-radio"
-                    />
-                    {v}
-                  </label>
-                ))}
+               <div className="mh-check-options">
+                 {[0, 1, 2, 3, 4].map((v) => (
+                   <label key={v} className="mh-check-option-label">
+                     <input
+                       type="radio"
+                       name={`q${i}`}
+                       value={v}
+                       checked={answers[i] === v}
+                       onChange={() => handleChange(i, v)}
+                       className="mh-check-radio"
+                     />
+                     {v === 0 && 'Tidak pernah'}
+                     {v === 1 && 'Hampir tidak pernah'}
+                     {v === 2 && 'Kadang-kadang'}
+                     {v === 3 && 'Cukup sering'}
+                     {v === 4 && 'Sangat sering'}
+                   </label>
+                 ))}
               </div>
             </div>
           ))}
@@ -114,7 +118,7 @@ export default function MentalHealthCheck() {
 
             {/* Progress Bar untuk skor_total (0-40) */}
             <div className="mh-score-bar-container">
-              <div 
+              <div
                 className={`mh-score-bar mh-score-${result.label.toLowerCase()}`}
                 style={{ width: `${Math.min((result.skor_total / 40) * 100, 100)}%` }}
               ></div>

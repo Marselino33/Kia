@@ -1,12 +1,12 @@
-package usecases
+﻿package usecases
 
 import (
 	"errors"
 	"strings"
 	"time"
 
-	"sejiwa-backend/app/models"
-	"sejiwa-backend/app/repositories"
+	"kia/app/models"
+	"kia/app/repositories"
 
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -169,3 +169,4 @@ func (u *AuthUseCase) signToken(pengguna *models.Pengguna, duration time.Duratio
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(u.jwtSecret))
 }
+

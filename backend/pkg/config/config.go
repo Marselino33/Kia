@@ -1,9 +1,9 @@
-package config
+﻿package config
 
 import (
 	"net/url"
 
-	"sejiwa-backend/pkg/database"
+	"kia/pkg/database"
 
 	"github.com/spf13/viper"
 )
@@ -52,3 +52,4 @@ func (d *Database) ToArgs(dbType database.DBType, connType database.ConnType, va
 	}
 	return
 }
+

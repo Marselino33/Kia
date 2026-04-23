@@ -1,10 +1,10 @@
-package controllers
+﻿package controllers
 
 import (
 	"sort"
 	"strings"
 
-	"sejiwa-backend/app/models"
+	"kia/app/models"
 
 	"gorm.io/gorm"
 )
@@ -117,3 +117,4 @@ func isMissingTableError(err error) bool {
 	msg := strings.ToLower(err.Error())
 	return strings.Contains(msg, "sqlstate 42p01") || (strings.Contains(msg, "relation") && strings.Contains(msg, "does not exist"))
 }
+

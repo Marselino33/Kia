@@ -19,6 +19,7 @@ export default function Landing() {
     { icon: Music, label: 'Stimuli Anak', link: '/stimulus' },
     { icon: Users, label: 'Pola Asuh', link: '/pola-asuh' },
     { icon: BookOpen, label: 'Kuis Pemahaman', link: '/kuis-parenting' },
+      { icon: BookOpen, label: 'Kuis Parenting', link: '/parenting-kuis' },
     { icon: Activity, label: 'Gizi Ibu', link: '/gizi-ibu-trimester1' },
     { icon: Droplets, label: 'Gizi Anak', link: '/gizi-anak' },
     { icon: Smile, label: 'Resep MPASI', link: '/resep-mpasi' },
